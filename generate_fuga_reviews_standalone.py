@@ -7,9 +7,9 @@ import csv
 import random
 from datetime import datetime, timedelta
 
-# Shopify credentials
-SHOP_DOMAIN = "fugafashion.myshopify.com"
-ACCESS_TOKEN = "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"
+# Shopify credentials (will be set via environment variables in production)
+SHOP_DOMAIN = "your-shop.myshopify.com"
+ACCESS_TOKEN = "your-access-token"
 API_VERSION = "2024-01"
 
 # Review templates from original generator

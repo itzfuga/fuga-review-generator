@@ -7,9 +7,9 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
-# Your credentials
-SHOP_DOMAIN = "fugafashion.myshopify.com"
-ACCESS_TOKEN = "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"
+# Your credentials from environment variables
+SHOP_DOMAIN = os.environ.get('SHOPIFY_SHOP_DOMAIN', 'your-shop.myshopify.com')
+ACCESS_TOKEN = os.environ.get('SHOPIFY_ACCESS_TOKEN', 'your-access-token')
 
 @app.route('/')
 def index():
