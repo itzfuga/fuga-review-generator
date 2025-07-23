@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Review Generator</title>
+    <script src="https://unpkg.com/@shopify/app-bridge@3"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .btn { background: #5c6ac4; color: white; border: none; padding: 16px 32px; border-radius: 6px; font-size: 16px; cursor: pointer; }
+        .btn:hover { background: #4c51bf; }
+        .loading { display: none; text-align: center; padding: 20px; }
+        .results { display: none; background: #d1fae5; padding: 20px; border-radius: 8px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🛍️ Review Generator</h1>
+            <p>Generate authentic reviews for your Fuga Studios products</p>
+            <button class="btn" onclick="generateReviews()">Generate All Reviews</button>
+            
+            <div class="loading" id="loading">
+                <p>Generating reviews... please wait</p>
+            </div>
+            
+            <div class="results" id="results">
+                <h3>✅ Success!</h3>
+                <p>Generated <span id="count">0</span> reviews</p>
+                <button class="btn" onclick="downloadFile()">Download CSV</button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>Import Instructions</h3>
+            <ul>
+                <li><strong>Judge.me:</strong> Apps → Judge.me → Import Reviews</li>
+                <li><strong>Loox:</strong> Settings → Import Reviews</li>
+                <li><strong>Stamped:</strong> Tools → Import</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let currentFile = null;
+
+        async function generateReviews() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            const response = await fetch('/api/generate', { method: 'POST' });
+            const data = await response.json();
+            
+            if (data.success) {
+                currentFile = data.filename;
+                document.getElementById('count').textContent = data.count;
+                document.getElementById('results').style.display = 'block';
+            }
+            
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function downloadFile() {
+            if (currentFile) {
+                window.open(`/download/${currentFile}`);
+            }
+        }
+    </script>
+</body>
+</html>
