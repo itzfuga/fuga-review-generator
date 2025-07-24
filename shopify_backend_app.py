@@ -42,16 +42,44 @@ def save_live_review_counts(data):
     with open(LIVE_REVIEW_TRACKING_FILE, 'w') as f:
         json.dump(data, f, indent=2)
 
-def get_all_klaviyo_reviews():
-    """Fetch all review counts from Klaviyo Reviews database (not events)"""
+def get_csv_review_counts():
+    """Get review counts from the CSV export file"""
     try:
+        import csv
+        review_counts = {}
+        csv_file_path = 'review_export_150f0ab9-09fe-445b-8854-d9ee9890ceb0.csv'
+        
+        if os.path.exists(csv_file_path):
+            with open(csv_file_path, 'r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    product_id = row.get('product_id', '').strip()
+                    status = row.get('status', '').strip()
+                    
+                    # Only count published reviews
+                    if product_id and status == 'published':
+                        if product_id not in review_counts:
+                            review_counts[product_id] = 0
+                        review_counts[product_id] += 1
+        
+        print(f"CSV review counts loaded: {len(review_counts)} products, {sum(review_counts.values())} total reviews")
+        return review_counts
+    except Exception as e:
+        print(f"Error loading CSV reviews: {str(e)}")
+        return {}
+
+def get_all_klaviyo_reviews():
+    """Fetch all review counts - CSV first, then live Klaviyo reviews"""
+    try:
+        # Start with CSV data (imported reviews)
+        review_counts = get_csv_review_counts()
+        
+        # Add live Klaviyo reviews (from email workflow)
         headers = {
             'Authorization': f'Klaviyo-API-Key {KLAVIYO_API_KEY}',
             'Accept': 'application/json',
             'revision': '2024-10-15'
         }
-        
-        review_counts = {}
         
         # Try to access Klaviyo Reviews API directly
         # This is the actual reviews database, not events
@@ -96,6 +124,7 @@ def get_all_klaviyo_reviews():
                             if len(parts) >= 3:
                                 shopify_product_id = parts[-1]  # Last part is the product ID
                                 
+                                # Add to existing CSV counts
                                 if shopify_product_id not in review_counts:
                                     review_counts[shopify_product_id] = 0
                                 review_counts[shopify_product_id] += 1
