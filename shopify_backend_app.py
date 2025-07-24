@@ -391,6 +391,57 @@ def debug_reviews():
     except Exception as e:
         return jsonify({'success': False, 'error': f'Error: {str(e)}'}), 500
 
+@app.route('/api/test-klaviyo-reviews', methods=['GET'])
+def test_klaviyo_reviews():
+    """Test endpoint to check Klaviyo Reviews API access"""
+    try:
+        if KLAVIYO_API_KEY == 'your-klaviyo-key':
+            return jsonify({
+                'success': False, 
+                'error': 'Klaviyo API key not configured'
+            })
+            
+        headers = {
+            'Authorization': f'Klaviyo-API-Key {KLAVIYO_API_KEY}',
+            'Accept': 'application/json',
+            'revision': '2024-10-15'
+        }
+        
+        # Test Klaviyo Reviews API
+        reviews_url = "https://a.klaviyo.com/api/reviews/?page[size]=10"
+        response = requests.get(reviews_url, headers=headers)
+        
+        result = {
+            'success': True,
+            'reviews_api_status': response.status_code,
+            'reviews_api_response': response.text[:1000] if response.text else 'No response text',
+            'review_counts': {}
+        }
+        
+        if response.status_code == 200:
+            try:
+                reviews_data = response.json()
+                reviews = reviews_data.get('data', [])
+                result['total_reviews_found'] = len(reviews)
+                result['sample_review'] = reviews[0] if reviews else None
+                
+                # Count reviews by product
+                for review in reviews:
+                    attributes = review.get('attributes', {})
+                    product_id = attributes.get('product_id')
+                    if product_id:
+                        if product_id not in result['review_counts']:
+                            result['review_counts'][product_id] = 0
+                        result['review_counts'][product_id] += 1
+                        
+            except Exception as e:
+                result['json_parse_error'] = str(e)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': f'Error: {str(e)}'})
+
 @app.route('/api/products', methods=['GET'])
 def get_products():
     """Fetch all products with review count tracking"""
