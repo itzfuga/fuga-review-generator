@@ -43,7 +43,7 @@ def save_live_review_counts(data):
         json.dump(data, f, indent=2)
 
 def get_all_klaviyo_reviews():
-    """Fetch all review counts from Klaviyo at once - more efficient"""
+    """Fetch all review counts from Klaviyo Reviews database (not events)"""
     try:
         headers = {
             'Authorization': f'Klaviyo-API-Key {KLAVIYO_API_KEY}',
@@ -53,7 +53,47 @@ def get_all_klaviyo_reviews():
         
         review_counts = {}
         
-        # Fetch more events at once to be more efficient
+        # Try to access Klaviyo Reviews API directly
+        # This is the actual reviews database, not events
+        reviews_url = "https://a.klaviyo.com/api/reviews/?page[size]=500"
+        
+        try:
+            response = requests.get(reviews_url, headers=headers)
+            print(f"Klaviyo Reviews API response: {response.status_code}")
+            
+            if response.status_code == 200:
+                reviews_data = response.json()
+                reviews = reviews_data.get('data', [])
+                print(f"Found {len(reviews)} reviews in Klaviyo Reviews")
+                
+                for review in reviews:
+                    # Extract product information from review
+                    attributes = review.get('attributes', {})
+                    
+                    # Try different ways to get product identifier
+                    product_id = attributes.get('product_id')
+                    product_handle = None
+                    
+                    # The product might be referenced by ID, we need to map it to handle
+                    if product_id:
+                        # Count by product_id for now, we'll map to handles later
+                        if product_id not in review_counts:
+                            review_counts[product_id] = 0
+                        review_counts[product_id] += 1
+                
+                print(f"Review counts by product_id: {review_counts}")
+                return review_counts
+                
+            elif response.status_code == 404:
+                print("Klaviyo Reviews API not available - might not be enabled")
+            else:
+                print(f"Klaviyo Reviews API error: {response.status_code} - {response.text}")
+                
+        except Exception as e:
+            print(f"Error accessing Klaviyo Reviews API: {str(e)}")
+        
+        # Fallback to events-based approach
+        print("Falling back to events-based review counting...")
         for metric_name in ['Submitted review', 'ReviewsIOProductReview']:
             url = f"https://a.klaviyo.com/api/events/?filter=equals(metric.name,'{metric_name}')&page[size]=500"
             response = requests.get(url, headers=headers)
@@ -64,34 +104,24 @@ def get_all_klaviyo_reviews():
                 for event in events:
                     properties = event.get('attributes', {}).get('properties', {})
                     
-                    # Try to extract product handle/identifier from various property names
-                    product_handle = None
-                    
-                    # Check different property names where the product handle might be stored
+                    # Try to extract product handle/identifier
                     possible_handles = [
                         properties.get('ProductID'),
                         properties.get('product_handle'),
                         properties.get('Product Handle'),
                         properties.get('product_id'),
-                        properties.get('handle'),
-                        properties.get('Product_Handle'),
-                        properties.get('productHandle')
+                        properties.get('handle')
                     ]
                     
                     for handle in possible_handles:
                         if handle and isinstance(handle, str) and handle.strip():
                             product_handle = handle.strip()
+                            if product_handle not in review_counts:
+                                review_counts[product_handle] = 0
+                            review_counts[product_handle] += 1
                             break
-                    
-                    # If we found a product handle, count it
-                    if product_handle:
-                        if product_handle not in review_counts:
-                            review_counts[product_handle] = 0
-                        review_counts[product_handle] += 1
-            else:
-                print(f"Klaviyo API error for {metric_name}: {response.status_code}")
         
-        print(f"Fetched Klaviyo reviews for {len(review_counts)} products")
+        print(f"Total review counts found: {len(review_counts)}")
         return review_counts
             
     except Exception as e:
