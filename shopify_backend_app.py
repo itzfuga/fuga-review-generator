@@ -15,6 +15,8 @@ KLAVIYO_API_KEY = os.environ.get('KLAVIYO_API_KEY', 'your-klaviyo-key')
 
 # File to track generated reviews
 REVIEW_TRACKING_FILE = 'review_tracking.json'
+# File to manually track live review counts
+LIVE_REVIEW_TRACKING_FILE = 'live_review_counts.json'
 
 def load_review_tracking():
     """Load tracking data for generated reviews"""
@@ -26,6 +28,18 @@ def load_review_tracking():
 def save_review_tracking(data):
     """Save tracking data for generated reviews"""
     with open(REVIEW_TRACKING_FILE, 'w') as f:
+        json.dump(data, f, indent=2)
+
+def load_live_review_counts():
+    """Load manually tracked live review counts"""
+    if os.path.exists(LIVE_REVIEW_TRACKING_FILE):
+        with open(LIVE_REVIEW_TRACKING_FILE, 'r') as f:
+            return json.load(f)
+    return {}
+
+def save_live_review_counts(data):
+    """Save manually tracked live review counts"""
+    with open(LIVE_REVIEW_TRACKING_FILE, 'w') as f:
         json.dump(data, f, indent=2)
 
 def get_all_klaviyo_reviews():
@@ -335,7 +349,8 @@ def debug_reviews():
                         debug_info['shopify_review_metafields'] = {
                             'product_title': product.get('title'),
                             'product_handle': product.get('handle'),
-                            'review_metafields': review_metafields
+                            'review_metafields': review_metafields,
+                            'all_metafields': [{'key': m.get('key'), 'namespace': m.get('namespace')} for m in metafields]
                         }
         
         return jsonify({
@@ -384,7 +399,10 @@ def get_products():
         # Check if we should fetch Klaviyo reviews (only if API key is set)
         fetch_klaviyo = KLAVIYO_API_KEY != 'your-klaviyo-key'
         
-        # Fetch all Klaviyo reviews at once for efficiency
+        # Load manually tracked live review counts (fallback if Klaviyo doesn't work)
+        live_review_counts = load_live_review_counts()
+        
+        # Try Klaviyo first, but use manual counts as fallback
         klaviyo_review_counts = {}
         if fetch_klaviyo:
             try:
@@ -399,8 +417,11 @@ def get_products():
             product_id = str(product['id'])
             product_handle = product['handle']
             
-            # Get Klaviyo review count from our fetched data
+            # Get live review count (Klaviyo first, then manual counts as fallback)
             klaviyo_reviews = klaviyo_review_counts.get(product_handle, 0)
+            if klaviyo_reviews == 0:
+                klaviyo_reviews = live_review_counts.get(product_handle, 0)
+            
             generated_reviews = review_tracking.get(product_id, {}).get('count', 0)
             
             products_data.append({
