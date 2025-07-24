@@ -66,6 +66,86 @@ def get_klaviyo_reviews_for_product(product_handle):
 def index():
     return render_template('shopify_backend.html')
 
+@app.route('/klaviyo-diagnostic')
+def klaviyo_diagnostic():
+    return render_template('klaviyo_diagnostic.html')
+
+@app.route('/api/klaviyo-events', methods=['GET'])
+def get_klaviyo_events():
+    """Diagnostic endpoint to discover Klaviyo event types"""
+    try:
+        if KLAVIYO_API_KEY == 'your-klaviyo-key':
+            return jsonify({
+                'success': False, 
+                'error': 'Klaviyo API key not configured'
+            }), 500
+            
+        headers = {
+            'Authorization': f'Klaviyo-API-Key {KLAVIYO_API_KEY}',
+            'Accept': 'application/json',
+            'revision': '2024-10-15'
+        }
+        
+        # First, let's get all metrics (event types) in your account
+        metrics_url = "https://a.klaviyo.com/api/metrics/"
+        response = requests.get(metrics_url, headers=headers)
+        
+        if response.status_code != 200:
+            return jsonify({
+                'success': False, 
+                'error': f'Klaviyo API error: {response.status_code} - {response.text}'
+            }), 500
+            
+        metrics_data = response.json()
+        metrics = metrics_data.get('data', [])
+        
+        # Filter for review-related metrics
+        review_metrics = []
+        all_metrics = []
+        
+        for metric in metrics:
+            metric_name = metric.get('attributes', {}).get('name', '')
+            metric_id = metric.get('id', '')
+            
+            all_metrics.append({
+                'id': metric_id,
+                'name': metric_name,
+                'integration': metric.get('attributes', {}).get('integration', {}).get('name', 'Unknown')
+            })
+            
+            # Check if this might be a review-related metric
+            if any(keyword in metric_name.lower() for keyword in ['review', 'rating', 'feedback', 'testimonial']):
+                review_metrics.append({
+                    'id': metric_id,
+                    'name': metric_name,
+                    'integration': metric.get('attributes', {}).get('integration', {}).get('name', 'Unknown')
+                })
+        
+        # Also try to get some recent events to see their structure
+        events_url = "https://a.klaviyo.com/api/events/?page[size]=10"
+        events_response = requests.get(events_url, headers=headers)
+        
+        sample_events = []
+        if events_response.status_code == 200:
+            events_data = events_response.json()
+            for event in events_data.get('data', [])[:5]:  # Get first 5 events
+                sample_events.append({
+                    'metric_name': event.get('attributes', {}).get('metric', {}).get('data', {}).get('attributes', {}).get('name', 'Unknown'),
+                    'timestamp': event.get('attributes', {}).get('timestamp', ''),
+                    'properties': event.get('attributes', {}).get('properties', {})
+                })
+        
+        return jsonify({
+            'success': True,
+            'review_metrics': review_metrics,
+            'all_metrics': all_metrics,
+            'sample_events': sample_events,
+            'total_metrics': len(all_metrics)
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': f'Error: {str(e)}'}), 500
+
 @app.route('/api/products', methods=['GET'])
 def get_products():
     """Fetch all products with review count tracking"""
