@@ -652,7 +652,7 @@ def generate_for_product(product_id):
             rating = random.choices([5, 4, 3], weights=[60, 30, 10])[0]
             name, email, location = generate_reviewer_info(lang)
             title = random.choice(REVIEW_TITLES[lang][rating])
-            content = generate_review_content(product['title'], rating, lang)
+            content = generate_review_content(product, rating, lang)
             
             reviews.append({
                 'product_id': str(product['id']),
