@@ -28,8 +28,8 @@ def save_review_tracking(data):
     with open(REVIEW_TRACKING_FILE, 'w') as f:
         json.dump(data, f, indent=2)
 
-def get_klaviyo_reviews_for_product(product_handle):
-    """Fetch review count from Klaviyo for a specific product"""
+def get_all_klaviyo_reviews():
+    """Fetch all review counts from Klaviyo at once - more efficient"""
     try:
         headers = {
             'Authorization': f'Klaviyo-API-Key {KLAVIYO_API_KEY}',
@@ -37,11 +37,11 @@ def get_klaviyo_reviews_for_product(product_handle):
             'revision': '2024-10-15'
         }
         
-        # Try both "Submitted review" and "ReviewsIOProductReview" events
-        review_count = 0
+        review_counts = {}
         
+        # Fetch more events at once to be more efficient
         for metric_name in ['Submitted review', 'ReviewsIOProductReview']:
-            url = f"https://a.klaviyo.com/api/events/?filter=equals(metric.name,'{metric_name}')&page[size]=100"
+            url = f"https://a.klaviyo.com/api/events/?filter=equals(metric.name,'{metric_name}')&page[size]=500"
             response = requests.get(url, headers=headers)
             
             if response.status_code == 200:
@@ -50,28 +50,44 @@ def get_klaviyo_reviews_for_product(product_handle):
                 for event in events:
                     properties = event.get('attributes', {}).get('properties', {})
                     
-                    # Check various property names that might contain the product identifier
-                    product_matches = [
-                        properties.get('ProductID') == product_handle,
-                        properties.get('product_handle') == product_handle,
-                        properties.get('Product Handle') == product_handle,
-                        properties.get('product_id') == product_handle,
-                        properties.get('handle') == product_handle,
-                        # Sometimes it might be stored as product title match
-                        product_handle in str(properties.get('Product Name', '')).lower().replace(' ', '-'),
-                        product_handle in str(properties.get('product_name', '')).lower().replace(' ', '-')
+                    # Try to extract product handle/identifier from various property names
+                    product_handle = None
+                    
+                    # Check different property names where the product handle might be stored
+                    possible_handles = [
+                        properties.get('ProductID'),
+                        properties.get('product_handle'),
+                        properties.get('Product Handle'),
+                        properties.get('product_id'),
+                        properties.get('handle'),
+                        properties.get('Product_Handle'),
+                        properties.get('productHandle')
                     ]
                     
-                    if any(product_matches):
-                        review_count += 1
+                    for handle in possible_handles:
+                        if handle and isinstance(handle, str) and handle.strip():
+                            product_handle = handle.strip()
+                            break
+                    
+                    # If we found a product handle, count it
+                    if product_handle:
+                        if product_handle not in review_counts:
+                            review_counts[product_handle] = 0
+                        review_counts[product_handle] += 1
             else:
                 print(f"Klaviyo API error for {metric_name}: {response.status_code}")
         
-        return review_count
+        print(f"Fetched Klaviyo reviews for {len(review_counts)} products")
+        return review_counts
             
     except Exception as e:
         print(f"Error fetching Klaviyo reviews: {str(e)}")
-        return 0
+        return {}
+
+def get_klaviyo_reviews_for_product(product_handle):
+    """Legacy function - kept for compatibility"""
+    all_reviews = get_all_klaviyo_reviews()
+    return all_reviews.get(product_handle, 0)
 
 @app.route('/')
 def index():
@@ -239,31 +255,34 @@ def get_products():
         # Check if we should fetch Klaviyo reviews (only if API key is set)
         fetch_klaviyo = KLAVIYO_API_KEY != 'your-klaviyo-key'
         
-        # For now, let's disable Klaviyo fetching to avoid timeouts
-        # We'll add it back with caching or async processing
-        fetch_klaviyo = False
+        # Fetch all Klaviyo reviews at once for efficiency
+        klaviyo_review_counts = {}
+        if fetch_klaviyo:
+            try:
+                print("Fetching Klaviyo reviews...")
+                klaviyo_review_counts = get_all_klaviyo_reviews()
+                print(f"Got review counts for {len(klaviyo_review_counts)} products")
+            except Exception as e:
+                print(f"Error fetching Klaviyo reviews: {str(e)}")
+                klaviyo_review_counts = {}
         
         for product in products:
             product_id = str(product['id'])
+            product_handle = product['handle']
             
-            # Get Klaviyo review count if available
-            klaviyo_reviews = 0
-            if fetch_klaviyo:
-                try:
-                    klaviyo_reviews = get_klaviyo_reviews_for_product(product['handle'])
-                except Exception as e:
-                    print(f"Error fetching Klaviyo reviews for {product['handle']}: {str(e)}")
-                    klaviyo_reviews = 0
+            # Get Klaviyo review count from our fetched data
+            klaviyo_reviews = klaviyo_review_counts.get(product_handle, 0)
+            generated_reviews = review_tracking.get(product_id, {}).get('count', 0)
             
             products_data.append({
                 'id': product_id,
                 'title': product['title'],
-                'handle': product['handle'],
+                'handle': product_handle,
                 'image': product['images'][0]['src'] if product.get('images') else None,
                 'variants_count': len(product.get('variants', [])),
-                'generated_reviews': review_tracking.get(product_id, {}).get('count', 0),
+                'generated_reviews': generated_reviews,
                 'klaviyo_reviews': klaviyo_reviews,
-                'total_reviews': klaviyo_reviews + review_tracking.get(product_id, {}).get('count', 0),
+                'total_reviews': klaviyo_reviews + generated_reviews,
                 'last_generated': review_tracking.get(product_id, {}).get('last_generated', None),
                 'created_at': product.get('created_at')
             })
