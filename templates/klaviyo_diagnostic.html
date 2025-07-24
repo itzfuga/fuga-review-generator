@@ -88,6 +88,7 @@
             <h1>🔍 Klaviyo Events Diagnostic</h1>
             <p>This tool helps you discover what event names Klaviyo is using for product reviews in your account.</p>
             <button class="btn" onclick="loadEvents()">Load Klaviyo Events</button>
+            <button class="btn" onclick="loadReviewSamples()" style="margin-left: 10px; background: #10b981;">Load Review Samples</button>
         </div>
 
         <div id="loading" class="loading" style="display: none;">
@@ -171,6 +172,52 @@
                 `;
 
                 document.getElementById('results').style.display = 'block';
+
+            } catch (error) {
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').innerHTML = `<strong>Error:</strong> ${error.message}`;
+            }
+
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        async function loadReviewSamples() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+
+            try {
+                const response = await fetch('/api/klaviyo-review-samples');
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to load review samples');
+                }
+
+                // Create a new results div specifically for review samples
+                let reviewResultsDiv = document.getElementById('review-samples-results');
+                if (!reviewResultsDiv) {
+                    reviewResultsDiv = document.createElement('div');
+                    reviewResultsDiv.id = 'review-samples-results';
+                    document.querySelector('.container').appendChild(reviewResultsDiv);
+                }
+
+                reviewResultsDiv.innerHTML = `
+                    <div class="card">
+                        <h2>🔍 Actual Review Event Samples</h2>
+                        <p>Here are ${data.total_samples} actual review events from your Klaviyo account. Look at the properties to see how product information is stored:</p>
+                        ${data.review_samples.map(event => `
+                            <div class="metric-item highlight">
+                                <div class="metric-name">${event.metric_name}</div>
+                                <div style="font-size: 12px; color: #666;">Timestamp: ${new Date(event.timestamp).toLocaleString()}</div>
+                                <div style="font-size: 12px; color: #333; margin: 8px 0;">Property Keys: <strong>${event.all_property_keys.join(', ')}</strong></div>
+                                <div class="event-properties">${JSON.stringify(event.properties, null, 2)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                reviewResultsDiv.style.display = 'block';
 
             } catch (error) {
                 document.getElementById('error').style.display = 'block';
