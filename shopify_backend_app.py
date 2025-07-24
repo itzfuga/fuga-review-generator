@@ -643,16 +643,35 @@ def generate_for_product(product_id):
         url = f"https://{SHOP_DOMAIN}/admin/api/2024-01/products/{product_id}.json"
         headers = {'X-Shopify-Access-Token': ACCESS_TOKEN}
         response = requests.get(url, headers=headers)
-        product = response.json()['product']
+        
+        if response.status_code != 200:
+            return jsonify({'success': False, 'error': f'Failed to fetch product: {response.status_code}'}), 500
+            
+        response_data = response.json()
+        if 'product' not in response_data:
+            return jsonify({'success': False, 'error': f'Product not found in response: {response_data}'}), 500
+            
+        product = response_data['product']
+        print(f"Fetched product: {product.get('title', 'Unknown')} (ID: {product.get('id', 'Unknown')})")
         
         # Generate reviews
         reviews = []
-        for _ in range(review_count):
-            lang = random.choice(['en', 'de'])
-            rating = random.choices([5, 4, 3], weights=[60, 30, 10])[0]
-            name, email, location = generate_reviewer_info(lang)
-            title = random.choice(REVIEW_TITLES[lang][rating])
-            content = generate_review_content(product, rating, lang)
+        for i in range(review_count):
+            try:
+                lang = random.choice(['en', 'de'])
+                rating = random.choices([5, 4, 3], weights=[60, 30, 10])[0]
+                name, email, location = generate_reviewer_info(lang)
+                title = random.choice(REVIEW_TITLES[lang][rating])
+                
+                print(f"Generating review {i+1}/{review_count} for product: {product.get('title')}")
+                print(f"Product keys available: {list(product.keys())}")
+                
+                content = generate_review_content(product, rating, lang)
+                print(f"Generated content: {content[:50]}...")
+                
+            except Exception as e:
+                print(f"Error generating review {i+1}: {str(e)}")
+                return jsonify({'success': False, 'error': f'Error generating review: {str(e)}'}), 500
             
             reviews.append({
                 'product_id': str(product['id']),
