@@ -238,6 +238,114 @@ def get_klaviyo_review_samples():
     except Exception as e:
         return jsonify({'success': False, 'error': f'Error: {str(e)}'}), 500
 
+@app.route('/api/debug-reviews', methods=['GET'])
+def debug_reviews():
+    """Debug where reviews might be stored"""
+    try:
+        if KLAVIYO_API_KEY == 'your-klaviyo-key':
+            return jsonify({
+                'success': False, 
+                'error': 'Klaviyo API key not configured'
+            }), 500
+            
+        headers = {
+            'Authorization': f'Klaviyo-API-Key {KLAVIYO_API_KEY}',
+            'Accept': 'application/json',
+            'revision': '2024-10-15'
+        }
+        
+        debug_info = {}
+        
+        # 1. Check if reviews are stored as profile properties
+        profiles_url = "https://a.klaviyo.com/api/profiles/?page[size]=5"
+        profiles_response = requests.get(profiles_url, headers=headers)
+        
+        if profiles_response.status_code == 200:
+            profiles = profiles_response.json().get('data', [])
+            profile_properties = []
+            
+            for profile in profiles[:3]:  # Check first 3 profiles
+                properties = profile.get('attributes', {}).get('properties', {})
+                review_related_props = {}
+                
+                for key, value in properties.items():
+                    if any(keyword in key.lower() for keyword in ['review', 'rating', 'feedback']):
+                        review_related_props[key] = value
+                
+                if review_related_props:
+                    profile_properties.append({
+                        'profile_id': profile.get('id'),
+                        'email': profile.get('attributes', {}).get('email'),
+                        'review_properties': review_related_props
+                    })
+            
+            debug_info['profile_review_properties'] = profile_properties
+        
+        # 2. Try a broader event search with recent events
+        recent_events_url = "https://a.klaviyo.com/api/events/?page[size]=20"
+        recent_response = requests.get(recent_events_url, headers=headers)
+        
+        if recent_response.status_code == 200:
+            events = recent_response.json().get('data', [])
+            recent_events_summary = []
+            
+            for event in events:
+                metric_name = event.get('attributes', {}).get('metric', {}).get('data', {}).get('attributes', {}).get('name', 'Unknown')
+                properties = event.get('attributes', {}).get('properties', {})
+                
+                # Check if any properties might be product-related
+                product_related = any(keyword in str(properties).lower() for keyword in ['product', 'item', 'sku'])
+                
+                recent_events_summary.append({
+                    'metric_name': metric_name,
+                    'timestamp': event.get('attributes', {}).get('timestamp', ''),
+                    'has_product_data': product_related,
+                    'property_keys': list(properties.keys())
+                })
+            
+            debug_info['recent_events'] = recent_events_summary
+        
+        # 3. Check specific product in Shopify for review data in metafields
+        if SHOP_DOMAIN != 'your-shop.myshopify.com':
+            shopify_headers = {'X-Shopify-Access-Token': ACCESS_TOKEN}
+            products_url = f"https://{SHOP_DOMAIN}/admin/api/2024-01/products.json?limit=1"
+            products_response = requests.get(products_url, headers=shopify_headers)
+            
+            if products_response.status_code == 200:
+                products = products_response.json().get('products', [])
+                if products:
+                    product = products[0]
+                    # Check if this product has metafields that might contain review data
+                    metafields_url = f"https://{SHOP_DOMAIN}/admin/api/2024-01/products/{product['id']}/metafields.json"
+                    metafields_response = requests.get(metafields_url, headers=shopify_headers)
+                    
+                    if metafields_response.status_code == 200:
+                        metafields = metafields_response.json().get('metafields', [])
+                        review_metafields = []
+                        
+                        for metafield in metafields:
+                            if any(keyword in metafield.get('key', '').lower() for keyword in ['review', 'rating', 'feedback']):
+                                review_metafields.append({
+                                    'key': metafield.get('key'),
+                                    'namespace': metafield.get('namespace'),
+                                    'value': metafield.get('value'),
+                                    'type': metafield.get('type')
+                                })
+                        
+                        debug_info['shopify_review_metafields'] = {
+                            'product_title': product.get('title'),
+                            'product_handle': product.get('handle'),
+                            'review_metafields': review_metafields
+                        }
+        
+        return jsonify({
+            'success': True,
+            'debug_info': debug_info
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': f'Error: {str(e)}'}), 500
+
 @app.route('/api/products', methods=['GET'])
 def get_products():
     """Fetch all products with review count tracking"""
