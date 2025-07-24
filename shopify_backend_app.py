@@ -191,8 +191,22 @@ def get_klaviyo_review_samples():
         
         review_samples = []
         
-        # Get sample events from both review metrics
-        for metric_name in ['Submitted review', 'ReviewsIOProductReview']:
+        # Try ALL the review-related metrics we found earlier
+        review_metric_names = [
+            'Submitted review',
+            'ReviewsIOProductReview', 
+            'ReviewsIOReview',
+            'Ready to review',
+            'Edited review',
+            'Submitted rating',
+            'ReviewsIONegativeProductReview',
+            'ReviewsIOPositiveReview',
+            'ReviewsIONegativeReview',
+            'ReviewsIOPositiveProductReview',
+            'Edited rating'
+        ]
+        
+        for metric_name in review_metric_names:
             url = f"https://a.klaviyo.com/api/events/?filter=equals(metric.name,'{metric_name}')&page[size]=5"
             response = requests.get(url, headers=headers)
             
@@ -207,6 +221,13 @@ def get_klaviyo_review_samples():
                         'properties': properties,
                         'all_property_keys': list(properties.keys())
                     })
+                    
+                    # Stop after we get some samples
+                    if len(review_samples) >= 10:
+                        break
+            
+            if len(review_samples) >= 10:
+                break
         
         return jsonify({
             'success': True,
