@@ -461,6 +461,56 @@ def test_klaviyo_reviews():
     except Exception as e:
         return jsonify({'success': False, 'error': f'Error: {str(e)}'})
 
+@app.route('/api/compare-reviews', methods=['GET'])
+def compare_reviews():
+    """Compare CSV reviews with Klaviyo Reviews API"""
+    try:
+        import csv
+        
+        # Count reviews from CSV file
+        csv_counts = {}
+        csv_file_path = 'review_export_150f0ab9-09fe-445b-8854-d9ee9890ceb0.csv'
+        
+        if os.path.exists(csv_file_path):
+            with open(csv_file_path, 'r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    product_id = row.get('product_id', '').strip()
+                    if product_id and product_id not in csv_counts:
+                        csv_counts[product_id] = 0
+                    if product_id:
+                        csv_counts[product_id] += 1
+        
+        # Get reviews from Klaviyo API
+        klaviyo_counts = get_all_klaviyo_reviews()
+        
+        # Compare
+        comparison = {
+            'csv_total_reviews': sum(csv_counts.values()),
+            'csv_products_with_reviews': len(csv_counts),
+            'klaviyo_total_reviews': sum(klaviyo_counts.values()),
+            'klaviyo_products_with_reviews': len(klaviyo_counts),
+            'sample_csv_counts': dict(list(csv_counts.items())[:5]),
+            'sample_klaviyo_counts': dict(list(klaviyo_counts.items())[:5]),
+            'missing_from_klaviyo': []
+        }
+        
+        # Find products with reviews in CSV but not in Klaviyo
+        for product_id, count in csv_counts.items():
+            if product_id not in klaviyo_counts:
+                comparison['missing_from_klaviyo'].append({
+                    'product_id': product_id,
+                    'csv_count': count
+                })
+        
+        return jsonify({
+            'success': True,
+            'comparison': comparison
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': f'Error: {str(e)}'})
+
 @app.route('/api/products', methods=['GET'])
 def get_products():
     """Fetch all products with review count tracking"""
