@@ -35,11 +35,30 @@ def index():
 def get_products():
     """Fetch all products with review count tracking"""
     try:
+        # Check if credentials are properly set
+        if SHOP_DOMAIN == 'your-shop.myshopify.com' or ACCESS_TOKEN == 'your-access-token':
+            return jsonify({
+                'success': False, 
+                'error': 'Shopify credentials not configured. Please set SHOPIFY_SHOP_DOMAIN and SHOPIFY_ACCESS_TOKEN environment variables.'
+            }), 500
+        
         # Fetch products from Shopify
         url = f"https://{SHOP_DOMAIN}/admin/api/2024-01/products.json?limit=250"
         headers = {'X-Shopify-Access-Token': ACCESS_TOKEN}
         response = requests.get(url, headers=headers)
-        products = response.json()['products']
+        
+        # Check if request was successful
+        if response.status_code != 200:
+            error_msg = f"Shopify API error: {response.status_code}"
+            if response.text:
+                error_msg += f" - {response.text}"
+            return jsonify({'success': False, 'error': error_msg}), 500
+        
+        response_data = response.json()
+        if 'products' not in response_data:
+            return jsonify({'success': False, 'error': 'Invalid response from Shopify API'}), 500
+            
+        products = response_data['products']
         
         # Load review tracking data
         review_tracking = load_review_tracking()
@@ -52,16 +71,18 @@ def get_products():
                 'id': product_id,
                 'title': product['title'],
                 'handle': product['handle'],
-                'image': product['images'][0]['src'] if product['images'] else None,
-                'variants_count': len(product['variants']),
+                'image': product['images'][0]['src'] if product.get('images') else None,
+                'variants_count': len(product.get('variants', [])),
                 'generated_reviews': review_tracking.get(product_id, {}).get('count', 0),
                 'last_generated': review_tracking.get(product_id, {}).get('last_generated', None)
             })
         
         return jsonify({'success': True, 'products': products_data})
     
+    except requests.exceptions.RequestException as e:
+        return jsonify({'success': False, 'error': f'Network error: {str(e)}'}), 500
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'error': f'Server error: {str(e)}'}), 500
 
 @app.route('/api/generate/<product_id>', methods=['POST'])
 def generate_for_product(product_id):
