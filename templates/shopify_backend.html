@@ -256,7 +256,14 @@
                 const response = await fetch('/api/products');
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    // Try to get error details from response
+                    try {
+                        const errorData = await response.json();
+                        console.error('Server error details:', errorData);
+                        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                    } catch (e) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
                 }
                 
                 const data = await response.json();
