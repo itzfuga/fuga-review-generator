@@ -202,7 +202,7 @@
             </div>
         </div>
 
-        <button class="btn btn-sync" onclick="syncProducts()">🔄 Sync Products from Shopify</button>
+        <button class="btn btn-sync" onclick="syncProducts(event)">🔄 Sync Products from Shopify</button>
         
         <div class="search-box">
             <input type="text" id="search" placeholder="Search products..." onkeyup="filterProducts()">
@@ -254,14 +254,22 @@
 
             try {
                 const response = await fetch('/api/products');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
 
                 if (data.success) {
                     products = data.products;
                     displayProducts();
                     updateStats();
+                } else {
+                    throw new Error(data.error || 'Failed to load products');
                 }
             } catch (error) {
+                console.error('Error loading products:', error);
                 alert('Error loading products: ' + error.message);
             }
 
@@ -321,8 +329,15 @@
             displayProducts();
         }
 
-        function syncProducts() {
-            loadProducts();
+        async function syncProducts(event) {
+            const syncButton = event.target;
+            syncButton.disabled = true;
+            syncButton.textContent = '⏳ Syncing...';
+            
+            await loadProducts();
+            
+            syncButton.disabled = false;
+            syncButton.textContent = '🔄 Sync Products from Shopify';
         }
 
         function openGenerateModal(productId, productName) {
