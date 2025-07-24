@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install Fuga Review Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .install-card {
+            background: white;
+            border-radius: 16px;
+            padding: 48px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: #5c6ac4;
+            border-radius: 16px;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+        }
+        
+        h1 {
+            color: #202223;
+            margin: 0 0 16px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        p {
+            color: #6d7175;
+            margin: 0 0 32px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .install-form {
+            margin-bottom: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #202223;
+            font-weight: 500;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #5c6ac4;
+            box-shadow: 0 0 0 3px rgba(92, 106, 196, 0.1);
+        }
+        
+        .install-btn {
+            background: #5c6ac4;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 16px;
+        }
+        
+        .install-btn:hover {
+            background: #4c51bf;
+        }
+        
+        .features {
+            text-align: left;
+            margin-top: 32px;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            color: #6d7175;
+        }
+        
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="install-card">
+        <div class="logo">⭐</div>
+        
+        <h1>Fuga Review Generator</h1>
+        <p>Generate authentic, high-quality product reviews for your Shopify store. Increase trust and boost conversions with sophisticated review content.</p>
+        
+        <form class="install-form" action="/" method="GET">
+            <div class="form-group">
+                <label for="shop">Your Shopify Store URL</label>
+                <input 
+                    type="text" 
+                    id="shop" 
+                    name="shop" 
+                    placeholder="your-store.myshopify.com"
+                    required
+                />
+            </div>
+            
+            <button type="submit" class="install-btn">
+                Install on Shopify
+            </button>
+        </form>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">✓</div>
+                <span>Multi-language support (EN, DE)</span>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">✓</div>
+                <span>Authentic reviewer profiles</span>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">✓</div>
+                <span>Product-specific content</span>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">✓</div>
+                <span>CSV export for Reviews.io</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const shopInput = document.getElementById('shop');
+            let shop = shopInput.value.trim();
+            
+            // Auto-add .myshopify.com if not present
+            if (shop && !shop.includes('.myshopify.com')) {
+                shop = shop.replace(/^https?:\/\//, ''); // Remove protocol
+                shop = shop.replace(/\/$/, ''); // Remove trailing slash
+                if (!shop.endsWith('.myshopify.com')) {
+                    shop += '.myshopify.com';
+                }
+                shopInput.value = shop;
+            }
+        });
+    </script>
+</body>
+</html>
