@@ -66,22 +66,41 @@ def get_all_klaviyo_reviews():
                 reviews = reviews_data.get('data', [])
                 print(f"Found {len(reviews)} reviews in Klaviyo Reviews")
                 
-                for review in reviews:
-                    # Extract product information from review
-                    attributes = review.get('attributes', {})
-                    
-                    # Try different ways to get product identifier
-                    product_id = attributes.get('product_id')
-                    product_handle = None
-                    
-                    # The product might be referenced by ID, we need to map it to handle
-                    if product_id:
-                        # Count by product_id for now, we'll map to handles later
-                        if product_id not in review_counts:
-                            review_counts[product_id] = 0
-                        review_counts[product_id] += 1
+                # Get all pages of reviews
+                all_reviews = reviews[:]
                 
-                print(f"Review counts by product_id: {review_counts}")
+                # Check if there are more pages
+                next_url = reviews_data.get('links', {}).get('next')
+                while next_url and len(all_reviews) < 1000:  # Safety limit
+                    next_response = requests.get(next_url, headers=headers)
+                    if next_response.status_code == 200:
+                        next_data = next_response.json()
+                        all_reviews.extend(next_data.get('data', []))
+                        next_url = next_data.get('links', {}).get('next')
+                    else:
+                        break
+                
+                print(f"Total reviews found across all pages: {len(all_reviews)}")
+                
+                for review in all_reviews:
+                    # Get product info from relationships section
+                    relationships = review.get('relationships', {})
+                    item_data = relationships.get('item', {}).get('data', {})
+                    catalog_item_id = item_data.get('id')
+                    
+                    if catalog_item_id:
+                        # Extract Shopify product ID from catalog item ID
+                        # Format: "$shopify:::$default:::PRODUCT_ID"
+                        if ':::' in catalog_item_id:
+                            parts = catalog_item_id.split(':::')
+                            if len(parts) >= 3:
+                                shopify_product_id = parts[-1]  # Last part is the product ID
+                                
+                                if shopify_product_id not in review_counts:
+                                    review_counts[shopify_product_id] = 0
+                                review_counts[shopify_product_id] += 1
+                
+                print(f"Review counts by Shopify product ID: {review_counts}")
                 return review_counts
                 
             elif response.status_code == 404:
@@ -499,7 +518,10 @@ def get_products():
             product_handle = product['handle']
             
             # Get live review count (Klaviyo first, then manual counts as fallback)
-            klaviyo_reviews = klaviyo_review_counts.get(product_handle, 0)
+            # Try matching by product_id first (from Klaviyo Reviews API), then by handle (manual)
+            klaviyo_reviews = klaviyo_review_counts.get(product_id, 0)
+            if klaviyo_reviews == 0:
+                klaviyo_reviews = klaviyo_review_counts.get(product_handle, 0)
             if klaviyo_reviews == 0:
                 klaviyo_reviews = live_review_counts.get(product_handle, 0)
             
