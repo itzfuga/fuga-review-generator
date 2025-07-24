@@ -1,68 +1,380 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Review Generator</title>
-    <script src="https://unpkg.com/@shopify/app-bridge@3"></script>
+    <title>Review Generator - Product Manager</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .card { background: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .btn { background: #5c6ac4; color: white; border: none; padding: 16px 32px; border-radius: 6px; font-size: 16px; cursor: pointer; }
-        .btn:hover { background: #4c51bf; }
-        .loading { display: none; text-align: center; padding: 20px; }
-        .results { display: none; background: #d1fae5; padding: 20px; border-radius: 8px; margin-top: 20px; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { 
+            background: white; 
+            padding: 24px; 
+            border-radius: 8px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+            margin-bottom: 20px; 
+        }
+        .stats { 
+            display: flex; 
+            gap: 20px; 
+            margin-top: 16px;
+        }
+        .stat-card {
+            flex: 1;
+            background: #f0f0f0;
+            padding: 16px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .stat-card h3 { margin: 0; color: #5c6ac4; }
+        .stat-card p { margin: 8px 0 0 0; font-size: 14px; color: #666; }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: box-shadow 0.2s;
+        }
+        .product-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            background: #f0f0f0;
+        }
+        .product-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .review-info {
+            background: #f0f0f0;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+        .review-count {
+            font-size: 24px;
+            font-weight: bold;
+            color: #5c6ac4;
+        }
+        .btn {
+            background: #5c6ac4;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #4c51bf;
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .btn-sync {
+            background: #10b981;
+            margin-bottom: 20px;
+        }
+        .btn-sync:hover {
+            background: #059669;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+        }
+        .modal h3 {
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .modal-buttons button {
+            flex: 1;
+        }
+        .btn-cancel {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        .btn-cancel:hover {
+            background: #d1d5db;
+        }
+        .no-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0;
+            color: #999;
+            font-size: 14px;
+        }
+        .search-box {
+            margin-bottom: 20px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .filter-info {
+            margin-bottom: 12px;
+            color: #666;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="card">
-            <h1>🛍️ Review Generator</h1>
-            <p>Generate authentic reviews for your Fuga Studios products</p>
-            <button class="btn" onclick="generateReviews()">Generate All Reviews</button>
+        <div class="header">
+            <h1>🛍️ Review Generator - Product Manager</h1>
+            <p>Manage and generate reviews for individual products</p>
             
-            <div class="loading" id="loading">
-                <p>Generating reviews... please wait</p>
-            </div>
-            
-            <div class="results" id="results">
-                <h3>✅ Success!</h3>
-                <p>Generated <span id="count">0</span> reviews</p>
-                <button class="btn" onclick="downloadFile()">Download CSV</button>
+            <div class="stats">
+                <div class="stat-card">
+                    <h3 id="total-products">0</h3>
+                    <p>Total Products</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="products-with-reviews">0</h3>
+                    <p>Products with Reviews</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="total-reviews">0</h3>
+                    <p>Total Reviews Generated</p>
+                </div>
             </div>
         </div>
+
+        <button class="btn btn-sync" onclick="syncProducts()">🔄 Sync Products from Shopify</button>
         
-        <div class="card">
-            <h3>Import Instructions</h3>
-            <ul>
-                <li><strong>Judge.me:</strong> Apps → Judge.me → Import Reviews</li>
-                <li><strong>Loox:</strong> Settings → Import Reviews</li>
-                <li><strong>Stamped:</strong> Tools → Import</li>
-            </ul>
+        <div class="search-box">
+            <input type="text" id="search" placeholder="Search products..." onkeyup="filterProducts()">
+        </div>
+        
+        <div class="filter-info">
+            <label>
+                <input type="checkbox" id="show-no-reviews" onchange="filterProducts()" checked>
+                Show products without reviews
+            </label>
+        </div>
+
+        <div class="loading" id="loading">
+            <p>Loading products...</p>
+        </div>
+
+        <div class="products-grid" id="products-grid" style="display: none;">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Modal for review generation -->
+    <div class="modal" id="generate-modal">
+        <div class="modal-content">
+            <h3>Generate Reviews for <span id="modal-product-name"></span></h3>
+            <div class="form-group">
+                <label>Number of reviews to generate:</label>
+                <input type="number" id="review-count" value="5" min="1" max="50">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn" onclick="confirmGenerate()">Generate</button>
+            </div>
         </div>
     </div>
 
     <script>
-        let currentFile = null;
+        let products = [];
+        let currentProductId = null;
 
-        async function generateReviews() {
+        // Load products on page load
+        window.onload = function() {
+            loadProducts();
+        };
+
+        async function loadProducts() {
             document.getElementById('loading').style.display = 'block';
-            document.getElementById('results').style.display = 'none';
-            
-            const response = await fetch('/api/generate', { method: 'POST' });
-            const data = await response.json();
-            
-            if (data.success) {
-                currentFile = data.filename;
-                document.getElementById('count').textContent = data.count;
-                document.getElementById('results').style.display = 'block';
+            document.getElementById('products-grid').style.display = 'none';
+
+            try {
+                const response = await fetch('/api/products');
+                const data = await response.json();
+
+                if (data.success) {
+                    products = data.products;
+                    displayProducts();
+                    updateStats();
+                }
+            } catch (error) {
+                alert('Error loading products: ' + error.message);
             }
-            
+
             document.getElementById('loading').style.display = 'none';
+            document.getElementById('products-grid').style.display = 'grid';
         }
 
-        function downloadFile() {
-            if (currentFile) {
-                window.open(`/download/${currentFile}`);
+        function displayProducts() {
+            const grid = document.getElementById('products-grid');
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            const showNoReviews = document.getElementById('show-no-reviews').checked;
+            
+            grid.innerHTML = '';
+
+            const filteredProducts = products.filter(product => {
+                const matchesSearch = product.title.toLowerCase().includes(searchTerm);
+                const matchesFilter = showNoReviews || product.generated_reviews > 0;
+                return matchesSearch && matchesFilter;
+            });
+
+            filteredProducts.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                
+                const imageHtml = product.image 
+                    ? `<img src="${product.image}" alt="${product.title}" class="product-image">`
+                    : `<div class="product-image no-image">No image</div>`;
+                
+                card.innerHTML = `
+                    ${imageHtml}
+                    <div class="product-title" title="${product.title}">${product.title}</div>
+                    <div class="review-info">
+                        <div class="review-count">${product.generated_reviews}</div>
+                        <div style="font-size: 12px; color: #666;">Reviews Generated</div>
+                        ${product.last_generated ? `<div style="font-size: 11px; color: #999; margin-top: 4px;">Last: ${new Date(product.last_generated).toLocaleDateString()}</div>` : ''}
+                    </div>
+                    <button class="btn" onclick="openGenerateModal('${product.id}', '${product.title.replace(/'/g, "\\'")}')">
+                        Generate Reviews
+                    </button>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function updateStats() {
+            const totalProducts = products.length;
+            const productsWithReviews = products.filter(p => p.generated_reviews > 0).length;
+            const totalReviews = products.reduce((sum, p) => sum + p.generated_reviews, 0);
+
+            document.getElementById('total-products').textContent = totalProducts;
+            document.getElementById('products-with-reviews').textContent = productsWithReviews;
+            document.getElementById('total-reviews').textContent = totalReviews;
+        }
+
+        function filterProducts() {
+            displayProducts();
+        }
+
+        function syncProducts() {
+            loadProducts();
+        }
+
+        function openGenerateModal(productId, productName) {
+            currentProductId = productId;
+            document.getElementById('modal-product-name').textContent = productName;
+            document.getElementById('generate-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('generate-modal').style.display = 'none';
+            currentProductId = null;
+        }
+
+        async function confirmGenerate() {
+            const count = document.getElementById('review-count').value;
+            
+            if (!currentProductId) return;
+            
+            closeModal();
+            
+            try {
+                const response = await fetch(`/api/generate/${currentProductId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ count: parseInt(count) })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(`✅ Generated ${data.count} reviews for ${data.product_name}\n\nFile: ${data.filename}`);
+                    
+                    // Download the file
+                    window.open(`/download/${data.filename}`);
+                    
+                    // Reload products to update counts
+                    loadProducts();
+                } else {
+                    alert('Error generating reviews: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error generating reviews: ' + error.message);
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('generate-modal');
+            if (event.target == modal) {
+                closeModal();
             }
         }
     </script>
