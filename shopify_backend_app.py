@@ -11,6 +11,7 @@ app = Flask(__name__)
 # Your credentials from environment variables
 SHOP_DOMAIN = os.environ.get('SHOPIFY_SHOP_DOMAIN', 'your-shop.myshopify.com')
 ACCESS_TOKEN = os.environ.get('SHOPIFY_ACCESS_TOKEN', 'your-access-token')
+KLAVIYO_API_KEY = os.environ.get('KLAVIYO_API_KEY', 'your-klaviyo-key')
 
 # File to track generated reviews
 REVIEW_TRACKING_FILE = 'review_tracking.json'
@@ -26,6 +27,40 @@ def save_review_tracking(data):
     """Save tracking data for generated reviews"""
     with open(REVIEW_TRACKING_FILE, 'w') as f:
         json.dump(data, f, indent=2)
+
+def get_klaviyo_reviews_for_product(product_handle):
+    """Fetch review count from Klaviyo for a specific product"""
+    try:
+        # Klaviyo uses events to track reviews
+        # We'll search for review events related to this product
+        headers = {
+            'Authorization': f'Klaviyo-API-Key {KLAVIYO_API_KEY}',
+            'Accept': 'application/json',
+            'revision': '2024-10-15'
+        }
+        
+        # First, let's try to get events of type "Reviewed Product"
+        # Note: The exact event name might vary based on your Klaviyo setup
+        url = f"https://a.klaviyo.com/api/events/?filter=equals(metric.name,'Reviewed Product')"
+        
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code == 200:
+            events = response.json().get('data', [])
+            # Count reviews for this specific product
+            review_count = 0
+            for event in events:
+                properties = event.get('attributes', {}).get('properties', {})
+                if properties.get('ProductID') == product_handle or properties.get('product_handle') == product_handle:
+                    review_count += 1
+            return review_count
+        else:
+            print(f"Klaviyo API error: {response.status_code}")
+            return 0
+            
+    except Exception as e:
+        print(f"Error fetching Klaviyo reviews: {str(e)}")
+        return 0
 
 @app.route('/')
 def index():
@@ -65,8 +100,18 @@ def get_products():
         
         # Format products with review counts
         products_data = []
+        
+        # Check if we should fetch Klaviyo reviews (only if API key is set)
+        fetch_klaviyo = KLAVIYO_API_KEY != 'your-klaviyo-key'
+        
         for product in products:
             product_id = str(product['id'])
+            
+            # Get Klaviyo review count if available
+            klaviyo_reviews = 0
+            if fetch_klaviyo:
+                klaviyo_reviews = get_klaviyo_reviews_for_product(product['handle'])
+            
             products_data.append({
                 'id': product_id,
                 'title': product['title'],
@@ -74,8 +119,14 @@ def get_products():
                 'image': product['images'][0]['src'] if product.get('images') else None,
                 'variants_count': len(product.get('variants', [])),
                 'generated_reviews': review_tracking.get(product_id, {}).get('count', 0),
-                'last_generated': review_tracking.get(product_id, {}).get('last_generated', None)
+                'klaviyo_reviews': klaviyo_reviews,
+                'total_reviews': klaviyo_reviews + review_tracking.get(product_id, {}).get('count', 0),
+                'last_generated': review_tracking.get(product_id, {}).get('last_generated', None),
+                'created_at': product.get('created_at')
             })
+        
+        # Sort by created_at (newest first)
+        products_data.sort(key=lambda x: x['created_at'] or '', reverse=True)
         
         return jsonify({'success': True, 'products': products_data})
     

@@ -293,7 +293,7 @@
 
             const filteredProducts = products.filter(product => {
                 const matchesSearch = product.title.toLowerCase().includes(searchTerm);
-                const matchesFilter = showNoReviews || product.generated_reviews > 0;
+                const matchesFilter = showNoReviews || (product.total_reviews || 0) > 0;
                 return matchesSearch && matchesFilter;
             });
 
@@ -309,12 +309,24 @@
                     ${imageHtml}
                     <div class="product-title" title="${product.title}">${product.title}</div>
                     <div class="review-info">
-                        <div class="review-count">${product.generated_reviews}</div>
-                        <div style="font-size: 12px; color: #666;">Reviews Generated</div>
-                        ${product.last_generated ? `<div style="font-size: 11px; color: #999; margin-top: 4px;">Last: ${new Date(product.last_generated).toLocaleDateString()}</div>` : ''}
+                        <div style="display: flex; justify-content: space-around; margin-bottom: 8px;">
+                            <div style="text-align: center;">
+                                <div class="review-count" style="color: #10b981;">${product.klaviyo_reviews || 0}</div>
+                                <div style="font-size: 11px; color: #666;">Live Reviews</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div class="review-count" style="color: #5c6ac4;">${product.generated_reviews}</div>
+                                <div style="font-size: 11px; color: #666;">Generated</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; padding-top: 8px; border-top: 1px solid #e5e7eb;">
+                            <div style="font-size: 20px; font-weight: bold; color: #374151;">${product.total_reviews || 0}</div>
+                            <div style="font-size: 12px; color: #666;">Total Reviews</div>
+                        </div>
+                        ${product.last_generated ? `<div style="font-size: 10px; color: #999; margin-top: 4px;">Last generated: ${new Date(product.last_generated).toLocaleDateString()}</div>` : ''}
                     </div>
                     <button class="btn" onclick="openGenerateModal('${product.id}', '${product.title.replace(/'/g, "\\'")}')">
-                        Generate Reviews
+                        Generate More Reviews
                     </button>
                 `;
                 
@@ -324,12 +336,14 @@
 
         function updateStats() {
             const totalProducts = products.length;
-            const productsWithReviews = products.filter(p => p.generated_reviews > 0).length;
-            const totalReviews = products.reduce((sum, p) => sum + p.generated_reviews, 0);
+            const productsWithReviews = products.filter(p => (p.total_reviews || 0) > 0).length;
+            const totalGeneratedReviews = products.reduce((sum, p) => sum + p.generated_reviews, 0);
+            const totalKlaviyoReviews = products.reduce((sum, p) => sum + (p.klaviyo_reviews || 0), 0);
+            const totalAllReviews = totalGeneratedReviews + totalKlaviyoReviews;
 
             document.getElementById('total-products').textContent = totalProducts;
             document.getElementById('products-with-reviews').textContent = productsWithReviews;
-            document.getElementById('total-reviews').textContent = totalReviews;
+            document.getElementById('total-reviews').innerHTML = `${totalAllReviews} <span style="font-size: 12px; color: #666;">(${totalKlaviyoReviews} live + ${totalGeneratedReviews} gen)</span>`;
         }
 
         function filterProducts() {
