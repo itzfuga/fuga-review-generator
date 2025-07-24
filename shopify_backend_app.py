@@ -239,13 +239,21 @@ def get_products():
         # Check if we should fetch Klaviyo reviews (only if API key is set)
         fetch_klaviyo = KLAVIYO_API_KEY != 'your-klaviyo-key'
         
+        # For now, let's disable Klaviyo fetching to avoid timeouts
+        # We'll add it back with caching or async processing
+        fetch_klaviyo = False
+        
         for product in products:
             product_id = str(product['id'])
             
             # Get Klaviyo review count if available
             klaviyo_reviews = 0
             if fetch_klaviyo:
-                klaviyo_reviews = get_klaviyo_reviews_for_product(product['handle'])
+                try:
+                    klaviyo_reviews = get_klaviyo_reviews_for_product(product['handle'])
+                except Exception as e:
+                    print(f"Error fetching Klaviyo reviews for {product['handle']}: {str(e)}")
+                    klaviyo_reviews = 0
             
             products_data.append({
                 'id': product_id,

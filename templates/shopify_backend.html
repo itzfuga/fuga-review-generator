@@ -253,7 +253,17 @@
             document.getElementById('products-grid').style.display = 'none';
 
             try {
-                const response = await fetch('/api/products');
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+                
+                const response = await fetch('/api/products', {
+                    signal: controller.signal,
+                    headers: {
+                        'Cache-Control': 'no-cache'
+                    }
+                });
+                
+                clearTimeout(timeoutId);
                 
                 if (!response.ok) {
                     // Try to get error details from response
@@ -262,11 +272,13 @@
                         console.error('Server error details:', errorData);
                         throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
                     } catch (e) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        console.error('Failed to parse error response:', e);
+                        throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
                     }
                 }
                 
                 const data = await response.json();
+                console.log('Products loaded successfully:', data.products?.length || 0, 'products');
 
                 if (data.success) {
                     products = data.products;
@@ -277,7 +289,14 @@
                 }
             } catch (error) {
                 console.error('Error loading products:', error);
-                alert('Error loading products: ' + error.message);
+                
+                if (error.name === 'AbortError') {
+                    alert('Request timed out. The server might be busy processing Klaviyo reviews. Please try again.');
+                } else if (error.message === 'Failed to fetch') {
+                    alert('Network error: Could not connect to server. Please check your internet connection and try again.');
+                } else {
+                    alert('Error loading products: ' + error.message);
+                }
             }
 
             document.getElementById('loading').style.display = 'none';
