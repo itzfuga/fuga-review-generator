@@ -31,32 +31,43 @@ def save_review_tracking(data):
 def get_klaviyo_reviews_for_product(product_handle):
     """Fetch review count from Klaviyo for a specific product"""
     try:
-        # Klaviyo uses events to track reviews
-        # We'll search for review events related to this product
         headers = {
             'Authorization': f'Klaviyo-API-Key {KLAVIYO_API_KEY}',
             'Accept': 'application/json',
             'revision': '2024-10-15'
         }
         
-        # First, let's try to get events of type "Reviewed Product"
-        # Note: The exact event name might vary based on your Klaviyo setup
-        url = f"https://a.klaviyo.com/api/events/?filter=equals(metric.name,'Reviewed Product')"
+        # Try both "Submitted review" and "ReviewsIOProductReview" events
+        review_count = 0
         
-        response = requests.get(url, headers=headers)
+        for metric_name in ['Submitted review', 'ReviewsIOProductReview']:
+            url = f"https://a.klaviyo.com/api/events/?filter=equals(metric.name,'{metric_name}')&page[size]=100"
+            response = requests.get(url, headers=headers)
+            
+            if response.status_code == 200:
+                events = response.json().get('data', [])
+                
+                for event in events:
+                    properties = event.get('attributes', {}).get('properties', {})
+                    
+                    # Check various property names that might contain the product identifier
+                    product_matches = [
+                        properties.get('ProductID') == product_handle,
+                        properties.get('product_handle') == product_handle,
+                        properties.get('Product Handle') == product_handle,
+                        properties.get('product_id') == product_handle,
+                        properties.get('handle') == product_handle,
+                        # Sometimes it might be stored as product title match
+                        product_handle in str(properties.get('Product Name', '')).lower().replace(' ', '-'),
+                        product_handle in str(properties.get('product_name', '')).lower().replace(' ', '-')
+                    ]
+                    
+                    if any(product_matches):
+                        review_count += 1
+            else:
+                print(f"Klaviyo API error for {metric_name}: {response.status_code}")
         
-        if response.status_code == 200:
-            events = response.json().get('data', [])
-            # Count reviews for this specific product
-            review_count = 0
-            for event in events:
-                properties = event.get('attributes', {}).get('properties', {})
-                if properties.get('ProductID') == product_handle or properties.get('product_handle') == product_handle:
-                    review_count += 1
-            return review_count
-        else:
-            print(f"Klaviyo API error: {response.status_code}")
-            return 0
+        return review_count
             
     except Exception as e:
         print(f"Error fetching Klaviyo reviews: {str(e)}")
@@ -141,6 +152,50 @@ def get_klaviyo_events():
             'all_metrics': all_metrics,
             'sample_events': sample_events,
             'total_metrics': len(all_metrics)
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': f'Error: {str(e)}'}), 500
+
+@app.route('/api/klaviyo-review-samples', methods=['GET'])
+def get_klaviyo_review_samples():
+    """Get sample review events to understand their structure"""
+    try:
+        if KLAVIYO_API_KEY == 'your-klaviyo-key':
+            return jsonify({
+                'success': False, 
+                'error': 'Klaviyo API key not configured'
+            }), 500
+            
+        headers = {
+            'Authorization': f'Klaviyo-API-Key {KLAVIYO_API_KEY}',
+            'Accept': 'application/json',
+            'revision': '2024-10-15'
+        }
+        
+        review_samples = []
+        
+        # Get sample events from both review metrics
+        for metric_name in ['Submitted review', 'ReviewsIOProductReview']:
+            url = f"https://a.klaviyo.com/api/events/?filter=equals(metric.name,'{metric_name}')&page[size]=5"
+            response = requests.get(url, headers=headers)
+            
+            if response.status_code == 200:
+                events = response.json().get('data', [])
+                
+                for event in events:
+                    properties = event.get('attributes', {}).get('properties', {})
+                    review_samples.append({
+                        'metric_name': metric_name,
+                        'timestamp': event.get('attributes', {}).get('timestamp', ''),
+                        'properties': properties,
+                        'all_property_keys': list(properties.keys())
+                    })
+        
+        return jsonify({
+            'success': True,
+            'review_samples': review_samples,
+            'total_samples': len(review_samples)
         })
         
     except Exception as e:
