@@ -220,7 +220,15 @@
     <div class="app-container">
         <div class="header">
             <h1>Review Generator</h1>
-            <button class="btn btn-secondary" onclick="refreshProducts()">Refresh Products</button>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-primary" onclick="openBulkModal()" id="bulkGenBtn" style="display: none;">
+                    Generate Reviews for Selected
+                </button>
+                <button class="btn btn-secondary" onclick="toggleSelectAll()" id="selectAllBtn">
+                    Select All
+                </button>
+                <button class="btn btn-secondary" onclick="refreshProducts()">Refresh Products</button>
+            </div>
         </div>
         
         <div class="stats-summary" id="stats-summary">
@@ -265,6 +273,28 @@
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
                 <button class="btn btn-primary" onclick="generateReviews()">Generate Reviews</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Review Generation Modal -->
+    <div id="bulkModal" class="modal">
+        <div class="modal-content">
+            <h3>Generate Reviews for Multiple Products</h3>
+            <p id="bulk-product-count">Selected: 0 products</p>
+            <div class="form-group">
+                <label for="bulkReviewCount">Reviews per Product</label>
+                <input type="number" id="bulkReviewCount" value="3" min="1" max="10" />
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="bulkPostToReviewsIO" style="margin-right: 8px;" />
+                    Post directly to Reviews.io (requires API configuration)
+                </label>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeBulkModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="generateBulkReviews()">Generate All Reviews</button>
             </div>
         </div>
     </div>
@@ -328,41 +358,46 @@
             const grid = document.getElementById('product-grid');
             
             grid.innerHTML = products.map(product => `
-                <div class="product-card">
-                    <img 
-                        src="${product.image || '/static/placeholder.png'}" 
-                        alt="${product.title}"
-                        class="product-image"
-                        onerror="this.style.display='none'"
-                    />
-                    <div class="product-info">
-                        <h3>${product.title}</h3>
-                        <div class="product-stats">
-                            <div class="stat">
-                                <span>⭐</span>
-                                <span>${product.live_reviews} live</span>
+                <div class="product-card" data-product-id="${product.id}">
+                    <div style="display: flex; align-items: flex-start; gap: 12px;">
+                        <input type="checkbox" class="product-checkbox" value="${product.id}" onchange="updateBulkButton()" />
+                        <div style="display: flex; gap: 16px; flex: 1; align-items: center;">
+                            <img 
+                                src="${product.image || '/static/placeholder.png'}" 
+                                alt="${product.title}"
+                                class="product-image"
+                                onerror="this.style.display='none'"
+                            />
+                            <div class="product-info">
+                                <h3>${product.title}</h3>
+                                <div class="product-stats">
+                                    <div class="stat">
+                                        <span>⭐</span>
+                                        <span>${product.live_reviews} live</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span>📝</span>
+                                        <span>${product.generated_reviews} generated</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span>📊</span>
+                                        <span>${product.total_reviews} total</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="stat">
-                                <span>📝</span>
-                                <span>${product.generated_reviews} generated</span>
-                            </div>
-                            <div class="stat">
-                                <span>📊</span>
-                                <span>${product.total_reviews} total</span>
+                            <div class="product-actions">
+                                <button 
+                                    class="btn btn-primary" 
+                                    onclick="openModal('${product.id}', '${product.title.replace(/'/g, "\\'")}')"
+                                >
+                                    Generate Reviews
+                                </button>
+                                ${product.generated_reviews > 0 ? 
+                                    `<button class="btn btn-secondary" onclick="viewGenerated('${product.id}')">View Generated</button>` : 
+                                    ''
+                                }
                             </div>
                         </div>
-                    </div>
-                    <div class="product-actions">
-                        <button 
-                            class="btn btn-primary" 
-                            onclick="openModal('${product.id}', '${product.title.replace(/'/g, "\\'")}')"
-                        >
-                            Generate Reviews
-                        </button>
-                        ${product.generated_reviews > 0 ? 
-                            `<button class="btn btn-secondary" onclick="viewGenerated('${product.id}')">View Generated</button>` : 
-                            ''
-                        }
                     </div>
                 </div>
             `).join('');
@@ -456,11 +491,124 @@
             alert(`Viewing generated reviews for product ${productId}. This feature will show the generated reviews list.`);
         }
         
+        function updateBulkButton() {
+            const checkboxes = document.querySelectorAll('.product-checkbox:checked');
+            const bulkBtn = document.getElementById('bulkGenBtn');
+            const selectAllBtn = document.getElementById('selectAllBtn');
+            
+            if (checkboxes.length > 0) {
+                bulkBtn.style.display = 'block';
+                bulkBtn.textContent = `Generate Reviews for ${checkboxes.length} Selected`;
+                selectAllBtn.textContent = 'Clear All';
+            } else {
+                bulkBtn.style.display = 'none';
+                selectAllBtn.textContent = 'Select All';
+            }
+        }
+        
+        function toggleSelectAll() {
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+            const allChecked = document.querySelectorAll('.product-checkbox:checked').length === checkboxes.length;
+            
+            checkboxes.forEach(cb => {
+                cb.checked = !allChecked;
+            });
+            
+            updateBulkButton();
+        }
+        
+        function openBulkModal() {
+            const selected = document.querySelectorAll('.product-checkbox:checked');
+            if (selected.length === 0) return;
+            
+            document.getElementById('bulk-product-count').textContent = `Selected: ${selected.length} products`;
+            document.getElementById('bulkModal').style.display = 'block';
+        }
+        
+        function closeBulkModal() {
+            document.getElementById('bulkModal').style.display = 'none';
+        }
+        
+        async function generateBulkReviews() {
+            const selectedCheckboxes = document.querySelectorAll('.product-checkbox:checked');
+            const count = parseInt(document.getElementById('bulkReviewCount').value) || 3;
+            const postToReviewsIO = document.getElementById('bulkPostToReviewsIO').checked;
+            
+            if (selectedCheckboxes.length === 0) return;
+            
+            const error = document.getElementById('error');
+            const success = document.getElementById('success');
+            error.style.display = 'none';
+            success.style.display = 'none';
+            
+            closeBulkModal();
+            
+            let successCount = 0;
+            let errorCount = 0;
+            let totalReviews = 0;
+            const errors = [];
+            
+            // Process each product
+            for (const checkbox of selectedCheckboxes) {
+                const productId = checkbox.value;
+                const productCard = checkbox.closest('.product-card');
+                const productTitle = productCard.querySelector('h3').textContent;
+                
+                try {
+                    const response = await fetch(`/api/generate/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            count,
+                            post_to_reviews_io: postToReviewsIO
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok || data.error) {
+                        throw new Error(data.error || 'Failed to generate reviews');
+                    }
+                    
+                    successCount++;
+                    totalReviews += data.count;
+                    
+                } catch (err) {
+                    errorCount++;
+                    errors.push(`${productTitle}: ${err.message}`);
+                }
+            }
+            
+            // Show results
+            let message = `<strong>Bulk Generation Complete!</strong><br/>`;
+            message += `✅ ${successCount} products completed (${totalReviews} reviews total)<br/>`;
+            
+            if (errorCount > 0) {
+                message += `❌ ${errorCount} products failed<br/>`;
+                message += `<details><summary>View Errors</summary>${errors.join('<br/>')}</details>`;
+            }
+            
+            success.innerHTML = message;
+            success.style.display = 'block';
+            
+            // Clear selections and refresh
+            document.querySelectorAll('.product-checkbox').forEach(cb => cb.checked = false);
+            updateBulkButton();
+            refreshProducts();
+        }
+        
         // Close modal when clicking outside
         window.addEventListener('click', function(event) {
-            const modal = document.getElementById('reviewModal');
-            if (event.target === modal) {
+            const reviewModal = document.getElementById('reviewModal');
+            const bulkModal = document.getElementById('bulkModal');
+            
+            if (event.target === reviewModal) {
                 closeModal();
+            }
+            if (event.target === bulkModal) {
+                closeBulkModal();
             }
         });
         
@@ -468,6 +616,7 @@
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 closeModal();
+                closeBulkModal();
             }
         });
     </script>
