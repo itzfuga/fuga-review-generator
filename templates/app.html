@@ -469,20 +469,40 @@
                 <input type="number" id="reviewCount" value="5" min="1" max="20" />
             </div>
             <div class="form-group">
-                <label>
-                    <input type="checkbox" id="postToReviewsIO" style="margin-right: 8px;" />
-                    Post directly to Reviews.io (requires API configuration)
-                </label>
+                <label>Action:</label>
+                <div style="display: flex; gap: 12px; margin: 8px 0;">
+                    <label style="display: flex; align-items: center; gap: 6px; font-weight: normal;">
+                        <input type="radio" name="action" value="csv" checked>
+                        Generate CSV (manual import)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; font-weight: normal;">
+                        <input type="radio" name="action" value="auto-import">
+                        Auto-import to platforms
+                    </label>
+                </div>
             </div>
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" id="postToKlaviyo" style="margin-right: 8px;" />
-                    Post directly to Klaviyo Reviews (requires API key)
-                </label>
+            
+            <div id="import-options" style="display: none;">
+                <div class="form-group">
+                    <label>Import to platforms:</label>
+                    <div style="display: flex; gap: 12px; margin: 8px 0;">
+                        <label style="display: flex; align-items: center; gap: 6px; font-weight: normal;">
+                            <input type="checkbox" name="platforms" value="reviews_io" id="reviews_io_checkbox">
+                            Reviews.io <span id="reviews_io_status" style="font-size: 11px; color: #ff6b6b;">(not configured)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; font-weight: normal;">
+                            <input type="checkbox" name="platforms" value="klaviyo" id="klaviyo_checkbox" checked>
+                            Klaviyo Reviews <span id="klaviyo_status" style="font-size: 11px; color: #51cf66;">(configured)</span>
+                        </label>
+                    </div>
+                    <div id="platform-note" style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                        💡 Only Klaviyo is currently configured. Configure Reviews.io API key to enable both platforms.
+                    </div>
+                </div>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="generateReviews()">Generate Reviews</button>
+                <button class="btn btn-primary" onclick="generateReviews()" id="generate-btn">Generate Reviews</button>
             </div>
         </div>
     </div>
@@ -631,11 +651,87 @@
             document.getElementById('generated-reviews').textContent = generatedReviews;
         }
         
-        function openModal(productId, productName) {
+        async function openModal(productId, productName) {
             currentProductId = productId;
             currentProductName = productName;
             document.getElementById('modal-title').textContent = `Generate Reviews for "${productName}"`;
             document.getElementById('reviewModal').style.display = 'block';
+            
+            // Check platform status
+            await updatePlatformStatus();
+            
+            // Add event listeners for action radio buttons
+            document.querySelectorAll('input[name="action"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const importOptions = document.getElementById('import-options');
+                    const generateBtn = document.getElementById('generate-btn');
+                    
+                    if (this.value === 'auto-import') {
+                        importOptions.style.display = 'block';
+                        generateBtn.textContent = 'Generate & Import';
+                    } else {
+                        importOptions.style.display = 'none';
+                        generateBtn.textContent = 'Generate Reviews';
+                    }
+                });
+            });
+        }
+        
+        async function updatePlatformStatus() {
+            try {
+                const response = await fetch('/api/import-status');
+                const status = await response.json();
+                
+                const reviewsIoCheckbox = document.getElementById('reviews_io_checkbox');
+                const reviewsIoStatus = document.getElementById('reviews_io_status');
+                const klaviyoCheckbox = document.getElementById('klaviyo_checkbox');
+                const klaviyoStatus = document.getElementById('klaviyo_status');
+                const platformNote = document.getElementById('platform-note');
+                
+                // Update Reviews.io status
+                if (status.platforms_configured.reviews_io) {
+                    reviewsIoStatus.textContent = '(configured)';
+                    reviewsIoStatus.style.color = '#51cf66';
+                    reviewsIoCheckbox.disabled = false;
+                } else {
+                    reviewsIoStatus.textContent = '(not configured)';
+                    reviewsIoStatus.style.color = '#ff6b6b';
+                    reviewsIoCheckbox.disabled = true;
+                    reviewsIoCheckbox.checked = false;
+                }
+                
+                // Update Klaviyo status
+                if (status.platforms_configured.klaviyo) {
+                    klaviyoStatus.textContent = '(configured)';
+                    klaviyoStatus.style.color = '#51cf66';
+                    klaviyoCheckbox.disabled = false;
+                    klaviyoCheckbox.checked = true;
+                } else {
+                    klaviyoStatus.textContent = '(not configured)';
+                    klaviyoStatus.style.color = '#ff6b6b';
+                    klaviyoCheckbox.disabled = true;
+                    klaviyoCheckbox.checked = false;
+                }
+                
+                // Update note
+                const configuredPlatforms = [];
+                if (status.platforms_configured.reviews_io) configuredPlatforms.push('Reviews.io');
+                if (status.platforms_configured.klaviyo) configuredPlatforms.push('Klaviyo');
+                
+                if (configuredPlatforms.length === 0) {
+                    platformNote.textContent = '⚠️ No platforms configured. Please add API keys to enable automatic imports.';
+                    platformNote.style.color = '#ff6b6b';
+                } else if (configuredPlatforms.length === 1) {
+                    platformNote.textContent = `✅ ${configuredPlatforms[0]} is configured and ready for automatic imports.`;
+                    platformNote.style.color = '#51cf66';
+                } else {
+                    platformNote.textContent = `✅ Both ${configuredPlatforms.join(' and ')} are configured.`;
+                    platformNote.style.color = '#51cf66';
+                }
+                
+            } catch (error) {
+                console.error('Error checking platform status:', error);
+            }
         }
         
         function closeModal() {
@@ -648,8 +744,7 @@
             if (!currentProductId) return;
             
             const count = parseInt(document.getElementById('reviewCount').value) || 5;
-            const postToReviewsIO = document.getElementById('postToReviewsIO').checked;
-            const postToKlaviyo = document.getElementById('postToKlaviyo').checked;
+            const action = document.querySelector('input[name="action"]:checked').value;
             const error = document.getElementById('error');
             const success = document.getElementById('success');
             
@@ -657,16 +752,34 @@
             success.style.display = 'none';
             
             try {
-                const response = await fetch(`/api/generate/${currentProductId}`, {
+                let endpoint, requestBody;
+                
+                if (action === 'auto-import') {
+                    // Get selected platforms
+                    const selectedPlatforms = Array.from(document.querySelectorAll('input[name="platforms"]:checked'))
+                        .map(cb => cb.value);
+                    
+                    if (selectedPlatforms.length === 0) {
+                        throw new Error('Please select at least one platform to import to.');
+                    }
+                    
+                    endpoint = `/api/generate-and-import/${currentProductId}`;
+                    requestBody = { 
+                        count: count,
+                        platforms: selectedPlatforms
+                    };
+                } else {
+                    // Traditional CSV generation
+                    endpoint = `/api/generate/${currentProductId}`;
+                    requestBody = { count: count };
+                }
+                
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ 
-                        count,
-                        post_to_reviews_io: postToReviewsIO,
-                        post_to_klaviyo: postToKlaviyo
-                    })
+                    body: JSON.stringify(requestBody)
                 });
                 
                 const data = await response.json();
@@ -675,28 +788,31 @@
                     throw new Error(data.error || 'Failed to generate reviews');
                 }
                 
-                let successMessage = `<strong>Success!</strong> Generated ${data.count} reviews for "${data.product_name}".<br/><br/>`;
-                successMessage += `<a href="/download/${data.filename}" target="_blank" style="color: #86efac; text-decoration: underline; font-weight: bold;">📥 Download CSV File (${data.filename})</a>`;
+                let successMessage;
                 
-                if (data.reviews_io) {
-                    if (data.reviews_io.total_created > 0) {
-                        successMessage += `<br><strong>Reviews.io:</strong> Posted ${data.reviews_io.total_created} reviews successfully!`;
+                if (action === 'auto-import') {
+                    const importResult = data.import_result;
+                    successMessage = `<strong>Success!</strong> Generated ${data.generated_reviews} reviews and imported ${importResult.summary.total_success} successfully!<br/><br/>`;
+                    
+                    // Show warnings if any
+                    if (importResult.warnings && importResult.warnings.length > 0) {
+                        successMessage += `<strong>Warnings:</strong><br/>`;
+                        importResult.warnings.forEach(warning => {
+                            successMessage += `⚠️ ${warning}<br/>`;
+                        });
+                        successMessage += `<br/>`;
                     }
-                    if (data.reviews_io.total_errors > 0) {
-                        successMessage += `<br><strong>Warning:</strong> ${data.reviews_io.total_errors} reviews failed to post to Reviews.io.`;
-                    }
-                }
-                
-                if (data.klaviyo) {
-                    if (data.klaviyo.total_created > 0) {
-                        successMessage += `<br><strong>Klaviyo:</strong> Posted ${data.klaviyo.total_created} reviews successfully!`;
-                    }
-                    if (data.klaviyo.total_errors > 0) {
-                        successMessage += `<br><strong>Warning:</strong> ${data.klaviyo.total_errors} reviews failed to post to Klaviyo.`;
-                    }
-                    if (data.klaviyo.error) {
-                        successMessage += `<br><strong>Klaviyo Error:</strong> ${data.klaviyo.error}`;
-                    }
+                    
+                    // Show platform-specific results
+                    successMessage += `<strong>Import Results:</strong><br/>`;
+                    Object.keys(importResult.platforms).forEach(platform => {
+                        const result = importResult.platforms[platform];
+                        const platformName = platform === 'reviews_io' ? 'Reviews.io' : 'Klaviyo';
+                        successMessage += `• ${platformName}: ${result.success_count} success, ${result.error_count} errors<br/>`;
+                    });
+                } else {
+                    successMessage = `<strong>Success!</strong> Generated ${data.count} reviews for "${data.product_name}".<br/><br/>`;
+                    successMessage += `<a href="/download/${data.filename}" target="_blank" style="color: #86efac; text-decoration: underline; font-weight: bold;">📥 Download CSV File (${data.filename})</a>`;
                 }
                 
                 success.innerHTML = successMessage;
