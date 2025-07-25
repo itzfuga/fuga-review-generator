@@ -675,8 +675,8 @@
                     throw new Error(data.error || 'Failed to generate reviews');
                 }
                 
-                let successMessage = `<strong>Success!</strong> Generated ${data.count} reviews for "${data.product_name}". `;
-                successMessage += `<a href="/download/${data.filename}" target="_blank">Download CSV</a>`;
+                let successMessage = `<strong>Success!</strong> Generated ${data.count} reviews for "${data.product_name}".<br/><br/>`;
+                successMessage += `<a href="/download/${data.filename}" target="_blank" style="color: #86efac; text-decoration: underline; font-weight: bold;">📥 Download CSV File (${data.filename})</a>`;
                 
                 if (data.reviews_io) {
                     if (data.reviews_io.total_created > 0) {
@@ -716,9 +716,8 @@
         }
         
         function viewGenerated(productId) {
-            // For now, just show an alert with the product ID
-            // This could later show a modal with generated reviews
-            alert(`Viewing generated reviews for product ${productId}. This feature will show the generated reviews list.`);
+            // Download the most recent CSV file for this product
+            window.open(`/download/reviews_${productId}_latest.csv`, '_blank');
         }
         
         function updateBulkButton() {
@@ -829,10 +828,15 @@
             
             closeBulkModal();
             
+            // Show processing message
+            success.innerHTML = `<strong>Processing...</strong> Generating reviews for ${selectedCheckboxes.length} products...`;
+            success.style.display = 'block';
+            
             let successCount = 0;
             let errorCount = 0;
             let totalReviews = 0;
             const errors = [];
+            const downloadLinks = [];
             
             // Process each product
             for (const checkbox of selectedCheckboxes) {
@@ -862,15 +866,28 @@
                     successCount++;
                     totalReviews += data.count;
                     
+                    // Add download link
+                    if (data.filename) {
+                        downloadLinks.push(`<a href="/download/${data.filename}" target="_blank" style="color: #86efac; text-decoration: underline;">${productTitle} (${data.count} reviews)</a>`);
+                    }
+                    
                 } catch (err) {
                     errorCount++;
                     errors.push(`${productTitle}: ${err.message}`);
                 }
+                
+                // Update progress
+                success.innerHTML = `<strong>Processing...</strong> Completed ${successCount + errorCount}/${selectedCheckboxes.length} products...`;
             }
             
-            // Show results
+            // Show final results with download links
             let message = `<strong>Bulk Generation Complete!</strong><br/>`;
-            message += `✅ ${successCount} products completed (${totalReviews} reviews total)<br/>`;
+            message += `✅ ${successCount} products completed (${totalReviews} reviews total)<br/><br/>`;
+            
+            if (downloadLinks.length > 0) {
+                message += `<strong>Download CSV files:</strong><br/>`;
+                message += downloadLinks.join('<br/>') + '<br/><br/>';
+            }
             
             if (errorCount > 0) {
                 message += `❌ ${errorCount} products failed<br/>`;

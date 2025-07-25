@@ -64,8 +64,12 @@ def index():
     if not shop.endswith('.myshopify.com'):
         return render_template('install.html'), 400
     
-    # Always show install page first (don't auto-redirect to /app)
-    # This ensures proper OAuth flow
+    # For fugafashion, skip install page and go directly to app
+    if shop == 'fugafashion.myshopify.com':
+        host = request.args.get('host', '')
+        return redirect(f'/app?shop={shop}&host={host}')
+    
+    # For other shops, show install page first
     return render_template('install.html', shop=shop)
 
 @app.route('/auth/start', methods=['POST'])
