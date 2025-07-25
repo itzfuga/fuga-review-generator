@@ -306,46 +306,27 @@ def generate_reviews(product_id):
 def generate_advanced_reviews(product, count=5):
     """Generate sophisticated reviews using the original algorithm"""
     # Import review generation components
-    from review_generator import (
-        REVIEW_TITLES, FIRST_NAMES, USERNAMES,
-        generate_username, generate_reviewer_info, generate_review_content
-    )
+    from review_generator import generate_review
     
     reviews = []
     
     for i in range(count):
-        # Language distribution: 50% EN, 30% DE, 20% EN  
-        lang = random.choices(["en", "de", "en"], weights=[50, 30, 20])[0]
-        
-        # Rating distribution: 60% 5-star, 30% 4-star, 10% 3-star
-        rating = random.choices([5, 4, 3], weights=[60, 30, 10])[0]
-        
-        # Generate reviewer
-        name, email, location = generate_reviewer_info(lang)
-        
-        # Review title
-        title = random.choice(REVIEW_TITLES[lang][rating])
-        
-        # Review content
-        content = generate_review_content(product, rating, lang)
-        
-        # Random date in last 36 months
-        days_ago = random.randint(1, 36 * 30)
-        review_date = (datetime.now() - timedelta(days=days_ago)).strftime('%Y-%m-%d')
+        # Generate review using the new comprehensive function
+        review_data = generate_review(product, existing_reviews=i)
         
         reviews.append({
             'product_id': str(product['id']),
             'product_handle': product['handle'],
             'product_name': product['title'],
-            'reviewer_name': name,
-            'reviewer_email': email,
-            'reviewer_location': location,
-            'review_title': title,
-            'review_content': content,
-            'review_date': review_date,
-            'rating': str(rating),
+            'reviewer_name': review_data['author'],
+            'reviewer_email': review_data['email'],
+            'reviewer_location': review_data['location'],
+            'review_title': review_data['title'],
+            'review_content': review_data['content'],
+            'review_date': review_data['date'],
+            'rating': str(review_data['rating']),
             'status': 'Published',
-            'verified': 'Yes' if random.random() > 0.05 else 'No',
+            'verified': review_data['verified'],
             'image_urls': '',
             'reply_content': '',
             'reply_date': '',

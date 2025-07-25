@@ -632,7 +632,7 @@ def get_products():
 @app.route('/api/generate/<product_id>', methods=['POST'])
 def generate_for_product(product_id):
     """Generate reviews for a specific product"""
-    from review_generator import REVIEW_TITLES, generate_reviewer_info, generate_review_content
+    from review_generator import generate_review, select_language
     
     try:
         # Get review count from request
@@ -658,16 +658,12 @@ def generate_for_product(product_id):
         reviews = []
         for i in range(review_count):
             try:
-                lang = random.choice(['en', 'de'])
-                rating = random.choices([5, 4, 3], weights=[60, 30, 10])[0]
-                name, email, location = generate_reviewer_info(lang)
-                title = random.choice(REVIEW_TITLES[lang][rating])
-                
                 print(f"Generating review {i+1}/{review_count} for product: {product.get('title')}")
                 print(f"Product keys available: {list(product.keys())}")
                 
-                content = generate_review_content(product, rating, lang)
-                print(f"Generated content: {content[:50]}...")
+                # Generate review using the new function
+                review_data = generate_review(product, existing_reviews=i)
+                print(f"Generated content: {review_data['content'][:50] if review_data['content'] else 'Empty'}...")
                 
             except Exception as e:
                 print(f"Error generating review {i+1}: {str(e)}")
@@ -677,15 +673,15 @@ def generate_for_product(product_id):
                 'product_id': str(product['id']),
                 'product_handle': product['handle'],
                 'product_name': product['title'],
-                'reviewer_name': name,
-                'reviewer_email': email,
-                'reviewer_location': location,
-                'review_title': title,
-                'review_content': content,
-                'review_date': (datetime.now() - timedelta(days=random.randint(1, 1095))).strftime('%Y-%m-%d'),
-                'rating': str(rating),
+                'reviewer_name': review_data['author'],
+                'reviewer_email': review_data['email'],
+                'reviewer_location': review_data['location'],
+                'review_title': review_data['title'],
+                'review_content': review_data['content'],
+                'review_date': review_data['date'],
+                'rating': str(review_data['rating']),
                 'status': 'Published',
-                'verified': 'Yes',
+                'verified': review_data['verified'],
                 'image_urls': '',
                 'reply_content': '',
                 'reply_date': '',
@@ -720,7 +716,7 @@ def generate_for_product(product_id):
 
 @app.route('/api/generate', methods=['POST'])
 def generate():
-    from review_generator import REVIEW_TITLES, generate_reviewer_info, generate_review_content
+    from review_generator import generate_review, select_language
     
     # Fetch products
     url = f"https://{SHOP_DOMAIN}/admin/api/2024-01/products.json?limit=250"
@@ -733,26 +729,23 @@ def generate():
     for product in products:
         if 'clearance' in product['title'].lower():
             continue
-        for _ in range(random.randint(3, 8)):
-            lang = random.choice(['en', 'de'])
-            rating = random.choices([5, 4, 3], weights=[60, 30, 10])[0]
-            name, email, location = generate_reviewer_info(lang)
-            title = random.choice(REVIEW_TITLES[lang][rating])
-            content = generate_review_content(product, rating, lang)
+        num_reviews = random.randint(3, 8)
+        for i in range(num_reviews):
+            review_data = generate_review(product, existing_reviews=i)
             
             reviews.append({
                 'product_id': str(product['id']),
                 'product_handle': product['handle'],
                 'product_name': product['title'],
-                'reviewer_name': name,
-                'reviewer_email': email,
-                'reviewer_location': location,
-                'review_title': title,
-                'review_content': content,
-                'review_date': (datetime.now() - timedelta(days=random.randint(1, 1095))).strftime('%Y-%m-%d'),
-                'rating': str(rating),
+                'reviewer_name': review_data['author'],
+                'reviewer_email': review_data['email'],
+                'reviewer_location': review_data['location'],
+                'review_title': review_data['title'],
+                'review_content': review_data['content'],
+                'review_date': review_data['date'],
+                'rating': str(review_data['rating']),
                 'status': 'Published',
-                'verified': 'Yes'
+                'verified': review_data['verified']
             })
     
     # Save CSV
