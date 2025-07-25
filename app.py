@@ -161,9 +161,13 @@ def get_products():
     if shop == 'fugafashion.myshopify.com' and not access_token:
         # This is your existing access token from the old app
         access_token = os.environ.get('SHOPIFY_ACCESS_TOKEN', '')
+        print(f"Using private app token for {shop}: {access_token[:10]}..." if access_token else "No token found")
     
     if not access_token:
-        # For now, use a placeholder - would need proper OAuth in production
+        # Debug what's happening
+        print(f"No access token found for shop: {shop}")
+        print(f"Session shop: {session.get('shop')}")
+        print(f"ENV SHOPIFY_ACCESS_TOKEN exists: {'SHOPIFY_ACCESS_TOKEN' in os.environ}")
         return jsonify({'error': 'Authentication required. Please reinstall the app.'}), 401
     
     try:
@@ -173,7 +177,15 @@ def get_products():
         response = requests.get(url, headers=headers)
         
         if response.status_code != 200:
-            return jsonify({'error': f'Shopify API error: {response.status_code}'}), 500
+            error_detail = {
+                'error': f'Shopify API error: {response.status_code}',
+                'shop': shop,
+                'token_exists': bool(access_token),
+                'token_prefix': access_token[:15] + '...' if access_token else 'None',
+                'response_text': response.text[:200] if response.text else 'No response text'
+            }
+            print(f"Shopify API Error: {error_detail}")
+            return jsonify(error_detail), 500
         
         products = response.json().get('products', [])
         
