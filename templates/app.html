@@ -227,6 +227,9 @@
                 <button class="btn btn-secondary" onclick="toggleSelectAll()" id="selectAllBtn">
                     Select All
                 </button>
+                <button class="btn btn-secondary" onclick="selectWithoutReviews()">
+                    Select Without Reviews
+                </button>
                 <button class="btn btn-secondary" onclick="refreshProducts()">Refresh Products</button>
             </div>
         </div>
@@ -515,6 +518,61 @@
             });
             
             updateBulkButton();
+        }
+        
+        function selectWithoutReviews() {
+            // Clear all selections first
+            document.querySelectorAll('.product-checkbox').forEach(cb => cb.checked = false);
+            
+            // Find products with 0 total reviews
+            const productCards = document.querySelectorAll('.product-card');
+            let selectedCount = 0;
+            
+            productCards.forEach(card => {
+                const statsElements = card.querySelectorAll('.stat span');
+                let totalReviews = 0;
+                
+                // Look for the "total" stat (3rd stat element)
+                statsElements.forEach(span => {
+                    if (span.textContent.includes('total')) {
+                        const match = span.textContent.match(/(\d+)\s+total/);
+                        if (match) {
+                            totalReviews = parseInt(match[1]);
+                        }
+                    }
+                });
+                
+                // Select if total reviews is 0
+                if (totalReviews === 0) {
+                    const checkbox = card.querySelector('.product-checkbox');
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        selectedCount++;
+                    }
+                }
+            });
+            
+            updateBulkButton();
+            
+            // Show a notification of how many were selected
+            if (selectedCount > 0) {
+                const success = document.getElementById('success');
+                success.innerHTML = `✅ Selected ${selectedCount} products without reviews`;
+                success.style.display = 'block';
+                
+                // Hide notification after 3 seconds
+                setTimeout(() => {
+                    success.style.display = 'none';
+                }, 3000);
+            } else {
+                const error = document.getElementById('error');
+                error.textContent = 'No products found without reviews';
+                error.style.display = 'block';
+                
+                setTimeout(() => {
+                    error.style.display = 'none';
+                }, 3000);
+            }
         }
         
         function openBulkModal() {
