@@ -6,47 +6,112 @@ import random
 from datetime import datetime, timedelta
 import re
 
-# Review titles with sophisticated language patterns
+# Review titles with sophisticated language patterns for all 20 shop languages
 REVIEW_TITLES = {
     "de": {
-        5: [
-            "Absolut fantastisch!", "Perfektes Produkt!", "Begeistert!", "Übertrifft alle Erwartungen!",
-            "Einfach traumhaft!", "Ein Muss für jeden!", "Kann ich nur empfehlen!", "Bestes Produkt ever!",
-            "Erstklassige Qualität!", "Liebe es!", "Top Produkt!", "Hervorragende Wahl!", "Mega Teil!",
-            "Voll cool!", "Krass gut!", "Einfach nur wow!", "Beste Entscheidung ever!"
-        ],
-        4: [
-            "Sehr gutes Produkt", "Fast perfekt", "Wirklich schön", "Bin sehr zufrieden",
-            "Gute Qualität", "Macht einen tollen Eindruck", "Empfehlenswert", "Positiv überrascht",
-            "Toller Kauf", "Gutes Preis-Leistungs-Verhältnis", "Schönes Design", "Überzeugt mich",
-            "Richtig nice", "Voll gut", "Echt cool", "Gefällt mir sehr"
-        ],
-        3: [
-            "Ganz okay", "Erfüllt seinen Zweck", "Im Großen und Ganzen zufrieden", "Mittelmäßig",
-            "Entspricht den Erwartungen", "Nicht schlecht", "Könnte besser sein", "Durchschnittlich",
-            "Für den Preis in Ordnung", "Brauchbar", "Mittelklasse", "Okay für den Alltag",
-            "Ganz nett", "Passt schon"
-        ],
+        5: ["Absolut fantastisch!", "Perfektes Produkt!", "Begeistert!", "Übertrifft alle Erwartungen!", "Einfach traumhaft!", "Ein Muss für jeden!", "Kann ich nur empfehlen!", "Bestes Produkt ever!", "Erstklassige Qualität!", "Liebe es!", "Top Produkt!", "Hervorragende Wahl!", "Mega Teil!", "Voll cool!", "Krass gut!", "Einfach nur wow!", "Beste Entscheidung ever!"],
+        4: ["Sehr gutes Produkt", "Fast perfekt", "Wirklich schön", "Bin sehr zufrieden", "Gute Qualität", "Macht einen tollen Eindruck", "Empfehlenswert", "Positiv überrascht", "Toller Kauf", "Gutes Preis-Leistungs-Verhältnis", "Schönes Design", "Überzeugt mich", "Richtig nice", "Voll gut", "Echt cool", "Gefällt mir sehr"],
+        3: ["Ganz okay", "Erfüllt seinen Zweck", "Im Großen und Ganzen zufrieden", "Mittelmäßig", "Entspricht den Erwartungen", "Nicht schlecht", "Könnte besser sein", "Durchschnittlich", "Für den Preis in Ordnung", "Brauchbar", "Mittelklasse", "Okay für den Alltag", "Ganz nett", "Passt schon"]
     },
     "en": {
-        5: [
-            "Absolutely amazing!", "Perfect product!", "Love it so much!", "Exceeds all expectations!",
-            "Simply wonderful!", "A must-have!", "Highly recommend!", "Best product ever!",
-            "First-class quality!", "Love it!", "Top product!", "Excellent choice!",
-            "Obsessed with this!", "Literally perfect!", "Totally in love!", "So freaking good!"
-        ],
-        4: [
-            "Very good product", "Almost perfect", "Really nice", "Very satisfied",
-            "Good quality", "Makes a great impression", "Recommendable", "Positively surprised",
-            "Great purchase", "Good value for money", "Beautiful design", "Convincing",
-            "Really cool", "Pretty nice", "Very pleased with it", "Quite good"
-        ],
-        3: [
-            "Decent", "Serves its purpose", "Satisfied overall", "Average",
-            "Meets expectations", "Not bad", "Could be better", "Average",
-            "Okay for the price", "Usable", "Middle-range", "Okay for everyday",
-            "Pretty decent", "It's fine"
-        ],
+        5: ["Absolutely amazing!", "Perfect product!", "Love it so much!", "Exceeds all expectations!", "Simply wonderful!", "A must-have!", "Highly recommend!", "Best product ever!", "First-class quality!", "Love it!", "Top product!", "Excellent choice!", "Obsessed with this!", "Literally perfect!", "Totally in love!", "So freaking good!"],
+        4: ["Very good product", "Almost perfect", "Really nice", "Very satisfied", "Good quality", "Makes a great impression", "Recommendable", "Positively surprised", "Great purchase", "Good value for money", "Beautiful design", "Convincing", "Really cool", "Pretty nice", "Very pleased with it", "Quite good"],
+        3: ["Decent", "Serves its purpose", "Satisfied overall", "Average", "Meets expectations", "Not bad", "Could be better", "Average", "Okay for the price", "Usable", "Middle-range", "Okay for everyday", "Pretty decent", "It's fine"]
+    },
+    "es": {
+        5: ["¡Absolutamente increíble!", "¡Producto perfecto!", "¡Me encanta!", "¡Supera todas las expectativas!", "¡Simplemente maravilloso!", "¡Imprescindible!", "¡Lo recomiendo mucho!", "¡El mejor producto!", "¡Calidad de primera!", "¡Lo amo!", "¡Producto top!", "¡Excelente elección!", "¡Obsesionada con esto!", "¡Literalmente perfecto!", "¡Totalmente enamorada!", "¡Increíblemente bueno!"],
+        4: ["Muy buen producto", "Casi perfecto", "Realmente bonito", "Muy satisfecha", "Buena calidad", "Causa una gran impresión", "Recomendable", "Positivamente sorprendida", "Gran compra", "Buena relación calidad-precio", "Diseño hermoso", "Me convence", "Realmente genial", "Bastante bueno", "Muy contenta con esto", "Bastante bueno"],
+        3: ["Decente", "Cumple su propósito", "Satisfecha en general", "Promedio", "Cumple las expectativas", "No está mal", "Podría ser mejor", "Promedio", "Bien por el precio", "Utilizable", "Gama media", "Bien para el día a día", "Bastante decente", "Está bien"]
+    },
+    "fr": {
+        5: ["Absolument incroyable!", "Produit parfait!", "Je l'adore!", "Dépasse toutes les attentes!", "Tout simplement merveilleux!", "Un incontournable!", "Je le recommande vivement!", "Le meilleur produit!", "Qualité de première classe!", "Je l'aime!", "Produit top!", "Excellent choix!", "Obsédée par ça!", "Littéralement parfait!", "Totalement amoureuse!", "Vraiment génial!"],
+        4: ["Très bon produit", "Presque parfait", "Vraiment beau", "Très satisfaite", "Bonne qualité", "Fait une grande impression", "Recommandable", "Positivement surprise", "Excellent achat", "Bon rapport qualité-prix", "Beau design", "Me convainc", "Vraiment cool", "Assez bien", "Très contente", "Assez bon"],
+        3: ["Correct", "Remplit son rôle", "Satisfaite dans l'ensemble", "Moyen", "Répond aux attentes", "Pas mal", "Pourrait être mieux", "Moyen", "Correct pour le prix", "Utilisable", "Milieu de gamme", "Correct pour tous les jours", "Assez correct", "Ça va"]
+    },
+    "it": {
+        5: ["Assolutamente incredibile!", "Prodotto perfetto!", "Lo adoro!", "Supera tutte le aspettative!", "Semplicemente meraviglioso!", "Un must-have!", "Lo raccomando vivamente!", "Il miglior prodotto!", "Qualità di prima classe!", "Lo amo!", "Prodotto top!", "Scelta eccellente!", "Ossessionata da questo!", "Letteralmente perfetto!", "Totalmente innamorata!", "Davvero fantastico!"],
+        4: ["Prodotto molto buono", "Quasi perfetto", "Davvero bello", "Molto soddisfatta", "Buona qualità", "Fa una grande impressione", "Raccomandabile", "Positivamente sorpresa", "Ottimo acquisto", "Buon rapporto qualità-prezzo", "Design bellissimo", "Mi convince", "Davvero cool", "Abbastanza buono", "Molto contenta", "Abbastanza buono"],
+        3: ["Decente", "Serve al suo scopo", "Soddisfatta nel complesso", "Nella media", "Soddisfa le aspettative", "Non male", "Potrebbe essere meglio", "Nella media", "Va bene per il prezzo", "Utilizzabile", "Fascia media", "Va bene per tutti i giorni", "Abbastanza decente", "Va bene"]
+    },
+    "ru": {
+        5: ["Абсолютно невероятно!", "Идеальный продукт!", "Обожаю это!", "Превосходит все ожидания!", "Просто замечательно!", "Обязательно нужно иметь!", "Очень рекомендую!", "Лучший продукт!", "Качество первого класса!", "Люблю это!", "Топ продукт!", "Отличный выбор!", "Одержима этим!", "Буквально идеально!", "Полностью влюблена!", "Невероятно хорошо!"],
+        4: ["Очень хороший продукт", "Почти идеально", "Действительно красиво", "Очень довольна", "Хорошее качество", "Производит отличное впечатление", "Рекомендую", "Приятно удивлена", "Отличная покупка", "Хорошее соотношение цены и качества", "Красивый дизайн", "Убеждает меня", "Действительно классно", "Довольно хорошо", "Очень довольна", "Довольно хорошо"],
+        3: ["Прилично", "Служит своей цели", "В целом довольна", "Средне", "Соответствует ожиданиям", "Неплохо", "Могло бы быть лучше", "Средне", "Нормально за эту цену", "Пригодно", "Средний класс", "Нормально для повседневного использования", "Довольно прилично", "Нормально"]
+    },
+    "pl": {
+        5: ["Absolutnie niesamowite!", "Idealny produkt!", "Uwielbiam to!", "Przewyższa wszystkie oczekiwania!", "Po prostu cudowne!", "Musisz to mieć!", "Gorąco polecam!", "Najlepszy produkt!", "Jakość pierwszej klasy!", "Kocham to!", "Produkt top!", "Doskonały wybór!", "Jestem obsesyjnie zakochana!", "Dosłownie idealne!", "Całkowicie zakochana!", "Niesamowicie dobre!"],
+        4: ["Bardzo dobry produkt", "Prawie idealny", "Naprawdę ładny", "Bardzo zadowolona", "Dobra jakość", "Robi świetne wrażenie", "Polecam", "Miło zaskoczona", "Świetny zakup", "Dobry stosunek jakości do ceny", "Piękny design", "Przekonuje mnie", "Naprawdę fajny", "Całkiem dobry", "Bardzo zadowolona", "Całkiem dobry"],
+        3: ["Przyzwoity", "Spełnia swoje zadanie", "Zadowolona ogólnie", "Średni", "Spełnia oczekiwania", "Nieźle", "Mógłby być lepszy", "Średni", "W porządku za tę cenę", "Użyteczny", "Średnia półka", "W porządku na co dzień", "Całkiem przyzwoity", "W porządku"]
+    },
+    "nl": {
+        5: ["Absoluut geweldig!", "Perfect product!", "Ik hou er zo van!", "Overtreft alle verwachtingen!", "Gewoon prachtig!", "Een must-have!", "Raad het ten zeerste aan!", "Beste product ooit!", "Eersteklas kwaliteit!", "Ik hou ervan!", "Top product!", "Uitstekende keuze!", "Geobsedeerd door dit!", "Letterlijk perfect!", "Helemaal verliefd!", "Zo ongelooflijk goed!"],
+        4: ["Zeer goed product", "Bijna perfect", "Echt mooi", "Zeer tevreden", "Goede kwaliteit", "Maakt een geweldige indruk", "Aanbevelenswaardig", "Positief verrast", "Geweldige aankoop", "Goede prijs-kwaliteitverhouding", "Prachtig ontwerp", "Overtuigt me", "Echt cool", "Behoorlijk goed", "Zeer tevreden", "Behoorlijk goed"],
+        3: ["Redelijk", "Vervult zijn doel", "Over het algemeen tevreden", "Gemiddeld", "Voldoet aan verwachtingen", "Niet slecht", "Zou beter kunnen", "Gemiddeld", "Oké voor de prijs", "Bruikbaar", "Middensegment", "Oké voor dagelijks gebruik", "Behoorlijk fatsoenlijk", "Het is prima"]
+    },
+    "sv": {
+        5: ["Helt fantastisk!", "Perfekt produkt!", "Älskar det så mycket!", "Överträffar alla förväntningar!", "Helt underbart!", "Ett måste!", "Rekommenderar starkt!", "Bästa produkten!", "Förstklassig kvalitet!", "Älskar det!", "Toppprodukt!", "Utmärkt val!", "Besatt av detta!", "Bokstavligen perfekt!", "Helt förälskad!", "Så otroligt bra!"],
+        4: ["Mycket bra produkt", "Nästan perfekt", "Riktigt snyggt", "Mycket nöjd", "Bra kvalitet", "Gör ett bra intryck", "Rekommenderas", "Positivt överraskad", "Fantastiskt köp", "Bra värde för pengarna", "Vacker design", "Övertygar mig", "Riktigt coolt", "Ganska bra", "Mycket nöjd", "Ganska bra"],
+        3: ["Okej", "Fyller sitt syfte", "Nöjd överlag", "Genomsnittlig", "Uppfyller förväntningarna", "Inte dåligt", "Kunde vara bättre", "Genomsnittlig", "Okej för priset", "Användbar", "Mellanklass", "Okej för vardagsbruk", "Ganska okej", "Det är bra"]
+    },
+    "da": {
+        5: ["Helt fantastisk!", "Perfekt produkt!", "Elsker det så meget!", "Overgår alle forventninger!", "Simpelthen vidunderligt!", "Et must-have!", "Anbefaler stærkt!", "Bedste produkt nogensinde!", "Førsteklasses kvalitet!", "Elsker det!", "Top produkt!", "Fremragende valg!", "Besat af dette!", "Bogstaveligt perfekt!", "Totalt forelsket!", "Så utroligt godt!"],
+        4: ["Meget godt produkt", "Næsten perfekt", "Virkelig pænt", "Meget tilfreds", "God kvalitet", "Gør et godt indtryk", "Kan anbefales", "Positivt overrasket", "Fantastisk køb", "God værdi for pengene", "Smukt design", "Overbeviser mig", "Virkelig cool", "Ret godt", "Meget tilfreds", "Ret godt"],
+        3: ["Anstændig", "Opfylder sit formål", "Tilfreds overordnet", "Gennemsnitlig", "Opfylder forventningerne", "Ikke dårligt", "Kunne være bedre", "Gennemsnitlig", "Okay for prisen", "Brugbar", "Mellemklasse", "Okay til daglig brug", "Ret anstændig", "Det er fint"]
+    },
+    "fi": {
+        5: ["Aivan fantastinen!", "Täydellinen tuote!", "Rakastan sitä niin paljon!", "Ylittää kaikki odotukset!", "Yksinkertaisesti ihana!", "Pakollinen hankinta!", "Suosittelen lämpimästi!", "Paras tuote ikinä!", "Ensiluokkainen laatu!", "Rakastan sitä!", "Huipputuote!", "Erinomainen valinta!", "Pakkomielle tähän!", "Kirjaimellisesti täydellinen!", "Täysin rakastunut!", "Niin uskomattoman hyvä!"],
+        4: ["Erittäin hyvä tuote", "Melkein täydellinen", "Todella kaunis", "Erittäin tyytyväinen", "Hyvä laatu", "Tekee hienon vaikutuksen", "Suositeltava", "Positiivisesti yllättynyt", "Loistava osto", "Hyvä hinta-laatusuhde", "Kaunis muotoilu", "Vakuuttaa minut", "Todella siisti", "Melko hyvä", "Erittäin tyytyväinen", "Melko hyvä"],
+        3: ["Kunnollinen", "Täyttää tarkoituksensa", "Tyytyväinen kaiken kaikkiaan", "Keskiverto", "Täyttää odotukset", "Ei huono", "Voisi olla parempi", "Keskiverto", "OK hinnaltaan", "Käyttökelpoinen", "Keskiluokka", "OK arkikäyttöön", "Melko kunnollinen", "Se on hyvä"]
+    },
+    "cs": {
+        5: ["Naprosto úžasné!", "Perfektní produkt!", "Miluju to tak moc!", "Předčí všechna očekávání!", "Jednoduše nádherné!", "Musíte mít!", "Vřele doporučuji!", "Nejlepší produkt vůbec!", "Prvotřídní kvalita!", "Miluji to!", "Špičkový produkt!", "Vynikající volba!", "Jsem tím posedlá!", "Doslova dokonalé!", "Úplně zamilovaná!", "Tak neuvěřitelně dobré!"],
+        4: ["Velmi dobrý produkt", "Skoro dokonalý", "Opravdu pěkný", "Velmi spokojená", "Dobrá kvalita", "Dělá skvělý dojem", "Doporučuji", "Příjemně překvapená", "Skvělý nákup", "Dobrý poměr ceny a kvality", "Krásný design", "Přesvědčuje mě", "Opravdu cool", "Docela dobré", "Velmi spokojená", "Docela dobré"],
+        3: ["Slušné", "Plní svůj účel", "Celkově spokojená", "Průměrné", "Splňuje očekávání", "Není špatné", "Mohlo by být lepší", "Průměrné", "OK za tu cenu", "Použitelné", "Střední třída", "OK pro každodenní použití", "Docela slušné", "Je to dobré"]
+    },
+    "hu": {
+        5: ["Teljesen elképesztő!", "Tökéletes termék!", "Annyira szeretem!", "Felülmúlja az összes elvárást!", "Egyszerűen csodálatos!", "Kötelező darab!", "Melegen ajánlom!", "A legjobb termék valaha!", "Első osztályú minőség!", "Imádom!", "Csúcs termék!", "Kiváló választás!", "Megszállottja vagyok ennek!", "Szó szerint tökéletes!", "Teljesen szerelmes vagyok!", "Olyan hihetetlenül jó!"],
+        4: ["Nagyon jó termék", "Majdnem tökéletes", "Igazán szép", "Nagyon elégedett", "Jó minőség", "Nagyszerű benyomást kelt", "Ajánlható", "Kellemesen meglepett", "Fantasztikus vásárlás", "Jó ár-érték arány", "Gyönyörű design", "Meggyőz engem", "Igazán menő", "Elég jó", "Nagyon elégedett", "Elég jó"],
+        3: ["Tisztességes", "Betölti a célját", "Összességében elégedett", "Átlagos", "Teljesíti az elvárásokat", "Nem rossz", "Lehetne jobb", "Átlagos", "Rendben az árért", "Használható", "Középkategória", "Rendben napi használatra", "Elég tisztességes", "Jó"]
+    },
+    "tr": {
+        5: ["Kesinlikle harika!", "Mükemmel ürün!", "Çok seviyorum!", "Tüm beklentileri aşıyor!", "Basitçe harika!", "Mutlaka alınmalı!", "Şiddetle tavsiye ederim!", "Şimdiye kadarki en iyi ürün!", "Birinci sınıf kalite!", "Bayılıyorum!", "En iyi ürün!", "Mükemmel seçim!", "Buna takıntılıyım!", "Kelimenin tam anlamıyla mükemmel!", "Tamamen aşığım!", "İnanılmaz derecede iyi!"],
+        4: ["Çok iyi ürün", "Neredeyse mükemmel", "Gerçekten güzel", "Çok memnun", "İyi kalite", "Harika bir izlenim bırakıyor", "Tavsiye edilir", "Olumlu şaşırdım", "Harika alışveriş", "İyi fiyat-kalite oranı", "Güzel tasarım", "Beni ikna ediyor", "Gerçekten cool", "Oldukça iyi", "Çok memnun", "Oldukça iyi"],
+        3: ["Düzgün", "Amacını yerine getiriyor", "Genel olarak memnun", "Ortalama", "Beklentileri karşılıyor", "Fena değil", "Daha iyi olabilirdi", "Ortalama", "Fiyatına göre tamam", "Kullanılabilir", "Orta sınıf", "Günlük kullanım için tamam", "Oldukça düzgün", "İyi"]
+    },
+    "ar": {
+        5: ["رائع تماماً!", "منتج مثالي!", "أحبه كثيراً!", "يفوق كل التوقعات!", "رائع ببساطة!", "يجب اقتناؤه!", "أنصح به بشدة!", "أفضل منتج على الإطلاق!", "جودة من الدرجة الأولى!", "أعشقه!", "منتج ممتاز!", "اختيار ممتاز!", "مهووسة به!", "مثالي حرفياً!", "واقعة في حبه تماماً!", "جيد بشكل لا يصدق!"],
+        4: ["منتج جيد جداً", "مثالي تقريباً", "جميل حقاً", "راضية جداً", "جودة جيدة", "يترك انطباعاً رائعاً", "يُنصح به", "تفاجأت بشكل إيجابي", "شراء رائع", "نسبة جيدة بين السعر والجودة", "تصميم جميل", "يقنعني", "رائع حقاً", "جيد إلى حد كبير", "راضية جداً", "جيد إلى حد كبير"],
+        3: ["لائق", "يحقق الغرض", "راضية بشكل عام", "متوسط", "يلبي التوقعات", "ليس سيئاً", "يمكن أن يكون أفضل", "متوسط", "مقبول للسعر", "قابل للاستخدام", "فئة متوسطة", "مقبول للاستخدام اليومي", "لائق إلى حد كبير", "إنه جيد"]
+    },
+    "el": {
+        5: ["Απολύτως καταπληκτικό!", "Τέλειο προϊόν!", "Το λατρεύω τόσο πολύ!", "Ξεπερνά όλες τις προσδοκίες!", "Απλά θαυμάσιο!", "Πρέπει να το έχεις!", "Το συνιστώ ανεπιφύλακτα!", "Το καλύτερο προϊόν ποτέ!", "Ποιότητα πρώτης τάξης!", "Το αγαπώ!", "Κορυφαίο προϊόν!", "Εξαιρετική επιλογή!", "Είμαι εμμονική με αυτό!", "Κυριολεκτικά τέλειο!", "Εντελώς ερωτευμένη!", "Τόσο απίστευτα καλό!"],
+        4: ["Πολύ καλό προϊόν", "Σχεδόν τέλειο", "Πραγματικά όμορφο", "Πολύ ικανοποιημένη", "Καλή ποιότητα", "Κάνει εξαιρετική εντύπωση", "Συστήνεται", "Θετικά εκπλήσσομαι", "Φανταστική αγορά", "Καλή σχέση ποιότητας-τιμής", "Όμορφος σχεδιασμός", "Με πείθει", "Πραγματικά cool", "Αρκετά καλό", "Πολύ ικανοποιημένη", "Αρκετά καλό"],
+        3: ["Αξιοπρεπές", "Εκπληρώνει τον σκοπό του", "Ικανοποιημένη συνολικά", "Μέτριο", "Ανταποκρίνεται στις προσδοκίες", "Όχι κακό", "Θα μπορούσε να είναι καλύτερο", "Μέτριο", "Εντάξει για την τιμή", "Χρησιμοποιήσιμο", "Μεσαία κατηγορία", "Εντάξει για καθημερινή χρήση", "Αρκετά αξιοπρεπές", "Είναι καλό"]
+    },
+    "ko": {
+        5: ["정말 놀라워요!", "완벽한 제품!", "너무 사랑해요!", "모든 기대를 뛰어넘어요!", "정말 멋져요!", "꼭 있어야 할 아이템!", "강력 추천!", "최고의 제품!", "일류 품질!", "정말 좋아해요!", "최고 제품!", "훌륭한 선택!", "이것에 빠져있어요!", "말 그대로 완벽해요!", "완전히 반했어요!", "믿을 수 없을 정도로 좋아요!"],
+        4: ["아주 좋은 제품", "거의 완벽해요", "정말 예뻐요", "매우 만족해요", "좋은 품질", "훌륭한 인상을 줘요", "추천해요", "좋게 놀랐어요", "훌륭한 구매", "좋은 가성비", "아름다운 디자인", "저를 설득해요", "정말 멋져요", "꽤 좋아요", "매우 만족해요", "꽤 좋아요"],
+        3: ["괜찮아요", "목적을 달성해요", "전반적으로 만족해요", "평균적", "기대에 부응해요", "나쁘지 않아요", "더 좋을 수 있어요", "평균적", "가격 대비 괜찮아요", "사용 가능해요", "중간급", "일상 사용에 괜찮아요", "꽤 괜찮아요", "좋아요"]
+    },
+    "ja": {
+        5: ["絶対に素晴らしい！", "完璧な商品！", "とても愛してる！", "すべての期待を上回る！", "シンプルに素晴らしい！", "必須アイテム！", "強くお勧めします！", "今まで最高の商品！", "一流の品質！", "大好き！", "トップ商品！", "素晴らしい選択！", "これに夢中！", "文字通り完璧！", "完全に恋してる！", "信じられないほど良い！"],
+        4: ["とても良い商品", "ほぼ完璧", "本当に美しい", "とても満足", "良い品質", "素晴らしい印象を与える", "お勧めできる", "良い意味で驚いた", "素晴らしい買い物", "良いコスパ", "美しいデザイン", "私を納得させる", "本当にクール", "かなり良い", "とても満足", "かなり良い"],
+        3: ["まあまあ", "目的を果たす", "全体的に満足", "平均的", "期待に応える", "悪くない", "もっと良くできる", "平均的", "価格にしては大丈夫", "使える", "中級", "日常使いには大丈夫", "かなりまあまあ", "良い"]
+    },
+    "zh": {
+        5: ["绝对惊人！", "完美的产品！", "太爱了！", "超出所有期望！", "简直太棒了！", "必备单品！", "强烈推荐！", "有史以来最好的产品！", "一流品质！", "爱死了！", "顶级产品！", "绝佳选择！", "对此着迷！", "字面意思的完美！", "完全爱上了！", "好得令人难以置信！"],
+        4: ["非常好的产品", "几乎完美", "真的很漂亮", "非常满意", "质量很好", "给人很好的印象", "值得推荐", "惊喜地满意", "很棒的购买", "性价比很好", "漂亮的设计", "说服了我", "真的很酷", "还不错", "非常满意", "还不错"],
+        3: ["还行", "达到目的", "总体满意", "一般", "符合期望", "不算差", "可以更好", "一般", "价格还行", "可用", "中等", "日常使用还行", "还算不错", "还好"]
+    },
+    "id": {
+        5: ["Benar-benar luar biasa!", "Produk sempurna!", "Sangat menyukainya!", "Melampaui semua harapan!", "Sangat menakjubkan!", "Wajib punya!", "Sangat merekomendasikan!", "Produk terbaik yang pernah ada!", "Kualitas kelas satu!", "Sangat menyukainya!", "Produk terbaik!", "Pilihan yang luar biasa!", "Terobsesi dengan ini!", "Benar-benar sempurna!", "Benar-benar jatuh cinta!", "Luar biasa sekali!"],
+        4: ["Produk yang sangat bagus", "Hampir sempurna", "Benar-benar bagus", "Sangat puas", "Kualitas bagus", "Memberikan kesan yang bagus", "Direkomendasikan", "Terkejut dengan positif", "Pembelian yang bagus", "Nilai yang bagus untuk uang", "Desain yang indah", "Meyakinkan saya", "Benar-benar keren", "Cukup bagus", "Sangat puas", "Cukup bagus"],
+        3: ["Lumayan", "Melayani tujuannya", "Puas secara keseluruhan", "Rata-rata", "Memenuhi harapan", "Tidak buruk", "Bisa lebih baik", "Rata-rata", "Oke untuk harganya", "Dapat digunakan", "Kelas menengah", "Oke untuk penggunaan sehari-hari", "Cukup lumayan", "Bagus"]
+    },
+    "pt": {
+        5: ["Absolutamente incrível!", "Produto perfeito!", "Amo muito!", "Supera todas as expectativas!", "Simplesmente maravilhoso!", "Indispensável!", "Recomendo vivamente!", "Melhor produto de sempre!", "Qualidade de primeira!", "Adoro!", "Produto top!", "Excelente escolha!", "Obcecada por isto!", "Literalmente perfeito!", "Completamente apaixonada!", "Incrivelmente bom!"],
+        4: ["Produto muito bom", "Quase perfeito", "Realmente bonito", "Muito satisfeita", "Boa qualidade", "Causa uma ótima impressão", "Recomendável", "Positivamente surpreendida", "Ótima compra", "Boa relação qualidade-preço", "Design lindo", "Convence-me", "Realmente fixe", "Bastante bom", "Muito satisfeita", "Bastante bom"],
+        3: ["Decente", "Serve o seu propósito", "Satisfeita no geral", "Médio", "Cumpre as expectativas", "Não é mau", "Podia ser melhor", "Médio", "Está bem pelo preço", "Utilizável", "Gama média", "Está bem para uso diário", "Bastante decente", "Está bom"]
     }
 }
 
@@ -606,9 +671,9 @@ def generate_review_content(product, rating, language="en"):
     # 35% chance for short one-liner
     if random.random() < 0.35:
         if language in SHORT_REVIEWS:
-            return random.choice(SHORT_REVIEWS[language])
+            return get_unique_phrase(SHORT_REVIEWS[language], language, "short")
         else:
-            return random.choice(SHORT_REVIEWS["en"])
+            return get_unique_phrase(SHORT_REVIEWS["en"], "en", "short")
     
     # Build review components
     review_components = []
@@ -659,7 +724,7 @@ def generate_review_content(product, rating, language="en"):
         }
         
         language_to_use = language if language in intros else "en"
-        review_components.append(random.choice(intros[language_to_use][rating]))
+        review_components.append(get_unique_phrase(intros[language_to_use][rating], language_to_use, "intro"))
     
     # Component 2: Product-specific phrases (70% chance, reduced from 85%)
     if random.random() < 0.70 and language in PRODUCT_PHRASES:
@@ -671,7 +736,14 @@ def generate_review_content(product, rating, language="en"):
         if phrases:
             # Reduce phrase count for better flow
             phrase_count = random.choices([1, 2], weights=[70, 30], k=1)[0]
-            selected_phrases = random.sample(phrases, min(phrase_count, len(phrases)))
+            # Use unique phrases to avoid repetition
+            available_phrases = [p for p in phrases if p not in USED_PHRASES[language]]
+            if len(available_phrases) < phrase_count:
+                available_phrases = phrases  # fallback if not enough unique phrases
+            selected_phrases = random.sample(available_phrases, min(phrase_count, len(available_phrases)))
+            # Mark selected phrases as used
+            for phrase in selected_phrases:
+                USED_PHRASES[language].add(phrase)
             
             if selected_phrases:
                 if len(review_components) > 0 and random.random() < 0.6:
@@ -691,18 +763,18 @@ def generate_review_content(product, rating, language="en"):
         if len(review_components) > 0:
             # Always use sentence break for shop references
             review_components[-1] += ". " if not review_components[-1].endswith(('.', '!')) else " "
-            review_components.append(random.choice(SHOP_REFERENCES[language]))
+            review_components.append(get_unique_phrase(SHOP_REFERENCES[language], language, "shop"))
         else:
-            review_components.append(random.choice(SHOP_REFERENCES[language]))
+            review_components.append(get_unique_phrase(SHOP_REFERENCES[language], language, "shop"))
     
     # Component 4: Social media reference (15% chance, reduced)
     if random.random() < 0.15 and language in SOCIAL_MEDIA_REFS:
         if len(review_components) > 0:
             # Always use sentence break for social media references
             review_components[-1] += ". " if not review_components[-1].endswith(('.', '!')) else " "
-            review_components.append(random.choice(SOCIAL_MEDIA_REFS[language]))
+            review_components.append(get_unique_phrase(SOCIAL_MEDIA_REFS[language], language, "social"))
         else:
-            review_components.append(random.choice(SOCIAL_MEDIA_REFS[language]))
+            review_components.append(get_unique_phrase(SOCIAL_MEDIA_REFS[language], language, "social"))
     
     # Component 5: Shipping comment (10% chance, reduced)
     if random.random() < 0.10 and language in SHIPPING_COMMENTS:
@@ -712,11 +784,11 @@ def generate_review_content(product, rating, language="en"):
             conn = random.choice(connectors)
             if conn in [".", "!"]:
                 review_components[-1] += conn
-                review_components.append(random.choice(SHIPPING_COMMENTS[language]))
+                review_components.append(get_unique_phrase(SHIPPING_COMMENTS[language], language, "shipping"))
             else:
-                review_components[-1] += conn + random.choice(SHIPPING_COMMENTS[language])
+                review_components[-1] += conn + get_unique_phrase(SHIPPING_COMMENTS[language], language, "shipping")
         else:
-            review_components.append(random.choice(SHIPPING_COMMENTS[language]))
+            review_components.append(get_unique_phrase(SHIPPING_COMMENTS[language], language, "shipping"))
     
     # Build review from components
     review = " ".join(review_components)
@@ -756,10 +828,46 @@ def generate_review_date(max_months_back=36):
     review_date = datetime.now() - timedelta(days=days_back)
     return review_date.strftime('%Y-%m-%d')
 
+# Global phrase tracking to prevent repetition
+USED_PHRASES = {
+    "de": set(), "en": set(), "es": set(), "fr": set(), "it": set(), "ru": set(),
+    "pl": set(), "nl": set(), "sv": set(), "da": set(), "fi": set(), "cs": set(),
+    "hu": set(), "tr": set(), "ar": set(), "el": set(), "ko": set(), "ja": set(),
+    "zh": set(), "id": set(), "pt": set()
+}
+
 def select_language():
-    """Select language based on desired distribution"""
-    # 30% German, 70% English (simplified from old_review.py for current app)
-    return random.choices(["de", "en"], weights=[30, 70], k=1)[0]
+    """Select language based on all 20 shop languages with realistic distribution"""
+    # Based on global fashion/youth market distribution
+    languages = ["de", "en", "es", "fr", "it", "ru", "pl", "nl", "sv", "da", 
+                "fi", "cs", "hu", "tr", "ar", "el", "ko", "ja", "zh", "id", "pt"]
+    weights = [15, 25, 10, 8, 7, 6, 5, 4, 3, 3, 2, 2, 2, 2, 2, 2, 3, 3, 4, 2, 3]  # Total: 100
+    return random.choices(languages, weights=weights, k=1)[0]
+
+def get_unique_phrase(phrase_list, language, category="general"):
+    """Get a unique phrase that hasn't been used recently"""
+    global USED_PHRASES
+    
+    available_phrases = [p for p in phrase_list if p not in USED_PHRASES[language]]
+    
+    # If we've used all phrases, reset the tracking for this language
+    if not available_phrases:
+        USED_PHRASES[language].clear()
+        available_phrases = phrase_list
+    
+    # Select random phrase and mark as used
+    phrase = random.choice(available_phrases)
+    USED_PHRASES[language].add(phrase)
+    
+    # Keep only recent phrases (limit to 50% of total phrases per language)
+    if len(USED_PHRASES[language]) > len(phrase_list) * 0.5:
+        # Remove oldest phrases (random selection to clear some)
+        phrases_to_remove = random.sample(list(USED_PHRASES[language]), 
+                                        len(USED_PHRASES[language]) // 3)
+        for p in phrases_to_remove:
+            USED_PHRASES[language].discard(p)
+    
+    return phrase
 
 def generate_review(product, existing_reviews=0):
     """Generate a single review for a product"""
@@ -772,16 +880,16 @@ def generate_review(product, existing_reviews=0):
         review_title = ""
     else:
         if language in REVIEW_TITLES and rating in REVIEW_TITLES[language]:
-            review_title = random.choice(REVIEW_TITLES[language][rating])
+            review_title = get_unique_phrase(REVIEW_TITLES[language][rating], language, "title")
         else:
-            review_title = random.choice(REVIEW_TITLES["en"][rating])
+            review_title = get_unique_phrase(REVIEW_TITLES["en"][rating], "en", "title")
     
     review_content = generate_review_content(product, rating, language)
     
     # Add review ending (30% chance) for longer reviews
     if len(review_content) > 50 and random.random() < 0.3:
         if language in REVIEW_ENDINGS and rating in REVIEW_ENDINGS[language]:
-            ending = random.choice(REVIEW_ENDINGS[language][rating])
+            ending = get_unique_phrase(REVIEW_ENDINGS[language][rating], language, "ending")
             if review_content and review_content[-1] not in [".", "!"]:
                 review_content += ". "
             elif review_content and review_content[-1] in [".", "!"]:
