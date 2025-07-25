@@ -104,7 +104,9 @@ SHORT_REVIEWS = {
         "aesthetic af", "obssessed damit!!!!", "Liebe das design sm", "straight fire 🔥🔥🔥", "fashion slay fr", 
         "direkt ausgegangen damit", "sieht 100x besser aus als auf insta", "fuga studios killt es wieder mal", "gibts in jeder farbe?",
         "shipping war flott", "insta feed material", "outfit mit diesem teil = iconic", "hatte fomo, aber jetz ist meins!",
-        "kann nicht aufhören es zu tragen tbh", "so in love mit dem style", "muss es in allen farben haben lmaoo", "hab von fuga auf tiktok gehört"
+        "kann nicht aufhören es zu tragen tbh", "so in love mit dem style", "muss es in allen farben haben lmaoo", "hab von fuga auf tiktok gehört",
+        "bin verliebt 😍", "quality ist insane", "perfekt für den summer", "endlich mal was gutes", "mega happy damit",
+        "würde 6 sterne geben", "beste purchase dieses jahr", "passt zu allem", "fühlt sich teuer an", "chef's kiss 👌"
     ],
     "en": [
         "obsessed!!!!", "new fav piece no cap", "copped instantly🔥", "the vibes are immaculate✨", "straight fire fit", 
@@ -112,7 +114,9 @@ SHORT_REVIEWS = {
         "aesthetic af", "literally can't take it off", "lowkey love this sm", "absolutely slayed", "fashion served frfr", 
         "went out in it right away", "looks 100x better irl", "fuga studios killing it again", "need this in every color",
         "shipping was quick", "literally my insta feed aesthetic", "outfit w this = iconic", "had fomo but now it's mine!",
-        "can't stop wearing this tbh", "so in love w the style", "gotta have it in all colors lol", "saw fuga on tiktok and had to buy"
+        "can't stop wearing this tbh", "so in love w the style", "gotta have it in all colors lol", "saw fuga on tiktok and had to buy",
+        "am obsessed 😍", "quality is insane", "perfect for summer vibes", "finally something good", "so happy with this",
+        "would give 6 stars", "best purchase this year", "goes with everything", "feels expensive af", "chef's kiss 👌"
     ]
 }
 
@@ -239,7 +243,13 @@ PRODUCT_PHRASES = {
             "für festivals und clubs erste wahl",
             "details sind wirklich unique",
             "statement piece für jeden goth look",
-            "harmoniert mit meinen platforms"
+            "harmoniert mit meinen platforms",
+            "mystisch aber nicht overdone",
+            "dark romantik energy",
+            "witchy aber wearable",
+            "gothic eleganz ohne kitsch",
+            "passt zu meiner alternative wardrobe",
+            "düster und sophisticated zugleich"
         ],
         "punk": [
             "hardcore punk vibes ohne try hard", 
@@ -248,7 +258,13 @@ PRODUCT_PHRASES = {
             "perfekt für konzerte und moshpits",
             "details geben dem ganzen den edge",
             "mein go-to für jedes punk event",
-            "passt zu meinen docs und ketten"
+            "passt zu meinen docs und ketten",
+            "authentisch rebellisch",
+            "punk attitude ohne kostüm effekt",
+            "rock chic mit attitude",
+            "perfekt für underground events",
+            "rebel style mit class",
+            "subkultur vibes aber stylisch"
         ],
         "vintage": [
             "y2k aesthetic ist on point", 
@@ -349,7 +365,13 @@ PRODUCT_PHRASES = {
             "gothic without being tryhard",
             "witchy energy in the best way",
             "elevated goth that works anywhere",
-            "works for both daytime and nightlife"
+            "works for both daytime and nightlife",
+            "mysterious but not overdone",
+            "dark romantic energy",
+            "gothic elegance without the cringe",
+            "fits my alternative wardrobe perfectly",
+            "moody aesthetic done right",
+            "sophisticated darkness"
         ],
         "punk": [
             "hardcore punk vibes without trying too hard", 
@@ -363,7 +385,13 @@ PRODUCT_PHRASES = {
             "punk aesthetic that's actually comfortable",
             "authentic without looking like a costume",
             "stands up to rowdy shows",
-            "distressing is done just right"
+            "distressing is done just right",
+            "genuinely rebellious style",
+            "punk attitude without the costume effect",
+            "rock chic with attitude",
+            "perfect for underground shows",
+            "rebel style with class",
+            "subculture vibes but stylish"
         ],
         "vintage": [
             "y2k aesthetic is spot on", 
@@ -478,54 +506,65 @@ def get_simplified_product_name(product_title, language="en"):
         return product_title
     
     words = product_title.split()
+    title_lower = product_title.lower()
     
-    # Common clothing terms
+    # Priority order: specific clothing terms first
     clothing_terms = {
-        "en": ["pants", "top", "shirt", "dress", "skirt", "jacket", "coat", "sweater", "hoodie", "cardigan", 
-               "jeans", "leggings", "shorts", "set", "bra", "corset", "gown", "jumpsuit", "bodysuit", "tee", 
-               "tank", "sweatshirt", "jumper", "blouse", "vest", "suit", "bikini", "swimsuit", "robe", 
-               "kimono", "crop", "hat", "cap", "belt", "bag", "chain", "necklace", "ring", "bracelet"],
-        "de": ["hose", "top", "shirt", "kleid", "rock", "jacke", "mantel", "pullover", "hoodie", "strickjacke", 
-               "jeans", "leggings", "shorts", "set", "bh", "korsett", "abendkleid", "jumpsuit", "bodysuit", 
-               "t-shirt", "tanktop", "sweatshirt", "pulli", "bluse", "weste", "anzug", "bikini", "badeanzug", 
-               "bademantel", "kimono", "croptop", "hut", "mütze", "gürtel", "tasche", "kette", "halskette", "ring", "armband"]
+        "en": ["belt", "chain", "necklace", "ring", "bracelet", "bag", "hat", "cap",
+               "pants", "jeans", "leggings", "shorts", "skirt", "dress", "gown", "jumpsuit",
+               "top", "shirt", "tee", "tank", "blouse", "crop", "bra", "corset", "bodysuit",
+               "jacket", "coat", "hoodie", "cardigan", "sweater", "sweatshirt", "vest"],
+        "de": ["gürtel", "kette", "halskette", "ring", "armband", "tasche", "hut", "mütze", 
+               "hose", "jeans", "leggings", "shorts", "rock", "kleid", "jumpsuit",
+               "top", "shirt", "t-shirt", "tanktop", "bluse", "croptop", "bh", "korsett", "bodysuit",
+               "jacke", "mantel", "hoodie", "strickjacke", "pullover", "sweatshirt", "weste"]
     }
     
     terms = clothing_terms.get(language, clothing_terms["en"])
     
-    # Check if last word is a clothing item
-    last_word_lower = words[-1].lower()
-    if last_word_lower in terms:
-        return words[-1]
+    # First check for exact word matches in priority order
+    for term in terms:
+        if f" {term}" in f" {title_lower}" or title_lower.startswith(term):
+            # Return the actual word from the title, preserving case
+            for word in words:
+                if word.lower() == term:
+                    return word
+            return term  # fallback
     
-    # Look for clothing term in entire title
+    # Handle Opium brand products - be more specific
+    if "opium" in title_lower:
+        # Look for specific product types within Opium products
+        opium_mappings = {
+            "en": {
+                "belt": "belt", "chain": "chain", "necklace": "necklace",
+                "top": "top", "shirt": "shirt", "dress": "dress",
+                "pants": "pants", "shorts": "shorts"
+            },
+            "de": {
+                "belt": "gürtel", "gürtel": "gürtel", "chain": "kette", "kette": "kette",
+                "top": "top", "shirt": "shirt", "dress": "kleid", "kleid": "kleid",
+                "pants": "hose", "hose": "hose", "shorts": "shorts"
+            }
+        }
+        
+        mappings = opium_mappings.get(language, opium_mappings["en"])
+        for key, value in mappings.items():
+            if key in title_lower:
+                return value
+        
+        # If no specific type found, use generic term
+        return "piece" if language == "en" else "Teil"
+    
+    # Fallback: try to find any clothing term
     for word in words:
         if word.lower() in terms:
             return word
     
-    # Handle Opium brand products
-    if "opium" in product_title.lower() or "Opium" in product_title:
-        text = product_title.lower()
-        for category in ["top", "pants", "dress", "skirt", "jacket", "coat", "cardigan", "belt", "bag", "chain"]:
-            if category in text:
-                if language == "de":
-                    translation = {"top": "top", "pants": "hose", "dress": "kleid", "skirt": "rock", 
-                                  "jacket": "jacke", "coat": "mantel", "cardigan": "strickjacke",
-                                  "belt": "gürtel", "bag": "tasche", "chain": "kette"}
-                    return translation.get(category, "Teil")
-                else:
-                    return category
-        return "Opium"
-    
-    # Fallback: last 1-2 words
-    if len(words) >= 3:
-        return f"{words[-2]} {words[-1]}"
-    elif len(words) == 2:
+    # Final fallback
+    if len(words) >= 2:
         return words[-1]
     
-    # Final fallback
-    generic_terms = {"de": "Teil", "en": "piece"}
-    return generic_terms.get(language, "piece")
+    return "piece" if language == "en" else "Teil"
 
 def get_product_category(product_info):
     """Determine product category based on title"""
@@ -622,73 +661,55 @@ def generate_review_content(product, rating, language="en"):
         language_to_use = language if language in intros else "en"
         review_components.append(random.choice(intros[language_to_use][rating]))
     
-    # Component 2: Product-specific phrases (85% chance)
-    if random.random() < 0.85 and language in PRODUCT_PHRASES:
+    # Component 2: Product-specific phrases (70% chance, reduced from 85%)
+    if random.random() < 0.70 and language in PRODUCT_PHRASES:
         phrases = []
         for category in categories:
             if category in PRODUCT_PHRASES[language]:
                 phrases.extend(PRODUCT_PHRASES[language][category])
         
         if phrases:
-            phrase_count = random.choices([1, 2, 3], weights=[60, 30, 10], k=1)[0]
+            # Reduce phrase count for better flow
+            phrase_count = random.choices([1, 2], weights=[70, 30], k=1)[0]
             selected_phrases = random.sample(phrases, min(phrase_count, len(phrases)))
             
             if selected_phrases:
-                if len(review_components) > 0 and random.random() < 0.5:
-                    # Connect with previous
+                if len(review_components) > 0 and random.random() < 0.6:
+                    # Better connectors for more natural flow
                     connectors = {
-                        "de": [" und ", " - ", ", ", ". ", "! ", " btw ", " aber "],
-                        "en": [" and ", " - ", ", ", ". ", "! ", " btw ", " but "]
+                        "de": [". ", "! ", ", "],
+                        "en": [". ", "! ", ", "]
                     }
                     conn = random.choice(connectors.get(language, connectors["en"]))
-                    if conn in [".", "!"]:
-                        review_components[-1] += conn
-                        review_components.append(" ".join(selected_phrases))
-                    else:
-                        review_components[-1] += conn + " ".join(selected_phrases)
+                    review_components[-1] += conn
+                    review_components.append(" ".join(selected_phrases))
                 else:
                     review_components.append(" ".join(selected_phrases))
     
-    # Component 3: Shop reference (25% chance)
-    if random.random() < 0.25 and language in SHOP_REFERENCES:
-        if len(review_components) > 0 and random.random() < 0.5:
-            connectors = {
-                "de": [". ", "! ", " und ", " - ", ", "],
-                "en": [". ", "! ", " and ", " - ", ", "]
-            }
-            conn = random.choice(connectors.get(language, connectors["en"]))
-            if conn in [".", "!"]:
-                review_components[-1] += conn
-                review_components.append(random.choice(SHOP_REFERENCES[language]))
-            else:
-                review_components[-1] += conn + random.choice(SHOP_REFERENCES[language])
+    # Component 3: Shop reference (20% chance, reduced)
+    if random.random() < 0.20 and language in SHOP_REFERENCES:
+        if len(review_components) > 0:
+            # Always use sentence break for shop references
+            review_components[-1] += ". " if not review_components[-1].endswith(('.', '!')) else " "
+            review_components.append(random.choice(SHOP_REFERENCES[language]))
         else:
             review_components.append(random.choice(SHOP_REFERENCES[language]))
     
-    # Component 4: Social media reference (20% chance)
-    if random.random() < 0.20 and language in SOCIAL_MEDIA_REFS:
-        if len(review_components) > 0 and random.random() < 0.5:
-            connectors = {
-                "de": [". ", "! ", " und ", " - ", ", "],
-                "en": [". ", "! ", " and ", " - ", ", "]
-            }
-            conn = random.choice(connectors.get(language, connectors["en"]))
-            if conn in [".", "!"]:
-                review_components[-1] += conn
-                review_components.append(random.choice(SOCIAL_MEDIA_REFS[language]))
-            else:
-                review_components[-1] += conn + random.choice(SOCIAL_MEDIA_REFS[language])
+    # Component 4: Social media reference (15% chance, reduced)
+    if random.random() < 0.15 and language in SOCIAL_MEDIA_REFS:
+        if len(review_components) > 0:
+            # Always use sentence break for social media references
+            review_components[-1] += ". " if not review_components[-1].endswith(('.', '!')) else " "
+            review_components.append(random.choice(SOCIAL_MEDIA_REFS[language]))
         else:
             review_components.append(random.choice(SOCIAL_MEDIA_REFS[language]))
     
-    # Component 5: Shipping comment (15% chance)
-    if random.random() < 0.15 and language in SHIPPING_COMMENTS:
+    # Component 5: Shipping comment (10% chance, reduced)
+    if random.random() < 0.10 and language in SHIPPING_COMMENTS:
         if len(review_components) > 0:
-            connectors = {
-                "de": [". ", "! ", " btw "],
-                "en": [". ", "! ", " btw "]
-            }
-            conn = random.choice(connectors.get(language, connectors["en"]))
+            # Use btw connector or sentence break
+            connectors = [". ", "! ", " btw "]
+            conn = random.choice(connectors)
             if conn in [".", "!"]:
                 review_components[-1] += conn
                 review_components.append(random.choice(SHIPPING_COMMENTS[language]))
