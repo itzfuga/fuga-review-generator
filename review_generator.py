@@ -101,8 +101,8 @@ def generate_reviewer_info(language="en"):
 
 def generate_review_content(product, rating, language="en"):
     """Generate sophisticated, context-aware review content"""
-    # 15% chance for empty review (common on high ratings)
-    if random.random() < 0.15 and rating >= 4:
+    # 8% chance for empty review (only on 5-star ratings)
+    if random.random() < 0.08 and rating == 5:
         return ""
     
     # Product analysis
@@ -155,7 +155,17 @@ def generate_german_content(product, rating, category, title_lower):
                 "Absolut geil! Hab direkt noch eins bestellt für meine Schwester",
                 "10/10 würde wieder kaufen, Fuga macht einfach die besten Sachen",
                 "Perfekt! Genau was ich gesucht hab und noch besser als erwartet",
-                "Bin so begeistert! Material ist top und Design einfach hammer"
+                "Bin so begeistert! Material ist top und Design einfach hammer",
+                "Krass gut! Übertrifft alle Erwartungen und sieht mega aus",
+                "Einfach nur wow! Beste Qualität die ich je hatte",
+                "Bin total verliebt! Passt perfekt zu meinem Style",
+                "Hammer Teil! Würde ich jedem empfehlen",
+                "Richtig gute Investition! Material fühlt sich premium an",
+                "Genial! Sieht noch besser aus als auf den Fotos",
+                "Top Qualität und mega schnelle Lieferung! Danke!",
+                "Bin restlos begeistert! Definitiv nicht mein letzter Kauf",
+                "Wahnsinnig gut verarbeitet! Jeden Cent wert",
+                "Einfach perfekt! Genau das was ich gesucht habe"
             ])
     
     elif rating == 4:
@@ -196,7 +206,17 @@ def generate_english_content(product, rating, category, title_lower):
                 "Absolutely love it! Ordered another one immediately for my friend",
                 "10/10 would buy again, Fuga always delivers the best products",
                 "Perfect! Exactly what I was looking for and even better than expected",
-                "Totally obsessed! Material is amazing and design is fire"
+                "Totally obsessed! Material is amazing and design is fire",
+                "This exceeded all my expectations! Worth every penny",
+                "Amazing quality and super stylish. Love everything about it!",
+                "Couldn't be happier with this purchase. Highly recommend!",
+                "Outstanding product! The attention to detail is incredible",
+                "Blown away by the quality. This is going to be my new favorite!",
+                "Fantastic! Looks even better in person than in photos",
+                "Love the craftsmanship and unique design. Perfect addition!",
+                "Superior quality and fast shipping. Will definitely order again!",
+                "This is exactly what I was looking for. Premium feel and look!",
+                "Impressed by the build quality. Money well spent!"
             ])
     
     elif rating == 4:
