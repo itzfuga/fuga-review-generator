@@ -25,10 +25,15 @@ Both main applications (`app.py` and `shopify_backend_app.py`) follow a similar 
 ### Review Generation System
 The application uses two review generation engines:
 1. **Modern Engine** (`review_generator.py`):
-   - Supports German and English with authentic Gen Z slang
-   - Context-aware product categorization (clothing, accessories, shoes, tech, home)
+   - Supports 20 languages with authentic Gen Z slang and writing styles
+   - Context-aware product categorization (clothing, accessories, gothic, punk, vintage)
    - Realistic rating distributions (60% 5-star, 30% 4-star, 10% 3-star)
-   - Sophisticated name generation and realistic touches (emojis, typos)
+   - Sophisticated name generation (mix of real names and trendy usernames)
+   - Phrase repetition prevention system
+   - Dynamic review components with natural flow
+   - Youth writing styles: 15% chance for lowercase, emojis, multiple exclamation marks
+   - Empty reviews: 15% chance for rating-only reviews (authentic behavior)
+   - Short reviews: 35% chance for one-liner reviews
 
 2. **Legacy Engine** (`old_review.py`):
    - Uses Faker library for multi-regional support (DE, EN, PL, RU)
@@ -44,8 +49,15 @@ The application uses two review generation engines:
 ### Integration Points
 - **Shopify API**: Product fetching, OAuth authentication, webhook handling
 - **Reviews.io**: Direct API integration via `ReviewsIOClient` class
+  - Bulk review creation capabilities
+  - Review count synchronization
+  - CSV fallback when API is unavailable
 - **Klaviyo Reviews API**: Direct review posting with diagnostic endpoints
+  - Event tracking and metrics retrieval
+  - Support for Reviews API revision 2024-10-15
 - **CSV Export**: Review export functionality for manual imports
+  - Bulk generation for multiple products in single CSV
+  - UUID-based naming pattern
 
 ## Common Development Commands
 
@@ -172,3 +184,7 @@ See `DEPLOYMENT.md` for detailed deployment instructions.
 - **Port Configuration**: Both apps run on port 5000 by default
 - **Session Management**: Flask sessions used for OAuth state management in `app.py`
 - **Error Handling**: APIs fail gracefully with CSV fallback for review counting
+- **Product Name Simplification**: Extracts natural product references from full titles
+- **Component-Based Generation**: Reviews built from multiple optional components
+- **API Fallbacks**: Multiple layers of fallback for reliability (API → CSV → JSON → Zero)
+- **Bulk Generation Flow**: Support for generating reviews for multiple products in single operation

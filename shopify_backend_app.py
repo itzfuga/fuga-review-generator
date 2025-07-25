@@ -855,6 +855,133 @@ def generate_bulk_reviews():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/import-reviews', methods=['POST'])
+def import_reviews():
+    """Automatically import generated reviews to configured platforms"""
+    from automatic_import import import_reviews_automatically
+    
+    try:
+        data = request.json
+        reviews = data.get('reviews', [])
+        platforms = data.get('platforms', ['reviews_io', 'klaviyo'])
+        
+        if not reviews:
+            return jsonify({'error': 'No reviews provided'}), 400
+        
+        # Perform automatic import
+        result = import_reviews_automatically(reviews, platforms)
+        
+        return jsonify({
+            'success': True,
+            'import_result': result,
+            'message': f"Import completed: {result['summary']['total_success']} successful, {result['summary']['total_failed']} failed"
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/generate-and-import/<product_id>', methods=['POST'])
+def generate_and_import(product_id):
+    """Generate reviews and automatically import them"""
+    from review_generator import generate_review
+    from automatic_import import import_reviews_automatically
+    
+    try:
+        data = request.json
+        review_count = data.get('count', 5)
+        platforms = data.get('platforms', ['reviews_io', 'klaviyo'])
+        
+        # Fetch product info
+        url = f"https://{SHOP_DOMAIN}/admin/api/2024-01/products/{product_id}.json"
+        headers = {'X-Shopify-Access-Token': ACCESS_TOKEN}
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code != 200:
+            return jsonify({'error': 'Product not found'}), 404
+        
+        product = response.json()['product']
+        
+        # Generate reviews
+        reviews = []
+        for i in range(review_count):
+            review_data = generate_review(product, existing_reviews=i)
+            reviews.append(review_data)
+        
+        # Import automatically
+        import_result = import_reviews_automatically(reviews, platforms)
+        
+        return jsonify({
+            'success': True,
+            'generated_reviews': len(reviews),
+            'import_result': import_result,
+            'message': f"Generated {len(reviews)} reviews and imported {import_result['summary']['total_success']} successfully"
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/generate-bulk-and-import', methods=['POST'])
+def generate_bulk_and_import():
+    """Generate reviews for multiple products and import automatically"""
+    from review_generator import generate_review
+    from automatic_import import import_reviews_automatically
+    
+    try:
+        data = request.json
+        product_ids = data.get('product_ids', [])
+        review_count = data.get('count', 5)
+        platforms = data.get('platforms', ['reviews_io', 'klaviyo'])
+        
+        if not product_ids:
+            return jsonify({'error': 'No product IDs provided'}), 400
+        
+        all_reviews = []
+        
+        # Generate reviews for each product
+        for product_id in product_ids:
+            # Fetch product
+            url = f"https://{SHOP_DOMAIN}/admin/api/2024-01/products/{product_id}.json"
+            headers = {'X-Shopify-Access-Token': ACCESS_TOKEN}
+            response = requests.get(url, headers=headers)
+            
+            if response.status_code == 200:
+                product = response.json()['product']
+                
+                # Generate reviews for this product
+                for i in range(review_count):
+                    review_data = generate_review(product, existing_reviews=i)
+                    all_reviews.append(review_data)
+        
+        if not all_reviews:
+            return jsonify({'error': 'No reviews could be generated'}), 400
+        
+        # Import all reviews automatically
+        import_result = import_reviews_automatically(all_reviews, platforms)
+        
+        return jsonify({
+            'success': True,
+            'total_products': len(product_ids),
+            'generated_reviews': len(all_reviews),
+            'import_result': import_result,
+            'message': f"Generated {len(all_reviews)} reviews for {len(product_ids)} products and imported {import_result['summary']['total_success']} successfully"
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/import-status')
+def import_status():
+    """Get import status for progress tracking"""
+    # This would connect to a progress tracker instance
+    # For now, return a simple status
+    return jsonify({
+        'status': 'ready',
+        'platforms_configured': {
+            'reviews_io': bool(os.environ.get('REVIEWS_IO_API_KEY')),
+            'klaviyo': bool(os.environ.get('KLAVIYO_API_KEY'))
+        }
+    })
+
 @app.route('/download/<filename>')
 def download(filename):
     return send_file(f'exports/{filename}', as_attachment=True)
