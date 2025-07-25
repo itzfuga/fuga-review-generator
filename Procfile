@@ -1,1 +1,1 @@
-web: gunicorn shopify_backend_app:app
+web: gunicorn app:app
