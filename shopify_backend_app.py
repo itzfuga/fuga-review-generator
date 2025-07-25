@@ -632,7 +632,7 @@ def get_products():
 @app.route('/api/generate/<product_id>', methods=['POST'])
 def generate_for_product(product_id):
     """Generate reviews for a specific product"""
-    from generate_fuga_reviews_standalone import REVIEW_TITLES, generate_reviewer_info, generate_review_content
+    from review_generator import REVIEW_TITLES, generate_reviewer_info, generate_review_content
     
     try:
         # Get review count from request
@@ -682,7 +682,7 @@ def generate_for_product(product_id):
                 'reviewer_location': location,
                 'review_title': title,
                 'review_content': content,
-                'review_date': (datetime.now() - timedelta(days=random.randint(1, 365))).strftime('%Y-%m-%d'),
+                'review_date': (datetime.now() - timedelta(days=random.randint(1, 1095))).strftime('%Y-%m-%d'),
                 'rating': str(rating),
                 'status': 'Published',
                 'verified': 'Yes',
@@ -720,7 +720,7 @@ def generate_for_product(product_id):
 
 @app.route('/api/generate', methods=['POST'])
 def generate():
-    from generate_fuga_reviews_standalone import REVIEW_TITLES, generate_reviewer_info, generate_review_content
+    from review_generator import REVIEW_TITLES, generate_reviewer_info, generate_review_content
     
     # Fetch products
     url = f"https://{SHOP_DOMAIN}/admin/api/2024-01/products.json?limit=250"
@@ -749,7 +749,7 @@ def generate():
                 'reviewer_location': location,
                 'review_title': title,
                 'review_content': content,
-                'review_date': (datetime.now() - timedelta(days=random.randint(1, 365))).strftime('%Y-%m-%d'),
+                'review_date': (datetime.now() - timedelta(days=random.randint(1, 1095))).strftime('%Y-%m-%d'),
                 'rating': str(rating),
                 'status': 'Published',
                 'verified': 'Yes'
