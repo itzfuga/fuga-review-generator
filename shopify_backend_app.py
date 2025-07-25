@@ -758,6 +758,103 @@ def generate():
     
     return jsonify({'success': True, 'count': len(reviews), 'filename': filename})
 
+@app.route('/api/generate-bulk', methods=['POST'])
+def generate_bulk_reviews():
+    """Generate reviews for multiple products in one combined CSV"""
+    from review_generator import generate_review
+    
+    try:
+        # Get request data
+        data = request.json
+        product_ids = data.get('product_ids', [])
+        review_count = data.get('count', 5)
+        
+        if not product_ids:
+            return jsonify({'error': 'No products specified'}), 400
+        
+        all_reviews = []
+        success_count = 0
+        error_count = 0
+        errors = []
+        
+        headers = {'X-Shopify-Access-Token': ACCESS_TOKEN}
+        
+        for product_id in product_ids:
+            try:
+                # Fetch product details
+                url = f"https://{SHOP_DOMAIN}/admin/api/2024-01/products/{product_id}.json"
+                response = requests.get(url, headers=headers)
+                
+                if response.status_code != 200:
+                    errors.append(f"Product {product_id}: Failed to fetch product details")
+                    error_count += 1
+                    continue
+                
+                product = response.json()['product']
+                
+                # Generate reviews for this product
+                for i in range(review_count):
+                    review_data = generate_review(product, existing_reviews=i)
+                    
+                    all_reviews.append({
+                        'product_id': str(product['id']),
+                        'product_handle': product['handle'],
+                        'product_name': product['title'],
+                        'reviewer_name': review_data['author'],
+                        'reviewer_email': review_data['email'],
+                        'reviewer_location': review_data['location'],
+                        'review_title': review_data['title'],
+                        'review_content': review_data['content'],
+                        'review_date': review_data['date'],
+                        'rating': str(review_data['rating']),
+                        'status': 'Published',
+                        'verified': review_data['verified'],
+                        'image_urls': '',
+                        'reply_content': '',
+                        'reply_date': '',
+                        'is_store_review': 'false'
+                    })
+                
+                success_count += 1
+                
+            except Exception as e:
+                errors.append(f"Product {product_id}: {str(e)}")
+                error_count += 1
+        
+        if not all_reviews:
+            return jsonify({'error': 'No reviews were generated'}), 500
+        
+        # Save all reviews to one combined CSV file
+        filename = f'bulk_reviews_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
+        os.makedirs('exports', exist_ok=True)
+        
+        with open(f'exports/{filename}', 'w', newline='', encoding='utf-8') as f:
+            if all_reviews:
+                writer = csv.DictWriter(f, fieldnames=all_reviews[0].keys())
+                writer.writeheader()
+                writer.writerows(all_reviews)
+        
+        # Update tracking for all products
+        review_tracking = load_review_tracking()
+        for product_id in product_ids:
+            if product_id not in review_tracking:
+                review_tracking[product_id] = {'count': 0}
+            review_tracking[product_id]['count'] += review_count
+            review_tracking[product_id]['last_generated'] = datetime.now().isoformat()
+        save_review_tracking(review_tracking)
+        
+        return jsonify({
+            'success': True,
+            'filename': filename,
+            'total_reviews': len(all_reviews),
+            'success_count': success_count,
+            'error_count': error_count,
+            'errors': errors
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/download/<filename>')
 def download(filename):
     return send_file(f'exports/{filename}', as_attachment=True)

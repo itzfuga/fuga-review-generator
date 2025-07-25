@@ -832,70 +832,55 @@
             success.innerHTML = `<strong>Processing...</strong> Generating reviews for ${selectedCheckboxes.length} products...`;
             success.style.display = 'block';
             
-            let successCount = 0;
-            let errorCount = 0;
-            let totalReviews = 0;
-            const errors = [];
-            const downloadLinks = [];
+            // Collect all product IDs
+            const productIds = Array.from(selectedCheckboxes).map(cb => cb.value);
             
-            // Process each product
-            for (const checkbox of selectedCheckboxes) {
-                const productId = checkbox.value;
-                const productCard = checkbox.closest('.product-card');
-                const productTitle = productCard.querySelector('h3').textContent;
+            try {
+                // Call bulk generation endpoint
+                const response = await fetch('/api/generate-bulk', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        product_ids: productIds,
+                        count: count,
+                        post_to_reviews_io: postToReviewsIO,
+                        post_to_klaviyo: postToKlaviyo
+                    })
+                });
                 
-                try {
-                    const response = await fetch(`/api/generate/${productId}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ 
-                            count,
-                            post_to_reviews_io: postToReviewsIO,
-                            post_to_klaviyo: postToKlaviyo
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (!response.ok || data.error) {
-                        throw new Error(data.error || 'Failed to generate reviews');
-                    }
-                    
-                    successCount++;
-                    totalReviews += data.count;
-                    
-                    // Add download link
-                    if (data.filename) {
-                        downloadLinks.push(`<a href="/download/${data.filename}" target="_blank" style="color: #86efac; text-decoration: underline;">${productTitle} (${data.count} reviews)</a>`);
-                    }
-                    
-                } catch (err) {
-                    errorCount++;
-                    errors.push(`${productTitle}: ${err.message}`);
+                const data = await response.json();
+                
+                if (!response.ok || data.error) {
+                    throw new Error(data.error || 'Failed to generate reviews');
                 }
                 
-                // Update progress
-                success.innerHTML = `<strong>Processing...</strong> Completed ${successCount + errorCount}/${selectedCheckboxes.length} products...`;
+                // Show success message with single download link
+                let message = `<strong>Bulk Generation Complete!</strong><br/>`;
+                message += `✅ ${data.success_count} products completed (${data.total_reviews} reviews total)<br/><br/>`;
+                
+                if (data.filename) {
+                    message += `<a href="/download/${data.filename}" target="_blank" style="color: #86efac; text-decoration: underline; font-weight: bold; font-size: 16px; display: inline-block; padding: 12px 24px; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; margin: 8px 0;">📥 Download All Reviews CSV (${data.total_reviews} reviews)</a><br/><br/>`;
+                    
+                    // Auto-download the file
+                    window.open(`/download/${data.filename}`, '_blank');
+                }
+                
+                if (data.error_count > 0) {
+                    message += `❌ ${data.error_count} products failed<br/>`;
+                    if (data.errors && data.errors.length > 0) {
+                        message += `<details><summary>View Errors</summary>${data.errors.join('<br/>')}</details>`;
+                    }
+                }
+                
+                success.innerHTML = message;
+                success.style.display = 'block';
+                
+            } catch (err) {
+                error.textContent = `Bulk generation failed: ${err.message}`;
+                error.style.display = 'block';
             }
-            
-            // Show final results with download links
-            let message = `<strong>Bulk Generation Complete!</strong><br/>`;
-            message += `✅ ${successCount} products completed (${totalReviews} reviews total)<br/><br/>`;
-            
-            if (downloadLinks.length > 0) {
-                message += `<strong>Download CSV files:</strong><br/>`;
-                message += downloadLinks.join('<br/>') + '<br/><br/>';
-            }
-            
-            if (errorCount > 0) {
-                message += `❌ ${errorCount} products failed<br/>`;
-                message += `<details><summary>View Errors</summary>${errors.join('<br/>')}</details>`;
-            }
-            
-            success.innerHTML = message;
-            success.style.display = 'block';
             
             // Clear selections and refresh
             document.querySelectorAll('.product-checkbox').forEach(cb => cb.checked = false);
