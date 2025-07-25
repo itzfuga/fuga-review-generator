@@ -138,60 +138,78 @@ def app_page():
 @app.route('/api/products')
 def get_products():
     """Get products with review counts"""
-    # For testing, use shop from query parameter
-    shop = request.args.get('shop', 'fuga-studios.myshopify.com')
+    shop = session.get('shop')
+    access_token = session.get('access_token')
     
-    # We'll need to implement proper token storage later
-    # For now, return empty products list for testing
+    # Fallback for testing
     if not shop:
-        return jsonify({'error': 'Missing shop parameter'}), 400
+        shop = request.args.get('shop', 'fugafashion.myshopify.com')
     
-    # For testing, return mock products data
-    products_data = [
-        {
-            'id': '12345',
-            'title': 'Sample Techwear Jacket',
-            'handle': 'sample-jacket',
-            'image': None,
-            'live_reviews': 0,
-            'generated_reviews': 0,
-            'total_reviews': 0,
-            'created_at': '2024-01-01'
-        },
-        {
-            'id': '12346', 
-            'title': 'Gothic Accessories Set',
-            'handle': 'gothic-accessories',
-            'image': None,
-            'live_reviews': 0,
-            'generated_reviews': 0,
-            'total_reviews': 0,
-            'created_at': '2024-01-02'
-        }
-    ]
+    if not access_token:
+        # For now, use a placeholder - would need proper OAuth in production
+        return jsonify({'error': 'Authentication required. Please reinstall the app.'}), 401
     
-    return jsonify({'products': products_data})
+    try:
+        # Fetch real products from Shopify
+        url = f"https://{shop}/admin/api/2024-01/products.json?limit=250"
+        headers = {'X-Shopify-Access-Token': access_token}
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code != 200:
+            return jsonify({'error': f'Shopify API error: {response.status_code}'}), 500
+        
+        products = response.json().get('products', [])
+        
+        # Load review tracking
+        review_tracking = load_review_tracking()
+        
+        # Format products with review data
+        products_data = []
+        for product in products:
+            product_id = str(product['id'])
+            
+            # Get review counts
+            live_reviews = get_reviews_io_count(product)
+            generated_reviews = review_tracking.get(product_id, {}).get('count', 0)
+            
+            products_data.append({
+                'id': product_id,
+                'title': product['title'],
+                'handle': product['handle'],
+                'image': product['images'][0]['src'] if product.get('images') else None,
+                'live_reviews': live_reviews,
+                'generated_reviews': generated_reviews,
+                'total_reviews': live_reviews + generated_reviews,
+                'created_at': product.get('created_at')
+            })
+        
+        return jsonify({'products': products_data})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/generate/<product_id>', methods=['POST'])
 def generate_reviews(product_id):
     """Generate reviews for a specific product"""
-    # For testing, create mock product data
-    if product_id == '12345':
-        product = {
-            'id': '12345',
-            'title': 'Sample Techwear Jacket',
-            'handle': 'sample-jacket'
-        }
-    else:
-        product = {
-            'id': '12346',
-            'title': 'Gothic Accessories Set', 
-            'handle': 'gothic-accessories'
-        }
+    shop = session.get('shop')
+    access_token = session.get('access_token')
+    
+    if not shop or not access_token:
+        return jsonify({'error': 'Authentication required. Please reinstall the app.'}), 401
     
     try:
         data = request.json
         review_count = data.get('count', 5)
+        
+        # Fetch product details
+        url = f"https://{shop}/admin/api/2024-01/products/{product_id}.json"
+        headers = {'X-Shopify-Access-Token': access_token}
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code != 200:
+            return jsonify({'error': 'Product not found'}), 404
+        
+        product = response.json()['product']
         
         # Generate reviews using the advanced algorithm
         reviews = generate_advanced_reviews(product, review_count)
