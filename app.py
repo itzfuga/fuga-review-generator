@@ -153,6 +153,12 @@ def get_products():
     shop = session.get('shop')
     access_token = session.get('access_token')
     
+    print(f"=== API PRODUCTS DEBUG ===")
+    print(f"Session shop: {shop}")
+    print(f"Session token: {access_token[:15] + '...' if access_token else 'None'}")
+    print(f"Token type: {type(access_token)}")
+    print("========================")
+    
     # Fallback for testing
     if not shop:
         shop = request.args.get('shop', 'fugafashion.myshopify.com')
