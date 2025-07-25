@@ -275,13 +275,21 @@
         
         // Initialize Shopify App Bridge
         const urlParams = new URLSearchParams(window.location.search);
-        const host = urlParams.get('host') || '{{ host }}';
+        const host = urlParams.get('host');
         
-        const app = window['app-bridge'].createApp({
-            apiKey: '{{ api_key }}',
-            host: host,
-            forceRedirect: true
-        });
+        // Only initialize App Bridge if we have a valid host parameter
+        let app = null;
+        if (host) {
+            try {
+                app = window['app-bridge'].createApp({
+                    apiKey: '{{ api_key }}',
+                    host: host,
+                    forceRedirect: true
+                });
+            } catch (error) {
+                console.error('Failed to initialize App Bridge:', error);
+            }
+        }
         
         // Load products on page load
         document.addEventListener('DOMContentLoaded', function() {

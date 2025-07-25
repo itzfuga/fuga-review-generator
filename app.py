@@ -126,13 +126,17 @@ def auth_callback():
 def app_page():
     """Main app interface"""
     shop = request.args.get('shop')
-    host = request.args.get('host')
+    host = request.args.get('host', '')
     
     if not shop:
         return "Missing shop parameter", 400
     
-    # For now, let's bypass session check and just render the app
-    # In a production app, you'd want to verify the shop/token properly
+    # Store shop in session if not already there
+    if not session.get('shop'):
+        session['shop'] = shop
+    
+    # For embedded apps, we need the host parameter
+    # But for direct access, we can work without it
     return render_template('app.html', shop=shop, api_key=SHOPIFY_API_KEY, host=host)
 
 @app.route('/api/products')
