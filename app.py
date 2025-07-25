@@ -120,20 +120,30 @@ def auth_callback():
     session['access_token'] = access_token
     
     # Redirect to app
-    return redirect(f'/app?shop={shop}')
+    return redirect(f'/app?shop={shop}&host={request.args.get("host", "")}')
 
 @app.route('/app')
 def app_page():
     """Main app interface"""
     shop = request.args.get('shop')
+    host = request.args.get('host')
     
-    if not shop or session.get('shop') != shop:
-        return redirect(f'/?shop={shop}')
+    # For embedded apps, we need to handle the authentication differently
+    if not shop:
+        return "Missing shop parameter", 400
     
-    if not session.get('access_token'):
-        return redirect(f'/?shop={shop}')
+    # Check if we have a stored access token for this shop
+    stored_shop = session.get('shop')
+    access_token = session.get('access_token')
     
-    return render_template('app.html', shop=shop, api_key=SHOPIFY_API_KEY)
+    # If not authenticated, redirect to auth flow
+    if not access_token or stored_shop != shop:
+        auth_url = f"/?shop={shop}"
+        if host:
+            auth_url += f"&host={host}"
+        return redirect(auth_url)
+    
+    return render_template('app.html', shop=shop, api_key=SHOPIFY_API_KEY, host=host)
 
 @app.route('/api/products')
 def get_products():

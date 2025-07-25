@@ -274,9 +274,12 @@
         let currentProductName = null;
         
         // Initialize Shopify App Bridge
+        const urlParams = new URLSearchParams(window.location.search);
+        const host = urlParams.get('host') || '{{ host }}';
+        
         const app = window['app-bridge'].createApp({
             apiKey: '{{ api_key }}',
-            host: new URLSearchParams(window.location.search).get('host'),
+            host: host,
             forceRedirect: true
         });
         
