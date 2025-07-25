@@ -160,7 +160,7 @@ def get_products():
     # Temporary: For fugafashion, use the existing access token
     if shop == 'fugafashion.myshopify.com' and not access_token:
         # This is your existing access token from the old app
-        access_token = os.environ.get('SHOPIFY_ACCESS_TOKEN', '')
+        access_token = os.environ.get('PRIVATE_APP_TOKEN', os.environ.get('SHOPIFY_ACCESS_TOKEN', ''))
         print(f"Using private app token for {shop}: {access_token[:10]}..." if access_token else "No token found")
     
     if not access_token:
@@ -229,7 +229,7 @@ def generate_reviews(product_id):
     
     # Temporary: For fugafashion, use the existing access token
     if shop == 'fugafashion.myshopify.com' and not access_token:
-        access_token = os.environ.get('SHOPIFY_ACCESS_TOKEN', '')
+        access_token = os.environ.get('PRIVATE_APP_TOKEN', os.environ.get('SHOPIFY_ACCESS_TOKEN', ''))
     
     if not shop or not access_token:
         return jsonify({'error': 'Authentication required. Please reinstall the app.'}), 401
