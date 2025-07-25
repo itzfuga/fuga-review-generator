@@ -201,6 +201,8 @@ def get_products():
             
             # Get review counts
             live_reviews = get_reviews_io_count(product)
+            if live_reviews > 0:
+                print(f"Product {product_id} ({product['title'][:30]}): {live_reviews} reviews")
             generated_reviews = review_tracking.get(product_id, {}).get('count', 0)
             
             products_data.append({
