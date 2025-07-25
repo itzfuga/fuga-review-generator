@@ -159,6 +159,17 @@ def get_products():
     
     # Temporary: For fugafashion, use the existing access token
     if shop == 'fugafashion.myshopify.com' and not access_token:
+        # Debug all Shopify-related env vars
+        print("=== ENV DEBUG ===")
+        for key in os.environ:
+            if 'SHOPIFY' in key or 'TOKEN' in key or 'PRIVATE' in key:
+                val = os.environ[key]
+                if 'token' in key.lower() or 'secret' in key.lower():
+                    print(f"{key}: {val[:15]}...")
+                else:
+                    print(f"{key}: {val}")
+        print("=================")
+        
         # This is your existing access token from the old app
         access_token = os.environ.get('PRIVATE_APP_TOKEN', os.environ.get('SHOPIFY_ACCESS_TOKEN', ''))
         print(f"Using private app token for {shop}: {access_token[:10]}..." if access_token else "No token found")
