@@ -352,7 +352,7 @@
                             Generate Reviews
                         </button>
                         ${product.generated_reviews > 0 ? 
-                            `<button class="btn btn-secondary">View Generated</button>` : 
+                            `<button class="btn btn-secondary" onclick="viewGenerated('${product.id}')">View Generated</button>` : 
                             ''
                         }
                     </div>
@@ -440,6 +440,12 @@
         
         function refreshProducts() {
             loadProducts();
+        }
+        
+        function viewGenerated(productId) {
+            // For now, just show an alert with the product ID
+            // This could later show a modal with generated reviews
+            alert(`Viewing generated reviews for product ${productId}. This feature will show the generated reviews list.`);
         }
         
         // Close modal when clicking outside

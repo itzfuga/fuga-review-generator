@@ -8,7 +8,7 @@ import hmac
 import hashlib
 import base64
 from urllib.parse import urlparse, parse_qs
-from flask import Flask, request, redirect, session, render_template, jsonify
+from flask import Flask, request, redirect, session, render_template, jsonify, send_file
 import requests
 from datetime import datetime, timedelta
 import csv
@@ -327,6 +327,18 @@ def app_uninstalled():
     # TODO: Clean up database records for this shop
     
     return "OK", 200
+
+@app.route('/download/<filename>')
+def download(filename):
+    """Download generated CSV files"""
+    try:
+        file_path = f'exports/{filename}'
+        if os.path.exists(file_path):
+            return send_file(file_path, as_attachment=True)
+        else:
+            return jsonify({'error': f'File not found: {filename}'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
