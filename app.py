@@ -149,6 +149,11 @@ def get_products():
     if not shop:
         shop = request.args.get('shop', 'fugafashion.myshopify.com')
     
+    # Temporary: For fugafashion, use the existing access token
+    if shop == 'fugafashion.myshopify.com' and not access_token:
+        # This is your existing access token from the old app
+        access_token = os.environ.get('SHOPIFY_ACCESS_TOKEN', '')
+    
     if not access_token:
         # For now, use a placeholder - would need proper OAuth in production
         return jsonify({'error': 'Authentication required. Please reinstall the app.'}), 401
@@ -197,6 +202,14 @@ def generate_reviews(product_id):
     """Generate reviews for a specific product"""
     shop = session.get('shop')
     access_token = session.get('access_token')
+    
+    # Fallback for testing
+    if not shop:
+        shop = request.args.get('shop', 'fugafashion.myshopify.com')
+    
+    # Temporary: For fugafashion, use the existing access token
+    if shop == 'fugafashion.myshopify.com' and not access_token:
+        access_token = os.environ.get('SHOPIFY_ACCESS_TOKEN', '')
     
     if not shop or not access_token:
         return jsonify({'error': 'Authentication required. Please reinstall the app.'}), 401
