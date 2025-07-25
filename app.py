@@ -443,6 +443,8 @@ def post_reviews_to_klaviyo(reviews):
                     results['total_created'] += 1
                 else:
                     error_msg = f"HTTP {response.status_code}: {response.text}"
+                    print(f"Klaviyo API Error: {error_msg}")
+                    print(f"Request data: {review_data}")
                     results['errors'].append({
                         'review': review.get('review_title', 'Untitled'),
                         'error': error_msg
