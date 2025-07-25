@@ -153,11 +153,6 @@ def get_products():
     shop = session.get('shop')
     access_token = session.get('access_token')
     
-    print(f"=== API PRODUCTS DEBUG ===")
-    print(f"Session shop: {shop}")
-    print(f"Session token: {access_token[:15] + '...' if access_token else 'None'}")
-    print(f"Token type: {type(access_token)}")
-    print("========================")
     
     # Fallback for testing
     if not shop:
@@ -165,16 +160,6 @@ def get_products():
     
     # Temporary: For fugafashion, use the existing access token
     if shop == 'fugafashion.myshopify.com' and not access_token:
-        # Debug all Shopify-related env vars
-        print("=== ENV DEBUG ===")
-        for key in os.environ:
-            if 'SHOPIFY' in key or 'TOKEN' in key or 'PRIVATE' in key:
-                val = os.environ[key]
-                if 'token' in key.lower() or 'secret' in key.lower():
-                    print(f"{key}: {val[:15]}...")
-                else:
-                    print(f"{key}: {val}")
-        print("=================")
         
         # This is your existing access token from the old app
         access_token = os.environ.get('PRIVATE_APP_TOKEN', os.environ.get('SHOPIFY_ACCESS_TOKEN', ''))
@@ -228,6 +213,9 @@ def get_products():
                 'total_reviews': live_reviews + generated_reviews,
                 'created_at': product.get('created_at')
             })
+        
+        # Sort by created_at (newest first)
+        products_data.sort(key=lambda x: x.get('created_at', ''), reverse=True)
         
         return jsonify({'products': products_data})
         

@@ -167,13 +167,20 @@ class ReviewsIOClient:
 def get_reviews_io_count(product):
     """Get review count for a product from Reviews.io"""
     try:
+        # First check CSV file for imported reviews
+        csv_counts = get_csv_review_counts()
+        product_id = str(product.get('id', ''))
+        
+        if product_id in csv_counts:
+            return csv_counts[product_id]
+        
+        # If no CSV data, try Reviews.io API
         client = ReviewsIOClient()
         
         if not client.test_connection():
             return 0
         
         # Try different product identifiers
-        product_id = str(product.get('id', ''))
         product_handle = product.get('handle', '')
         
         # First try with product ID
@@ -193,6 +200,33 @@ def get_reviews_io_count(product):
     except Exception as e:
         print(f"Error fetching Reviews.io count: {str(e)}")
         return 0
+
+def get_csv_review_counts():
+    """Get review counts from the CSV export file"""
+    try:
+        import csv
+        import os
+        review_counts = {}
+        csv_file_path = 'review_export_150f0ab9-09fe-445b-8854-d9ee9890ceb0.csv'
+        
+        if os.path.exists(csv_file_path):
+            with open(csv_file_path, 'r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    product_id = row.get('product_id', '').strip()
+                    status = row.get('status', '').strip()
+                    
+                    # Only count published reviews
+                    if product_id and status == 'published':
+                        if product_id not in review_counts:
+                            review_counts[product_id] = 0
+                        review_counts[product_id] += 1
+        
+        print(f"CSV review counts loaded: {len(review_counts)} products, {sum(review_counts.values())} total reviews")
+        return review_counts
+    except Exception as e:
+        print(f"Error loading CSV reviews: {str(e)}")
+        return {}
 
 def sync_reviews_io_counts() -> Dict[str, int]:
     """Sync all review counts from Reviews.io"""
