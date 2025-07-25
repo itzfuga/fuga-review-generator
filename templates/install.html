@@ -134,6 +134,15 @@
         <h1>Fuga Review Generator</h1>
         <p>Generate authentic, high-quality product reviews for your Shopify store. Increase trust and boost conversions with sophisticated review content.</p>
         
+        {% if shop %}
+        <form class="install-form" action="/auth/start" method="POST">
+            <input type="hidden" name="shop" value="{{ shop }}" />
+            <p style="margin-bottom: 24px;">Ready to install on <strong>{{ shop }}</strong></p>
+            <button type="submit" class="install-btn">
+                Install App
+            </button>
+        </form>
+        {% else %}
         <form class="install-form" action="/" method="GET">
             <div class="form-group">
                 <label for="shop">Your Shopify Store URL</label>
@@ -150,6 +159,7 @@
                 Install on Shopify
             </button>
         </form>
+        {% endif %}
         
         <div class="features">
             <div class="feature">

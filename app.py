@@ -64,9 +64,17 @@ def index():
     if not shop.endswith('.myshopify.com'):
         return render_template('install.html'), 400
     
-    # Check if already authenticated
-    if session.get('shop') == shop and session.get('access_token'):
-        return redirect(f'/app?shop={shop}')
+    # Always show install page first (don't auto-redirect to /app)
+    # This ensures proper OAuth flow
+    return render_template('install.html', shop=shop)
+
+@app.route('/auth/start', methods=['POST'])
+def auth_start():
+    """Start OAuth flow"""
+    shop = request.form.get('shop')
+    
+    if not shop or not shop.endswith('.myshopify.com'):
+        return "Invalid shop", 400
     
     # Start OAuth flow
     auth_url = f"https://{shop}/admin/oauth/authorize"
