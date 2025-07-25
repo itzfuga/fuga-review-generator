@@ -99,176 +99,286 @@ def generate_reviewer_info(language="en"):
     
     return name, email, location
 
+def get_simplified_product_name(title, language="en"):
+    """Simplify product name for natural reviews"""
+    title_lower = title.lower()
+    
+    # Common simplifications
+    if "jacket" in title_lower or "jacke" in title_lower:
+        return "jacket" if language == "en" else "jacke"
+    elif "hoodie" in title_lower:
+        return "hoodie"
+    elif "shirt" in title_lower:
+        return "shirt"
+    elif "dress" in title_lower:
+        return "dress" if language == "en" else "kleid"
+    elif "bag" in title_lower:
+        return "bag" if language == "en" else "tasche"
+    elif "belt" in title_lower or "gürtel" in title_lower:
+        return "belt" if language == "en" else "gürtel"
+    else:
+        return "piece" if language == "en" else "teil"
+
 def generate_review_content(product, rating, language="en"):
-    """Generate sophisticated, context-aware review content"""
-    # 8% chance for empty review (only on 5-star ratings)
-    if random.random() < 0.08 and rating == 5:
+    """Generate Gen Z style review content like old_review.py"""
+    # 15% chance for empty review
+    if random.random() < 0.15:
         return ""
     
-    # Product analysis
-    title_lower = product['title'].lower()
-    product_type = product.get('product_type', '').lower()
+    # Get simplified product name
+    simplified_name = get_simplified_product_name(product['title'], language)
     
-    # Advanced product categorization
-    categories = {
-        'clothing': ['jacket', 'hoodie', 'shirt', 't-shirt', 'dress', 'pants', 'jeans', 'top'],
-        'accessories': ['bag', 'backpack', 'jewelry', 'necklace', 'ring', 'bracelet', 'earring'],
-        'shoes': ['shoe', 'boot', 'sneaker', 'sandal'],
-        'tech': ['phone', 'case', 'charger', 'cable', 'headphone', 'speaker'],
-        'home': ['mug', 'pillow', 'blanket', 'poster', 'art', 'decoration']
+    # 35% chance for short one-liner review
+    if random.random() < 0.35:
+        return random.choice(get_short_reviews(language))
+    
+    # Build modular review with multiple components
+    review_components = []
+    
+    # Component 1: Intro based on rating and language
+    intros = get_intro_phrases(simplified_name, rating, language)
+    if intros:
+        review_components.append(random.choice(intros))
+    
+    # Component 2: Product-specific phrases (60% chance)
+    if random.random() < 0.6:
+        category_phrases = get_category_phrases(product['title'], language)
+        if category_phrases:
+            selected_phrases = random.sample(category_phrases, min(2, len(category_phrases)))
+            if review_components and random.random() < 0.5:
+                # Connect with previous component
+                connectors = get_connectors(language)
+                conn = random.choice(connectors)
+                if conn in [".", "!"]:
+                    review_components[-1] += conn
+                    review_components.append(" ".join(selected_phrases))
+                else:
+                    review_components[-1] += conn + " ".join(selected_phrases)
+            else:
+                review_components.append(" ".join(selected_phrases))
+    
+    # Component 3: Shop reference (25% chance)
+    if random.random() < 0.25:
+        shop_refs = get_shop_references(language)
+        if shop_refs and review_components:
+            connectors = [". ", "! ", " and " if language == "en" else " und "]
+            conn = random.choice(connectors)
+            if conn in [".", "!"]:
+                review_components[-1] += conn
+                review_components.append(random.choice(shop_refs))
+            else:
+                review_components[-1] += conn + random.choice(shop_refs)
+    
+    # Join components
+    review = " ".join(review_components)
+    
+    # Apply youth writing style (40% chance - more like old_review.py)
+    if random.random() < 0.4:
+        review = apply_youth_style(review, language)
+    
+    return review
+
+def get_short_reviews(language):
+    """Short one-liner reviews with Gen Z slang"""
+    short_reviews = {
+        "de": [
+            "krass gut!!!", "omg, neues lieblingsstück💖", "hab sofort zugeschlagen!!!", "vibes sind immaculate✨", "style ist brutal", 
+            "10/10 würd nochmal kaufen", "Für parties perfekt!!", "hab schon 5 komplimente bekommen lol", "Mega fit check material",
+            "aesthetic af", "obssessed damit!!!!", "Liebe das design sm", "straight fire 🔥🔥🔥", "fashion slay fr", 
+            "direkt ausgegangen damit", "sieht 100x besser aus als auf insta", "fuga studios killt es wieder mal", "gibts in jeder farbe?",
+            "shipping war flott", "insta feed material", "outfit mit diesem teil = iconic", "hatte fomo, aber jetz ist meins!",
+            "kann nicht aufhören es zu tragen tbh", "so in love mit dem style", "muss es in allen farben haben lmaoo", "hab von fuga auf tiktok gehört"
+        ],
+        "en": [
+            "obsessed!!!!", "new fav piece no cap", "copped instantly🔥", "the vibes are immaculate✨", "straight fire fit", 
+            "10/10 would cop again", "perfect for partying!!", "got 5 compliments already lmao", "major fit check material",
+            "aesthetic af", "literally can't take it off", "lowkey love this sm", "absolutely slayed", "fashion served frfr", 
+            "went out in it right away", "looks 100x better irl", "fuga studios killing it again", "need this in every color",
+            "shipping was quick", "literally my insta feed aesthetic", "outfit w this = iconic", "had fomo but now it's mine!",
+            "can't stop wearing this tbh", "so in love w the style", "gotta have it in all colors lol", "saw fuga on tiktok and had to buy"
+        ]
     }
-    
-    detected_category = None
-    for category, keywords in categories.items():
-        if any(keyword in title_lower for keyword in keywords):
-            detected_category = category
-            break
-    
-    # Generate content based on category and rating
-    if language == "de":
-        content = generate_german_content(product, rating, detected_category, title_lower)
-    else:
-        content = generate_english_content(product, rating, detected_category, title_lower)
-    
-    return content
+    return short_reviews.get(language, short_reviews["en"])
 
-def generate_german_content(product, rating, category, title_lower):
-    """Generate German review content"""
-    if rating == 5:
-        if category == 'clothing':
-            return random.choice([
-                "Bin mega happy damit! Sitzt perfekt und das Material ist top qualität. Hab schon mehrere Komplimente bekommen 😍",
-                "Diese Jacke ist der absolute Hammer! Perfekt für Festivals und sieht einfach krass aus",
-                "Qualität ist unglaublich gut, hab schon 3 Stück bestellt weil ich so begeistert bin",
-                "Beste Techwear Jacke ever! Sitzt wie angegossen und hält richtig warm",
-                "Bin so verliebt in das Teil! Material fühlt sich premium an und Design ist einfach 🔥"
-            ])
-        elif category == 'accessories':
-            return random.choice([
-                "Der Bag ist einfach perfekt! Passt super zu meinem Aesthetic und ist mega praktisch",
-                "Qualität übertrifft alle Erwartungen. Sieht genauso aus wie auf den Bildern!",
-                "Hab den schon seit Monaten und immer noch wie neu. Absolute Kaufempfehlung!"
-            ])
-        else:
-            return random.choice([
-                "Bin mega happy damit! Qualität top und Versand war schnell 🚀",
-                "Absolut geil! Hab direkt noch eins bestellt für meine Schwester",
-                "10/10 würde wieder kaufen, Fuga macht einfach die besten Sachen",
-                "Perfekt! Genau was ich gesucht hab und noch besser als erwartet",
-                "Bin so begeistert! Material ist top und Design einfach hammer",
-                "Krass gut! Übertrifft alle Erwartungen und sieht mega aus",
-                "Einfach nur wow! Beste Qualität die ich je hatte",
-                "Bin total verliebt! Passt perfekt zu meinem Style",
-                "Hammer Teil! Würde ich jedem empfehlen",
-                "Richtig gute Investition! Material fühlt sich premium an",
-                "Genial! Sieht noch besser aus als auf den Fotos",
-                "Top Qualität und mega schnelle Lieferung! Danke!",
-                "Bin restlos begeistert! Definitiv nicht mein letzter Kauf",
-                "Wahnsinnig gut verarbeitet! Jeden Cent wert",
-                "Einfach perfekt! Genau das was ich gesucht habe"
-            ])
-    
-    elif rating == 4:
-        return random.choice([
-            "Sehr zufrieden mit dem Kauf. Gute Qualität für den Preis",
-            "Wirklich schönes Produkt, nur die Lieferung hätte schneller sein können",
-            "Fast perfekt, nur eine Kleinigkeit die mich stört aber sonst top",
-            "Sehr gute Qualität, würde ich weiterempfehlen"
-        ])
-    
-    else:  # rating == 3
-        return random.choice([
-            "Ganz okay für den Preis. Erfüllt seinen Zweck",
-            "Mittelmäßige Qualität, aber auch nicht schlecht",
-            "Für den Preis in Ordnung, hab schon bessere gesehen"
-        ])
-
-def generate_english_content(product, rating, category, title_lower):
-    """Generate English review content"""
-    if rating == 5:
-        if category == 'clothing':
-            return random.choice([
-                "Obsessed with this piece! Quality is insane and fits perfectly. Got so many compliments already 😍",
-                "This jacket is absolutely incredible! Perfect for festivals and concerts, love the aesthetic",
-                "Quality exceeded my expectations, already ordered 2 more because I'm so in love with it",
-                "Best techwear piece I own! Fits like a glove and keeps me warm in any weather",
-                "Can't stop wearing this! Material feels so premium and the design is just 🔥"
-            ])
-        elif category == 'accessories':
-            return random.choice([
-                "This bag is everything I wanted! Perfect size and matches my vibe perfectly",
-                "Quality is amazing, looks exactly like the photos. Super happy with this purchase!",
-                "Had this for months now and still looks brand new. Definitely recommend!"
-            ])
-        else:
-            return random.choice([
-                "So happy with this! Quality is top tier and shipping was super fast 🚀",
-                "Absolutely love it! Ordered another one immediately for my friend",
-                "10/10 would buy again, Fuga always delivers the best products",
-                "Perfect! Exactly what I was looking for and even better than expected",
-                "Totally obsessed! Material is amazing and design is fire",
-                "This exceeded all my expectations! Worth every penny",
-                "Amazing quality and super stylish. Love everything about it!",
-                "Couldn't be happier with this purchase. Highly recommend!",
-                "Outstanding product! The attention to detail is incredible",
-                "Blown away by the quality. This is going to be my new favorite!",
-                "Fantastic! Looks even better in person than in photos",
-                "Love the craftsmanship and unique design. Perfect addition!",
-                "Superior quality and fast shipping. Will definitely order again!",
-                "This is exactly what I was looking for. Premium feel and look!",
-                "Impressed by the build quality. Money well spent!"
-            ])
-    
-    elif rating == 4:
-        return random.choice([
-            "Very satisfied with the purchase. Good quality for the price",
-            "Really nice product, only wish shipping was faster",
-            "Almost perfect, just one tiny thing bothers me but overall great",
-            "Very good quality, would definitely recommend to others"
-        ])
-    
-    else:  # rating == 3
-        return random.choice([
-            "Decent for the price. Does what it's supposed to do",
-            "Average quality, but not bad either",
-            "Okay for the price, seen better but also seen worse"
-        ])
-
-def generate_age_appropriate_slang(age_group, language="en"):
-    """Generate age-appropriate slang and expressions"""
-    if language == "de":
-        if age_group == "young":  # 16-25
-            return random.choice(["mega", "krass", "hammer", "geil", "fire", "wild"])
-        elif age_group == "adult":  # 25-40
-            return random.choice(["super", "toll", "schön", "gut"])
-        else:  # 40+
-            return random.choice(["sehr gut", "wunderbar", "ausgezeichnet"])
-    else:
-        if age_group == "young":  # 16-25
-            return random.choice(["fire", "slaps", "no cap", "bussin", "periodt", "slay"])
-        elif age_group == "adult":  # 25-40
-            return random.choice(["amazing", "awesome", "great", "love it"])
-        else:  # 40+
-            return random.choice(["excellent", "wonderful", "very good", "satisfied"])
-
-def add_realistic_touches(content, rating, language="en"):
-    """Add realistic touches like typos, emojis, etc."""
-    # Add emojis occasionally (higher chance on 5-star reviews)
-    emoji_chance = 0.3 if rating == 5 else 0.1 if rating == 4 else 0.05
-    
-    if random.random() < emoji_chance:
-        emojis = ["😍", "🔥", "💯", "✨", "👌", "🚀", "💖", "⭐"] if rating >= 4 else ["😐", "🤷‍♀️", "😕"]
-        content += " " + random.choice(emojis)
-    
-    # Occasional typos for realism (very low chance)
-    if random.random() < 0.05:
-        typos = {
-            "the": "teh", "and": "adn", "love": "lov", "great": "gerat",
-            "quality": "qualiy", "perfect": "perfekt"
+def get_intro_phrases(simplified_name, rating, language):
+    """Intro phrases with product name integration"""
+    intros = {
+        "de": {
+            5: [
+                f"obsessed mit diesem {simplified_name}!!!",
+                f"hab das {simplified_name} direkt gecopt und zero regrets",
+                f"omg dieser {simplified_name} ist literally perfection",
+                f"brauchte ein {simplified_name} und hab jackpot gewonnen"
+            ],
+            4: [
+                f"richtig nice {simplified_name}",
+                f"hab das {simplified_name} endlich bekommen",
+                f"das {simplified_name} ist echt cool",
+                f"ziemlich happy mit dem {simplified_name}"
+            ],
+            3: [
+                f"das {simplified_name} ist okay",
+                f"{simplified_name} ist ganz nice",
+                f"hab mir das {simplified_name} gegönnt",
+                f"das {simplified_name} erfüllt seinen zweck"
+            ]
+        },
+        "en": {
+            5: [
+                f"obsessed with this {simplified_name}!!!",
+                f"copped this {simplified_name} and zero regrets",
+                f"omg this {simplified_name} is literally perfection",
+                f"needed a {simplified_name} and hit the jackpot"
+            ],
+            4: [
+                f"really nice {simplified_name}",
+                f"finally got this {simplified_name}",
+                f"this {simplified_name} is pretty cool",
+                f"pretty happy with the {simplified_name}"
+            ],
+            3: [
+                f"this {simplified_name} is okay",
+                f"{simplified_name} is nice enough",
+                f"treated myself to this {simplified_name}",
+                f"this {simplified_name} does the job"
+            ]
         }
-        for original, typo in typos.items():
-            if original in content.lower():
-                content = content.replace(original, typo, 1)
-                break
+    }
+    return intros.get(language, {}).get(rating, [])
+
+def get_category_phrases(title, language):
+    """Category-specific phrases based on product type like old_review.py"""
+    title_lower = title.lower()
     
-    return content
+    # Gothic/alternative style phrases (Opium, Rebel, Dark, etc.)
+    if any(word in title_lower for word in ["opium", "goth", "black", "dark", "rebel", "skull", "rave", "punk"]):
+        if language == "de":
+            return [
+                "dark vibes ohne costumey zu wirken",
+                "edgy aber trotzdem alltagstauglich", 
+                "perfekt für mein dark academia aesthetic",
+                "erste wahl für festivals und clubs",
+                "details sind echt unique",
+                "statement piece für jeden goth look",
+                "passt perfekt zu meinen platforms",
+                "gothic ohne tryhard zu sein",
+                "witchy energy in der besten art",
+                "elevated goth das überall funktioniert"
+            ]
+        else:
+            return [
+                "dark vibes without looking costumey",
+                "edgy but still wearable daily",
+                "perfect for my dark academia aesthetic", 
+                "first choice for festivals and clubs",
+                "details are genuinely unique",
+                "statement piece for any goth look",
+                "pairs perfectly with my platforms",
+                "gothic without being tryhard",
+                "witchy energy in the best way",
+                "elevated goth that works anywhere",
+                "hardcore punk vibes without trying too hard",
+                "rebellious energy but still wearable"
+            ]
+    
+    # Tops/clothing phrases
+    elif any(word in title_lower for word in ["top", "shirt", "jacket", "hoodie", "dress"]):
+        if language == "de":
+            return [
+                "sitzt wie angegossen",
+                "material fühlt sich premium an", 
+                "perfekt für layering",
+                "bekomm ständig komplimente dafür",
+                "sieht teurer aus als es war",
+                "perfekte oversized silhouette",
+                "details sind nicht basic",
+                "übergang von tag zu nacht",
+                "warm ohne bulky zu sein"
+            ]
+        else:
+            return [
+                "fits like a second skin",
+                "material feels premium af",
+                "perfect for layering", 
+                "getting compliments non-stop",
+                "looks way more expensive than it was",
+                "silhouette is perfectly oversized",
+                "details are not basic",
+                "transitions from day to night",
+                "warm without being bulky",
+                "just the right amount of crop",
+                "breathable even at crowded parties"
+            ]
+    
+    # Default phrases with more Gen Z energy
+    if language == "de":
+        return [
+            "qualität ist krass gut",
+            "sieht genauso aus wie auf den bildern", 
+            "würd ich definitiv weiterempfehlen",
+            "shipping war mega schnell",
+            "hab schon 5 komplimente bekommen lol",
+            "aesthetic af",
+            "straight fire design",
+            "kann nicht aufhören es zu tragen tbh"
+        ]
+    else:
+        return [
+            "quality is insane",
+            "looks exactly like the pics",
+            "would definitely recommend", 
+            "shipping was super fast",
+            "got 5 compliments already lmao",
+            "aesthetic af",
+            "straight fire design", 
+            "can't stop wearing this tbh",
+            "literally my insta feed aesthetic",
+            "major fit check material"
+        ]
+
+def get_shop_references(language):
+    """Shop and brand references"""
+    if language == "de":
+        return [
+            "fuga studios macht einfach die besten sachen",
+            "hab schon mehrere teile von fuga",
+            "fuga enttäuscht nie",
+            "wieder mal ein hit von fuga"
+        ]
+    else:
+        return [
+            "fuga studios never misses",
+            "already have multiple pieces from fuga",
+            "fuga always delivers",
+            "another banger from fuga"
+        ]
+
+def get_connectors(language):
+    """Connecting words for joining review components"""
+    if language == "de":
+        return [" und ", " - ", ", ", ". ", "! ", " btw ", " aber "]
+    else:
+        return [" and ", " - ", ", ", ". ", "! ", " btw ", " but "]
+
+def apply_youth_style(review, language):
+    """Apply Gen Z writing style"""
+    import re
+    
+    # Lowercase sentence start sometimes
+    if random.random() < 0.3:
+        review = review[0].lower() + review[1:] if len(review) > 1 else review.lower()
+    
+    # Multiple exclamation marks
+    if review and review[-1] in [".", "!"]:
+        num_excl = random.choices([1, 2, 3, 4], weights=[40, 30, 20, 10], k=1)[0]
+        review = review[:-1] + "!" * num_excl
+        
+        # Add emojis (50% chance)
+        if random.random() < 0.5:
+            emojis = ["💖", "✨", "🔥", "👌", "💯", "🙌", "😍", "🤩", "🥰", "💕", "❤️", "🖤", "👑", "🌟"]
+            num_emojis = random.choices([1, 2, 3], weights=[50, 30, 20], k=1)[0]
+            selected_emojis = random.sample(emojis, min(num_emojis, len(emojis)))
+            review += "".join(selected_emojis)
+    
+    return review
+
