@@ -269,6 +269,13 @@ def generate_reviews(product_id):
             from reviews_io_integration import post_reviews_to_reviews_io
             reviews_io_result = post_reviews_to_reviews_io(reviews)
         
+        # Optionally post to Klaviyo Reviews API
+        klaviyo_result = None
+        post_to_klaviyo = data.get('post_to_klaviyo', False)
+        
+        if post_to_klaviyo:
+            klaviyo_result = post_reviews_to_klaviyo(reviews)
+        
         # Update tracking
         review_tracking = load_review_tracking()
         if product_id not in review_tracking:
@@ -286,6 +293,9 @@ def generate_reviews(product_id):
         
         if reviews_io_result:
             response_data['reviews_io'] = reviews_io_result
+        
+        if klaviyo_result:
+            response_data['klaviyo'] = klaviyo_result
         
         return jsonify(response_data)
         
@@ -373,6 +383,87 @@ def save_reviews_csv(reviews, product_id):
             writer.writerows(reviews)
     
     return filename
+
+def post_reviews_to_klaviyo(reviews):
+    """Post generated reviews directly to Klaviyo Reviews API"""
+    try:
+        klaviyo_api_key = os.environ.get('KLAVIYO_API_KEY')
+        if not klaviyo_api_key:
+            return {'error': 'Klaviyo API key not configured', 'total_created': 0, 'total_errors': len(reviews)}
+        
+        headers = {
+            'Authorization': f'Klaviyo-API-Key {klaviyo_api_key}',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'revision': '2024-10-15'
+        }
+        
+        results = {
+            'success': [],
+            'errors': [],
+            'total_created': 0,
+            'total_errors': 0
+        }
+        
+        for review in reviews:
+            try:
+                # Format for Klaviyo Reviews API
+                review_data = {
+                    "data": {
+                        "type": "review",
+                        "attributes": {
+                            "rating": int(float(review.get('rating', 5))),
+                            "title": review.get('review_title', ''),
+                            "body": review.get('review_content', ''),
+                            "reviewer_name": review.get('reviewer_name', ''),
+                            "reviewer_email": review.get('reviewer_email', ''),
+                            "created": review.get('review_date', datetime.now().strftime('%Y-%m-%d')),
+                            "verified": review.get('verified', 'Yes') == 'Yes'
+                        },
+                        "relationships": {
+                            "item": {
+                                "data": {
+                                    "type": "catalog-item",
+                                    "id": f"$shopify:::$default:::{review.get('product_id')}"
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                # Post to Klaviyo Reviews API
+                response = requests.post(
+                    'https://a.klaviyo.com/api/reviews/',
+                    headers=headers,
+                    json=review_data
+                )
+                
+                if response.status_code in [200, 201]:
+                    results['success'].append(response.json())
+                    results['total_created'] += 1
+                else:
+                    error_msg = f"HTTP {response.status_code}: {response.text}"
+                    results['errors'].append({
+                        'review': review.get('review_title', 'Untitled'),
+                        'error': error_msg
+                    })
+                    results['total_errors'] += 1
+                    
+            except Exception as e:
+                results['errors'].append({
+                    'review': review.get('review_title', 'Untitled'),
+                    'error': str(e)
+                })
+                results['total_errors'] += 1
+        
+        return results
+        
+    except Exception as e:
+        return {
+            'error': str(e),
+            'total_created': 0,
+            'total_errors': len(reviews)
+        }
 
 @app.route('/webhooks/app/uninstalled', methods=['POST'])
 def app_uninstalled():

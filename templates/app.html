@@ -273,6 +273,12 @@
                     Post directly to Reviews.io (requires API configuration)
                 </label>
             </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="postToKlaviyo" style="margin-right: 8px;" />
+                    Post directly to Klaviyo Reviews (requires API key)
+                </label>
+            </div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
                 <button class="btn btn-primary" onclick="generateReviews()">Generate Reviews</button>
@@ -293,6 +299,12 @@
                 <label>
                     <input type="checkbox" id="bulkPostToReviewsIO" style="margin-right: 8px;" />
                     Post directly to Reviews.io (requires API configuration)
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="bulkPostToKlaviyo" style="margin-right: 8px;" />
+                    Post directly to Klaviyo Reviews (requires API key)
                 </label>
             </div>
             <div class="modal-actions">
@@ -436,6 +448,7 @@
             
             const count = parseInt(document.getElementById('reviewCount').value) || 5;
             const postToReviewsIO = document.getElementById('postToReviewsIO').checked;
+            const postToKlaviyo = document.getElementById('postToKlaviyo').checked;
             const error = document.getElementById('error');
             const success = document.getElementById('success');
             
@@ -450,7 +463,8 @@
                     },
                     body: JSON.stringify({ 
                         count,
-                        post_to_reviews_io: postToReviewsIO
+                        post_to_reviews_io: postToReviewsIO,
+                        post_to_klaviyo: postToKlaviyo
                     })
                 });
                 
@@ -469,6 +483,18 @@
                     }
                     if (data.reviews_io.total_errors > 0) {
                         successMessage += `<br><strong>Warning:</strong> ${data.reviews_io.total_errors} reviews failed to post to Reviews.io.`;
+                    }
+                }
+                
+                if (data.klaviyo) {
+                    if (data.klaviyo.total_created > 0) {
+                        successMessage += `<br><strong>Klaviyo:</strong> Posted ${data.klaviyo.total_created} reviews successfully!`;
+                    }
+                    if (data.klaviyo.total_errors > 0) {
+                        successMessage += `<br><strong>Warning:</strong> ${data.klaviyo.total_errors} reviews failed to post to Klaviyo.`;
+                    }
+                    if (data.klaviyo.error) {
+                        successMessage += `<br><strong>Klaviyo Error:</strong> ${data.klaviyo.error}`;
                     }
                 }
                 
@@ -591,6 +617,7 @@
             const selectedCheckboxes = document.querySelectorAll('.product-checkbox:checked');
             const count = parseInt(document.getElementById('bulkReviewCount').value) || 3;
             const postToReviewsIO = document.getElementById('bulkPostToReviewsIO').checked;
+            const postToKlaviyo = document.getElementById('bulkPostToKlaviyo').checked;
             
             if (selectedCheckboxes.length === 0) return;
             
@@ -620,7 +647,8 @@
                         },
                         body: JSON.stringify({ 
                             count,
-                            post_to_reviews_io: postToReviewsIO
+                            post_to_reviews_io: postToReviewsIO,
+                            post_to_klaviyo: postToKlaviyo
                         })
                     });
                     
