@@ -699,275 +699,873 @@ def extract_product_features(product, language="en"):
     return insights
 
 def generate_product_specific_comment(product_insights, language="en"):
-    """Generate comments based on actual product features"""
+    """Generate comments based on actual product features with anti-repetition"""
     comments = []
     
-    # Material comments
+    # Material comments with variety and tracking
     if product_insights['material']:
-        material_comments = {
+        material_phrases = {
             'de': {
-                'cotton': 'aus Baumwolle und super angenehm',
-                'leather': 'Leder fühlt sich hochwertig an',
-                'lace': 'die Spitze ist wunderschön verarbeitet',
-                'denim': 'Denim Qualität ist top',
-                'velvet': 'Samt fühlt sich luxuriös an'
+                'cotton': [
+                    'aus Baumwolle und super angenehm', 'Baumwoll-Material fühlt sich toll an', 
+                    'Baumwolle ist mega comfortable', 'tolles Baumwoll-Gefühl auf der Haut',
+                    'weiche Baumwolle liebt die Haut', 'Baumwolle in bester Qualität'
+                ],
+                'leather': [
+                    'Leder fühlt sich hochwertig an', 'echtes Leder in top Qualität',
+                    'Lederverarbeitung ist erstklassig', 'das Leder riecht so gut',
+                    'hochwertiges Leder überzeugt total', 'Leder wirkt sehr edel'
+                ],
+                'lace': [
+                    'die Spitze ist wunderschön verarbeitet', 'Spitzen-Details sind ein Traum',
+                    'Spitze verleiht den perfect touch', 'edle Spitze macht den Unterschied',
+                    'filigrane Spitzenarbeit beeindruckt', 'Spitze sieht richtig teuer aus'
+                ],
+                'denim': [
+                    'Denim Qualität ist top', 'perfekter Jeansstoff mit tollem Fall',
+                    'Denim hat die ideale Dicke', 'hochwertiger Jeansstoff überzeugt',
+                    'Denim fühlt sich authentisch an', 'klassischer Denim in bester Qualität'
+                ],
+                'velvet': [
+                    'Samt fühlt sich luxuriös an', 'samtweich und total edel',
+                    'Velvet bringt Luxus-Feeling', 'Samt-Material ist ein Traum',
+                    'weicher Samt strahlt Eleganz aus', 'Samtoberfläche ist butterweich'
+                ]
             },
             'en': {
-                'cotton': 'cotton feels so comfortable',
-                'leather': 'leather quality is amazing',
-                'lace': 'lace detailing is gorgeous',
-                'denim': 'denim is perfect weight',
-                'velvet': 'velvet texture is so soft'
+                'cotton': [
+                    'cotton feels so comfortable', 'cotton material is amazing quality',
+                    'soft cotton against the skin', 'breathable cotton fabric',
+                    'premium cotton construction', 'cotton texture is perfect'
+                ],
+                'leather': [
+                    'leather quality is amazing', 'genuine leather feels luxurious',
+                    'leather craftsmanship is top-tier', 'leather has that rich smell',
+                    'high-quality leather throughout', 'leather looks expensive'
+                ],
+                'lace': [
+                    'lace detailing is gorgeous', 'lace work is intricate and beautiful',
+                    'delicate lace adds perfect touch', 'lace pattern is stunning',
+                    'fine lace craftsmanship shows', 'lace details elevate the whole piece'
+                ],
+                'denim': [
+                    'denim is perfect weight', 'denim quality exceeds expectations',
+                    'substantial denim fabric', 'authentic denim feel',
+                    'premium denim construction', 'denim has great structure'
+                ],
+                'velvet': [
+                    'velvet texture is so soft', 'luxurious velvet material',
+                    'velvet adds elegance', 'plush velvet finish',
+                    'rich velvet texture', 'velvet feels expensive'
+                ]
             },
             'pl': {
-                'cotton': 'bawełna jest bardzo wygodna',
-                'leather': 'skóra jest wysokiej jakości',
-                'lace': 'koronka jest pięknie wykonana',
-                'denim': 'denim ma idealną wagę',
-                'velvet': 'aksamit jest tak miękki'
+                'cotton': [
+                    'bawełna jest bardzo wygodna', 'materiał bawełniany w super jakości',
+                    'miękka bawełna na skórze', 'oddychająca tkanina bawełniana',
+                    'premium bawełna zachwyca', 'bawełna ma idealną strukturę'
+                ],
+                'leather': [
+                    'skóra jest wysokiej jakości', 'prawdziwa skóra luksusowa',
+                    'rzemiosło skórzane na najwyższym poziomie', 'skóra ma bogaty zapach',
+                    'wysokiej jakości skóra wszędzie', 'skóra wygląda drogo'
+                ],
+                'lace': [
+                    'koronka jest pięknie wykonana', 'koronkowa robota jest skomplikowana i piękna',
+                    'delikatna koronka dodaje idealny akcent', 'wzór koronki jest oszałamiający',
+                    'subtelne rzemiosło koronkowe', 'detale koronkowe podnoszą całość'
+                ],
+                'denim': [
+                    'denim ma idealną wagę', 'jakość denimu przewyższa oczekiwania',
+                    'solidna tkanina denim', 'autentyczne uczucie denimu',
+                    'premium konstrukcja denim', 'denim ma świetną strukturę'
+                ],
+                'velvet': [
+                    'aksamit jest tak miękki', 'luksusowy materiał aksamitny',
+                    'aksamit dodaje elegancji', 'pluszowe wykończenie aksamitne',
+                    'bogata tekstura aksamitu', 'aksamit wydaje się drogi'
+                ]
             },
             'it': {
-                'cotton': 'cotone molto confortevole',
-                'leather': 'pelle di ottima qualità',
-                'lace': 'pizzo bellissimo',
-                'denim': 'denim peso perfetto',
-                'velvet': 'velluto così morbido'
+                'cotton': [
+                    'cotone molto confortevole', 'materiale cotone qualità eccellente',
+                    'cotone morbido sulla pelle', 'tessuto cotone traspirante',
+                    'cotone premium stupendo', 'cotone texture perfetta'
+                ],
+                'leather': [
+                    'pelle di ottima qualità', 'pelle genuina lussuosa',
+                    'lavorazione pelle di alto livello', 'pelle profumo ricco',
+                    'pelle alta qualità ovunque', 'pelle sembra costosa'
+                ],
+                'lace': [
+                    'pizzo bellissimo', 'lavorazione pizzo intricata e bella',
+                    'pizzo delicato aggiunge tocco perfetto', 'motivo pizzo stupendo',
+                    'artigianato pizzo sottile', 'dettagli pizzo elevano tutto'
+                ],
+                'denim': [
+                    'denim peso perfetto', 'qualità denim supera aspettative',
+                    'tessuto denim sostanziale', 'sensazione denim autentica',
+                    'costruzione denim premium', 'denim struttura ottima'
+                ],
+                'velvet': [
+                    'velluto così morbido', 'materiale velluto lussuoso',
+                    'velluto aggiunge eleganza', 'finitura velluto morbida',
+                    'texture velluto ricca', 'velluto sembra costoso'
+                ]
             },
             'fr': {
-                'cotton': 'coton très confortable',
-                'leather': 'cuir de qualité incroyable',
-                'lace': 'dentelle magnifique',
-                'denim': 'denim poids parfait',
-                'velvet': 'velours si doux'
+                'cotton': [
+                    'coton très confortable', 'matériau coton qualité excellente',
+                    'coton doux sur la peau', 'tissu coton respirant',
+                    'coton premium magnifique', 'coton texture parfaite'
+                ],
+                'leather': [
+                    'cuir de qualité incroyable', 'cuir véritable luxueux',
+                    'artisanat cuir haut niveau', 'cuir odeur riche',
+                    'cuir haute qualité partout', 'cuir semble cher'
+                ],
+                'lace': [
+                    'dentelle magnifique', 'travail dentelle complexe et beau',
+                    'dentelle délicate ajoute touche parfaite', 'motif dentelle époustouflant',
+                    'artisanat dentelle fin', 'détails dentelle élèvent tout'
+                ],
+                'denim': [
+                    'denim poids parfait', 'qualité denim dépasse attentes',
+                    'tissu denim substantiel', 'sensation denim authentique',
+                    'construction denim premium', 'denim excellente structure'
+                ],
+                'velvet': [
+                    'velours si doux', 'matériau velours luxueux',
+                    'velours ajoute élégance', 'finition velours moelleuse',
+                    'texture velours riche', 'velours semble cher'
+                ]
             },
             'es': {
-                'cotton': 'algodón muy cómodo',
-                'leather': 'cuero de calidad increíble',
-                'lace': 'encaje hermoso',
-                'denim': 'denim peso perfecto',
-                'velvet': 'terciopelo tan suave'
+                'cotton': [
+                    'algodón muy cómodo', 'material algodón calidad excelente',
+                    'algodón suave en la piel', 'tejido algodón transpirable',
+                    'algodón premium magnífico', 'algodón textura perfecta'
+                ],
+                'leather': [
+                    'cuero de calidad increíble', 'cuero genuino lujoso',
+                    'artesanía cuero alto nivel', 'cuero olor rico',
+                    'cuero alta calidad en todo', 'cuero parece caro'
+                ],
+                'lace': [
+                    'encaje hermoso', 'trabajo encaje intrincado y bello',
+                    'encaje delicado añade toque perfecto', 'patrón encaje impresionante',
+                    'artesanía encaje fino', 'detalles encaje elevan todo'
+                ],
+                'denim': [
+                    'denim peso perfecto', 'calidad denim supera expectativas',
+                    'tejido denim sustancial', 'sensación denim auténtica',
+                    'construcción denim premium', 'denim excelente estructura'
+                ],
+                'velvet': [
+                    'terciopelo tan suave', 'material terciopelo lujoso',
+                    'terciopelo añade elegancia', 'acabado terciopelo suave',
+                    'textura terciopelo rica', 'terciopelo parece caro'
+                ]
             },
             'cs': {
-                'cotton': 'bavlna velmi pohodlná',
-                'leather': 'kůže skvělé kvality',
-                'lace': 'krajka nádherná',
-                'denim': 'denim perfektní váha',
-                'velvet': 'samet tak měkký'
+                'cotton': [
+                    'bavlna velmi pohodlná', 'bavlněný materiál vynikající kvality',
+                    'bavlna měkká na kůži', 'bavlněná látka prodyšná',
+                    'prémiová bavlna nádherná', 'bavlna textura dokonalá'
+                ],
+                'leather': [
+                    'kůže skvělé kvality', 'pravá kůže luxusní',
+                    'kožené řemeslo vysoké úrovně', 'kůže bohatá vůně',
+                    'vysoká kvalita kůže všude', 'kůže vypadá draho'
+                ],
+                'lace': [
+                    'krajka nádherná', 'krajková práce složitá a krásná',
+                    'jemná krajka dodává dokonalý dotek', 'vzor krajky úžasný',
+                    'jemné krajkové řemeslo', 'detaily krajky povyšují vše'
+                ],
+                'denim': [
+                    'denim perfektní váha', 'kvalita denim překračuje očekávání',
+                    'podstatná džínová látka', 'autentický pocit denim',
+                    'prémiová konstrukce denim', 'denim vynikající struktura'
+                ],
+                'velvet': [
+                    'samet tak měkký', 'luxusní sametový materiál',
+                    'samet dodává eleganci', 'plyšové sametové povrchová úprava',
+                    'bohatá sametová textura', 'samet vypadá draho'
+                ]
             }
         }
         
         for material in product_insights['material']:
-            lang_comments = material_comments.get(language, material_comments['en'])
-            if material in lang_comments:
-                comments.append(lang_comments[material])
+            lang_phrases = material_phrases.get(language, material_phrases['en'])
+            if material in lang_phrases:
+                phrase = get_unique_phrase(lang_phrases[material], language, f"material_{material}")
+                if phrase:
+                    comments.append(phrase)
     
-    # Feature comments
+    # Feature comments with variety and tracking
     if product_insights['features']:
-        feature_comments = {
+        feature_phrases = {
             'de': {
-                'pockets': 'Taschen sind praktisch',
-                'zipper': 'Reißverschluss läuft smooth',
-                'hood': 'Kapuze ist perfekt geschnitten',
-                'sleeves': 'Ärmel haben die perfekte Länge'
+                'pockets': [
+                    'Taschen sind praktisch', 'die Taschen sind mega funktional',
+                    'praktische Taschen erleichtern alles', 'Taschen perfekt platziert',
+                    'genügend Taschen für alles wichtige', 'durchdachte Taschen-Lösung'
+                ],
+                'zipper': [
+                    'Reißverschluss läuft smooth', 'Zipper Qualität überzeugt total',
+                    'Reißverschluss funktioniert einwandfrei', 'hochwertiger Zipper verbaut',
+                    'Reißverschluss läuft wie Butter', 'stabiler Zipper hält ewig'
+                ],
+                'hood': [
+                    'Kapuze ist perfekt geschnitten', 'Hoodie-Form sitzt ideal',
+                    'Kapuze bietet optimalen Schutz', 'Kapuze hat die richtige Größe',
+                    'Kapuze fällt schön natürlich', 'durchdachte Kapuzen-Konstruktion'
+                ],
+                'sleeves': [
+                    'Ärmel haben die perfekte Länge', 'Ärmellänge sitzt genau richtig',
+                    'Ärmel enden an der idealen Stelle', 'Ärmel-Schnitt überzeugt',
+                    'Ärmellänge passt wie angegossen', 'Ärmel sind optimal proportioniert'
+                ]
             },
             'en': {
-                'pockets': 'pockets are so useful',
-                'zipper': 'zipper quality is great',
-                'hood': 'hood fits perfectly', 
-                'sleeves': 'sleeve length is perfect'
+                'pockets': [
+                    'pockets are so useful', 'pockets functionality is amazing',
+                    'practical pockets make life easier', 'pockets perfectly placed',
+                    'enough pockets for all essentials', 'thoughtful pocket design'
+                ],
+                'zipper': [
+                    'zipper quality is great', 'zipper operates smoothly',
+                    'zipper works flawlessly', 'high-quality zipper hardware',
+                    'zipper glides like butter', 'sturdy zipper built to last'
+                ],
+                'hood': [
+                    'hood fits perfectly', 'hoodie shape sits ideally',
+                    'hood provides optimal coverage', 'hood has the right proportions',
+                    'hood drapes naturally', 'thoughtful hood construction'
+                ],
+                'sleeves': [
+                    'sleeve length is perfect', 'sleeve length sits just right',
+                    'sleeves end at ideal spot', 'sleeve cut is convincing',
+                    'sleeve length fits like a glove', 'sleeves optimally proportioned'
+                ]
             },
             'pl': {
-                'pockets': 'kieszenie są bardzo praktyczne',
-                'zipper': 'zamek błyskawiczny działa świetnie',
-                'hood': 'kaptur pasuje idealnie',
-                'sleeves': 'długość rękawów jest idealna'
+                'pockets': [
+                    'kieszenie są bardzo praktyczne', 'funkcjonalność kieszeni jest niesamowita',
+                    'praktyczne kieszenie ułatwiają życie', 'kieszenie idealnie umieszczone',
+                    'wystarczająco kieszeni na wszystko', 'przemyślany design kieszeni'
+                ],
+                'zipper': [
+                    'zamek błyskawiczny działa świetnie', 'zamek błyskawiczny działa gładko',
+                    'zamek błyskawiczny działa bez zarzutu', 'wysokiej jakości hardware zamka',
+                    'zamek ślizga się jak masło', 'mocny zamek zbudowany na lata'
+                ],
+                'hood': [
+                    'kaptur pasuje idealnie', 'kształt bluzy siedzi idealnie',
+                    'kaptur zapewnia optymalne pokrycie', 'kaptur ma właściwe proporcje',
+                    'kaptur układa się naturalnie', 'przemyślana konstrukcja kaptura'
+                ],
+                'sleeves': [
+                    'długość rękawów jest idealna', 'długość rękawów siedzi w sam raz',
+                    'rękawy kończą się w idealnym miejscu', 'krój rękawów przekonuje',
+                    'długość rękawów pasuje jak ulał', 'rękawy optymalnie proporcjonalne'
+                ]
             },
             'it': {
-                'pockets': 'tasche molto utili',
-                'zipper': 'qualità della cerniera ottima',
-                'hood': 'cappuccio veste perfettamente',
-                'sleeves': 'lunghezza maniche perfetta'
+                'pockets': [
+                    'tasche molto utili', 'funzionalità tasche incredibile',
+                    'tasche pratiche rendono vita più facile', 'tasche perfettamente posizionate',
+                    'abbastanza tasche per tutto essenziale', 'design tasche ponderato'
+                ],
+                'zipper': [
+                    'qualità della cerniera ottima', 'cerniera funziona liscia',
+                    'cerniera funziona perfettamente', 'hardware cerniera alta qualità',
+                    'cerniera scivola come burro', 'cerniera robusta costruita per durare'
+                ],
+                'hood': [
+                    'cappuccio veste perfettamente', 'forma felpa siedeidealmente',
+                    'cappuccio fornisce copertura ottimale', 'cappuccio ha proporzioni giuste',
+                    'cappuccio cade naturalmente', 'costruzione cappuccio ponderata'
+                ],
+                'sleeves': [
+                    'lunghezza maniche perfetta', 'lunghezza maniche siede giusto',
+                    'maniche finiscono punto ideale', 'taglio maniche convincente',
+                    'lunghezza maniche calza guanto', 'maniche ottimamente proporzionate'
+                ]
             },
             'fr': {
-                'pockets': 'poches très utiles',
-                'zipper': 'qualité de la fermeture éclair excellente',
-                'hood': 'capuche s\'ajuste parfaitement',
-                'sleeves': 'longueur des manches parfaite'
+                'pockets': [
+                    'poches très utiles', 'fonctionnalité poches incroyable',
+                    'poches pratiques facilitent vie', 'poches parfaitement placées',
+                    'assez poches pour tout essentiel', 'design poches réfléchi'
+                ],
+                'zipper': [
+                    'qualité de la fermeture éclair excellente', 'fermeture éclair fonctionne lisse',
+                    'fermeture éclair fonctionne parfaitement', 'hardware fermeture éclair haute qualité',
+                    'fermeture éclair glisse comme beurre', 'fermeture éclair robuste construite durer'
+                ],
+                'hood': [
+                    'capuche s\'ajuste parfaitement', 'forme sweat siège idéalement',
+                    'capuche fournit couverture optimale', 'capuche a bonnes proportions',
+                    'capuche tombe naturellement', 'construction capuche réfléchie'
+                ],
+                'sleeves': [
+                    'longueur des manches parfaite', 'longueur manches siège juste',
+                    'manches finissent endroit idéal', 'coupe manches convaincante',
+                    'longueur manches ajuste gant', 'manches optimalement proportionnées'
+                ]
             },
             'es': {
-                'pockets': 'bolsillos muy útiles',
-                'zipper': 'calidad de la cremallera excelente',
-                'hood': 'capucha ajusta perfectamente',
-                'sleeves': 'longitud de mangas perfecta'
+                'pockets': [
+                    'bolsillos muy útiles', 'funcionalidad bolsillos increíble',
+                    'bolsillos prácticos facilitan vida', 'bolsillos perfectamente ubicados',
+                    'suficientes bolsillos para todo esencial', 'diseño bolsillos considerado'
+                ],
+                'zipper': [
+                    'calidad de la cremallera excelente', 'cremallera funciona suave',
+                    'cremallera funciona perfectamente', 'hardware cremallera alta calidad',
+                    'cremallera desliza como mantequilla', 'cremallera robusta construida durar'
+                ],
+                'hood': [
+                    'capucha ajusta perfectamente', 'forma sudadera sienta idealmente',
+                    'capucha proporciona cobertura óptima', 'capucha tiene proporciones correctas',
+                    'capucha cae naturalmente', 'construcción capucha considerada'
+                ],
+                'sleeves': [
+                    'longitud de mangas perfecta', 'longitud mangas sienta justo',
+                    'mangas terminan lugar ideal', 'corte mangas convincente',
+                    'longitud mangas ajusta guante', 'mangas óptimamente proporcionadas'
+                ]
             },
             'cs': {
-                'pockets': 'kapsy velmi praktické',
-                'zipper': 'kvalita zipu vynikající',
-                'hood': 'kapuce sedí dokonale',
-                'sleeves': 'délka rukávů perfektní'
+                'pockets': [
+                    'kapsy velmi praktické', 'funkcionalita kapes neuvěřitelná',
+                    'praktické kapsy usnadňují život', 'kapsy dokonale umístěné',
+                    'dostatek kapes pro vše podstatné', 'promyšlený design kapes'
+                ],
+                'zipper': [
+                    'kvalita zipu vynikající', 'zip funguje hladce',
+                    'zip funguje bezchybně', 'hardware zip vysoká kvalita',
+                    'zip klouzá jako máslo', 'robustní zip postavený vydržet'
+                ],
+                'hood': [
+                    'kapuce sedí dokonale', 'tvar mikiny sedí ideálně',
+                    'kapuce poskytuje optimální pokrytí', 'kapuce má správné proporce',
+                    'kapuce padá přirozeně', 'promyšlená konstrukce kapuce'
+                ],
+                'sleeves': [
+                    'délka rukávů perfektní', 'délka rukávů sedí správně',
+                    'rukávy končí ideálním místě', 'střih rukávů přesvědčivý',
+                    'délka rukávů sedí jako rukavice', 'rukávy optimálně proporcionální'
+                ]
             }
         }
         
         for feature in product_insights['features']:
-            lang_comments = feature_comments.get(language, feature_comments['en'])
-            if feature in lang_comments:
-                comments.append(lang_comments[feature])
+            lang_phrases = feature_phrases.get(language, feature_phrases['en'])
+            if feature in lang_phrases:
+                phrase = get_unique_phrase(lang_phrases[feature], language, f"feature_{feature}")
+                if phrase:
+                    comments.append(phrase)
     
-    # Style comments
+    # Style comments with variety and tracking  
     if product_insights['style']:
-        style_comments = {
+        style_phrases = {
             'de': {
-                'gothic': 'der Gothic Style ist genau mein Ding',
-                'punk': 'Punk Vibe ist authentisch',
-                'vintage': 'Vintage Look ist zeitlos',
-                'elegant': 'elegant und raffiniert'
+                'gothic': [
+                    'der Gothic Style ist genau mein Ding', 'Gothic Ästhetik trifft meinen Geschmack',
+                    'düstere Eleganz überzeugt total', 'Gothic Vibe ist authentisch dark',
+                    'perfekte Gothic Atmosphäre eingefangen', 'dark aesthetic passt perfect zu mir'
+                ],
+                'punk': [
+                    'Punk Vibe ist authentisch', 'echter Punk Spirit spürbar',
+                    'rebellische Energie strahlt aus', 'Punk Ästhetik on point',
+                    'raw punk attitude eingefangen', 'underground Feeling perfekt getroffen'
+                ],
+                'vintage': [
+                    'Vintage Look ist zeitlos', 'retro Charme überzeugt',
+                    'nostalgischer Vibe trifft genau', 'vintage Ästhetik perfekt umgesetzt',
+                    'klassischer vintage spirit', 'zeitlose Eleganz eingefangen'
+                ],
+                'elegant': [
+                    'elegant und raffiniert', 'sophisticated und stilvoll',
+                    'edle Ausstrahlung guaranteed', 'klassische Eleganz überzeugt',
+                    'zeitlos elegant designed', 'noble Ästhetik perfect'
+                ]
             },
             'en': {
-                'gothic': 'gothic aesthetic is perfect',
-                'punk': 'punk vibe is authentic',
-                'vintage': 'vintage style is timeless',
-                'elegant': 'elegant and classy'
+                'gothic': [
+                    'gothic aesthetic is perfect', 'gothic vibe hits different',
+                    'dark elegance captured beautifully', 'authentic gothic atmosphere',
+                    'gothic mood perfectly executed', 'dark aesthetic speaks to my soul'
+                ],
+                'punk': [
+                    'punk vibe is authentic', 'real punk spirit shines through',
+                    'rebellious energy radiates', 'punk aesthetic on point',
+                    'raw punk attitude captured', 'underground feeling perfectly hit'
+                ],
+                'vintage': [
+                    'vintage style is timeless', 'retro charm convinces',
+                    'nostalgic vibe hits exactly', 'vintage aesthetic perfectly executed',
+                    'classic vintage spirit', 'timeless elegance captured'
+                ],
+                'elegant': [
+                    'elegant and classy', 'sophisticated and stylish',
+                    'refined aura guaranteed', 'classic elegance convinces',
+                    'timelessly elegant designed', 'noble aesthetic perfect'
+                ]
             },
             'pl': {
-                'gothic': 'gotycki styl jest idealny',
-                'punk': 'punkowy klimat jest autentyczny',
-                'vintage': 'vintage styl jest ponadczasowy',
-                'elegant': 'elegancki i stylowy'
+                'gothic': [
+                    'gotycki styl jest idealny', 'gotycki klimat trafia inaczej',
+                    'mroczna elegancja pięknie uchwycona', 'autentyczna gotycka atmosfera',
+                    'gotycki nastrój perfekcyjnie wykonany', 'mroczna estetyka przemawia do duszy'
+                ],
+                'punk': [
+                    'punkowy klimat jest autentyczny', 'prawdziwy duch punk świeci',
+                    'buntownicza energia promieniuje', 'estetyka punk na miejscu',
+                    'surowa postawa punk uchwycona', 'podziemne uczucie idealnie trafione'
+                ],
+                'vintage': [
+                    'vintage styl jest ponadczasowy', 'retro urok przekonuje',
+                    'nostalgiczny klimat trafia dokładnie', 'vintage estetyka perfekcyjnie wykonana',
+                    'klasyczny vintage duch', 'ponadczasowa elegancja uchwycona'
+                ],
+                'elegant': [
+                    'elegancki i stylowy', 'wyrafinowany i stylowy',
+                    'wyrafinowana aura gwarantowana', 'klasyczna elegancja przekonuje',
+                    'ponadczasowo elegancko zaprojektowany', 'szlachetna estetyka idealna'
+                ]
             },
             'it': {
-                'gothic': 'estetica gotica è perfetta',
-                'punk': 'vibe punk è autentico',
-                'vintage': 'stile vintage è senza tempo',
-                'elegant': 'elegante e di classe'
+                'gothic': [
+                    'estetica gotica è perfetta', 'vibe gotico colpisce diversamente',
+                    'eleganza oscura catturata bellamente', 'atmosfera gotica autentica',
+                    'umore gotico perfettamente eseguito', 'estetica oscura parla anima'
+                ],
+                'punk': [
+                    'vibe punk è autentico', 'vero spirito punk risplende',
+                    'energia ribelle irradia', 'estetica punk sul punto',
+                    'atteggiamento punk crudo catturato', 'sensazione underground perfettamente colpita'
+                ],
+                'vintage': [
+                    'stile vintage è senza tempo', 'fascino retro convince',
+                    'vibe nostalgico colpisce esattamente', 'estetica vintage perfettamente eseguita',
+                    'spirito vintage classico', 'eleganza senza tempo catturata'
+                ],
+                'elegant': [
+                    'elegante e di classe', 'sofisticato e elegante',
+                    'aura raffinata garantita', 'eleganza classica convince',
+                    'elegantemente senza tempo progettato', 'estetica nobile perfetta'
+                ]
             },
             'fr': {
-                'gothic': 'esthétique gothique est parfaite',
-                'punk': 'vibe punk est authentique',
-                'vintage': 'style vintage est intemporel',
-                'elegant': 'élégant et chic'
+                'gothic': [
+                    'esthétique gothique est parfaite', 'vibe gothique frappe différemment',
+                    'élégance sombre capturée magnifiquement', 'atmosphère gothique authentique',
+                    'humeur gothique parfaitement exécutée', 'esthétique sombre parle âme'
+                ],
+                'punk': [
+                    'vibe punk est authentique', 'vrai esprit punk brille',
+                    'énergie rebelle rayonne', 'esthétique punk sur point',
+                    'attitude punk brute capturée', 'sensation underground parfaitement frappée'
+                ],
+                'vintage': [
+                    'style vintage est intemporel', 'charme rétro convainc',
+                    'vibe nostalgique frappe exactement', 'esthétique vintage parfaitement exécutée',
+                    'esprit vintage classique', 'élégance intemporelle capturée'
+                ],
+                'elegant': [
+                    'élégant et chic', 'sophistiqué et élégant',
+                    'aura raffinée garantie', 'élégance classique convainc',
+                    'élégamment intemporel conçu', 'esthétique noble parfaite'
+                ]
             },
             'es': {
-                'gothic': 'estética gótica es perfecta',
-                'punk': 'vibe punk es auténtico',
-                'vintage': 'estilo vintage es atemporal',
-                'elegant': 'elegante y con clase'
+                'gothic': [
+                    'estética gótica es perfecta', 'vibe gótico golpea diferente',
+                    'elegancia oscura capturada hermosamente', 'atmósfera gótica auténtica',
+                    'estado ánimo gótico perfectamente ejecutado', 'estética oscura habla alma'
+                ],
+                'punk': [
+                    'vibe punk es auténtico', 'verdadero espíritu punk brilla',
+                    'energía rebelde irradia', 'estética punk en punto',
+                    'actitud punk cruda capturada', 'sensación underground perfectamente golpeada'
+                ],
+                'vintage': [
+                    'estilo vintage es atemporal', 'encanto retro convence',
+                    'vibe nostálgico golpea exactamente', 'estética vintage perfectamente ejecutada',
+                    'espíritu vintage clásico', 'elegancia atemporal capturada'
+                ],
+                'elegant': [
+                    'elegante y con clase', 'sofisticado y elegante',
+                    'aura refinada garantizada', 'elegancia clásica convence',
+                    'elegantemente atemporal diseñado', 'estética noble perfecta'
+                ]
             },
             'cs': {
-                'gothic': 'gotický styl je perfektní',
-                'punk': 'punkový vibe je autentický',
-                'vintage': 'vintage styl je nadčasový',
-                'elegant': 'elegantní a stylový'
+                'gothic': [
+                    'gotický styl je perfektní', 'gotický vibe zasahuje jinak',
+                    'temná elegance krásně zachycena', 'autentická gotická atmosféra',
+                    'gotická nálada dokonale provedena', 'temná estetika mluví k duši'
+                ],
+                'punk': [
+                    'punkový vibe je autentický', 'skutečný punk duch svítí',
+                    'rebelská energie vyzařuje', 'punk estetika na místě',
+                    'surový punk postoj zachycen', 'underground pocit dokonale zasažen'
+                ],
+                'vintage': [
+                    'vintage styl je nadčasový', 'retro kouzlo přesvědčuje',
+                    'nostalgický vibe zasahuje přesně', 'vintage estetika dokonale provedena',
+                    'klasický vintage duch', 'nadčasová elegance zachycena'
+                ],
+                'elegant': [
+                    'elegantní a stylový', 'sofistikovaný a stylový',
+                    'rafinovaná aura zaručena', 'klasická elegance přesvědčuje',
+                    'nadčasově elegantně navrženo', 'ušlechtilá estetika dokonalá'
+                ]
             }
         }
         
         for style in product_insights['style']:
-            lang_comments = style_comments.get(language, style_comments['en'])
-            if style in lang_comments:
-                comments.append(lang_comments[style])
+            lang_phrases = style_phrases.get(language, style_phrases['en'])
+            if style in lang_phrases:
+                phrase = get_unique_phrase(lang_phrases[style], language, f"style_{style}")
+                if phrase:
+                    comments.append(phrase)
     
-    # Fit comments
+    # Fit comments with variety and tracking
     if product_insights['fit']:
-        fit_comments = {
+        fit_phrases = {
             'de': {
-                'oversized': 'oversized Fit ist mega gemütlich',
-                'fitted': 'tailliert und schmeichelt der Figur',
-                'stretchy': 'Material ist schön dehnbar',
-                'comfortable': 'unglaublich bequem zu tragen'
+                'oversized': [
+                    'oversized Fit ist mega gemütlich', 'lockerer Schnitt sitzt perfekt',
+                    'oversized Style bringt Komfort', 'weiter Schnitt ist so bequem',
+                    'relaxed Fit macht alles mit', 'oversized Passform liebt jeder'
+                ],
+                'fitted': [
+                    'tailliert und schmeichelt der Figur', 'enger Schnitt betont Silhouette',
+                    'figurbetont und mega schmeichelnd', 'perfekt anliegend geschnitten',
+                    'körpernah und vorteilhaft', 'fitted Style zeigt tolle Form'
+                ],
+                'stretchy': [
+                    'Material ist schön dehnbar', 'elastischer Stoff gibt nach',
+                    'stretch Material bewegt sich mit', 'dehnbares Gewebe ist angenehm',
+                    'flexible Materialien überzeugen', 'stretch Eigenschaft ist perfekt'
+                ],
+                'comfortable': [
+                    'unglaublich bequem zu tragen', 'so comfortable den ganzen Tag',
+                    'mega gemütlich und weich', 'trägt sich wie eine zweite Haut',
+                    'comfort Level ist outstanding', 'bequemer geht es nicht'
+                ]
             },
             'en': {
-                'oversized': 'oversized fit is so comfy',
-                'fitted': 'fitted perfectly to my body',
-                'stretchy': 'material has great stretch',
-                'comfortable': 'incredibly comfortable to wear'
+                'oversized': [
+                    'oversized fit is so comfy', 'loose cut fits perfectly',
+                    'oversized style brings comfort', 'relaxed fit feels amazing',
+                    'roomy fit accommodates everything', 'oversized silhouette works great'
+                ],
+                'fitted': [
+                    'fitted perfectly to my body', 'snug cut emphasizes silhouette',
+                    'form-fitting and flattering', 'perfectly contoured design',
+                    'body-hugging and advantageous', 'fitted style shows great shape'
+                ],
+                'stretchy': [
+                    'material has great stretch', 'elastic fabric gives flexibility',
+                    'stretch material moves with you', 'stretchable fabric feels nice',
+                    'flexible materials convince', 'stretch property is perfect'
+                ],
+                'comfortable': [
+                    'incredibly comfortable to wear', 'so comfortable all day long',
+                    'extremely cozy and soft', 'wears like a second skin',
+                    'comfort level is outstanding', 'can\'t get more comfortable'
+                ]
             },
             'pl': {
-                'oversized': 'oversized krój jest bardzo wygodny',
-                'fitted': 'dopasowany idealnie do ciała',
-                'stretchy': 'materiał ma świetną elastyczność',
-                'comfortable': 'niesamowicie wygodny do noszenia'
+                'oversized': [
+                    'oversized krój jest bardzo wygodny', 'luźny krój pasuje idealnie',
+                    'oversized styl zapewnia komfort', 'relaxed fit czuje się niesamowicie',
+                    'przestronny krój pomieści wszystko', 'oversized sylwetka działa świetnie'
+                ],
+                'fitted': [
+                    'dopasowany idealnie do ciała', 'obcisły krój podkreśla sylwetkę',
+                    'dopasowany i schlebiający', 'perfekcyjnie wyprofilowany design',
+                    'przylegający do ciała i korzystny', 'dopasowany styl pokazuje świetny kształt'
+                ],
+                'stretchy': [
+                    'materiał ma świetną elastyczność', 'elastyczna tkanina daje elastyczność',
+                    'stretch materiał porusza się z tobą', 'rozciągliwa tkanina jest miła',
+                    'elastyczne materiały przekonują', 'właściwość stretch jest idealna'
+                ],
+                'comfortable': [
+                    'niesamowicie wygodny do noszenia', 'tak wygodny przez cały dzień',
+                    'bardzo przytulny i miękki', 'nosi się jak druga skóra',
+                    'poziom komfortu jest wspaniały', 'nie może być wygodniej'
+                ]
             },
             'it': {
-                'oversized': 'vestibilità oversized è comoda',
-                'fitted': 'aderente perfettamente al corpo',
-                'stretchy': 'materiale ha ottima elasticità',
-                'comfortable': 'incredibilmente comodo da indossare'
+                'oversized': [
+                    'vestibilità oversized è comoda', 'taglio largo veste perfettamente',
+                    'stile oversized porta comfort', 'vestibilità rilassata è incredibile',
+                    'taglio spazioso accoglie tutto', 'silhouette oversized funziona benissimo'
+                ],
+                'fitted': [
+                    'aderente perfettamente al corpo', 'taglio aderente enfatizza silhouette',
+                    'aderente e lusinghiero', 'design perfettamente sagomato',
+                    'aderente al corpo e vantaggioso', 'stile aderente mostra forma ottima'
+                ],
+                'stretchy': [
+                    'materiale ha ottima elasticità', 'tessuto elastico dà flessibilità',
+                    'materiale stretch si muove con te', 'tessuto estensibile è piacevole',
+                    'materiali flessibili convincono', 'proprietà stretch è perfetta'
+                ],
+                'comfortable': [
+                    'incredibilmente comodo da indossare', 'così comodo tutto il giorno',
+                    'estremamente accogliente e morbido', 'indossa come seconda pelle',
+                    'livello comfort è eccezionale', 'non può essere più comodo'
+                ]
             },
             'fr': {
-                'oversized': 'coupe oversized est confortable',
-                'fitted': 'ajusté parfaitement au corps',
-                'stretchy': 'matériau a une grande élasticité',
-                'comfortable': 'incroyablement confortable à porter'
+                'oversized': [
+                    'coupe oversized est confortable', 'coupe ample s\'ajuste parfaitement',
+                    'style oversized apporte confort', 'coupe décontractée est incroyable',
+                    'coupe spacieuse accueille tout', 'silhouette oversized fonctionne très bien'
+                ],
+                'fitted': [
+                    'ajusté parfaitement au corps', 'coupe ajustée met en valeur silhouette',
+                    'ajusté et flatteur', 'design parfaitement galbé',
+                    'près du corps et avantageux', 'style ajusté montre belle forme'
+                ],
+                'stretchy': [
+                    'matériau a une grande élasticité', 'tissu élastique donne flexibilité',
+                    'matériau stretch bouge avec vous', 'tissu extensible est agréable',
+                    'matériaux flexibles convainquent', 'propriété stretch est parfaite'
+                ],
+                'comfortable': [
+                    'incroyablement confortable à porter', 'si confortable toute la journée',
+                    'extrêmement douillet et doux', 'porte comme seconde peau',
+                    'niveau confort est exceptionnel', 'ne peut pas être plus confortable'
+                ]
             },
             'es': {
-                'oversized': 'ajuste oversized es cómodo',
-                'fitted': 'ajustado perfectamente al cuerpo',
-                'stretchy': 'material tiene gran elasticidad',
-                'comfortable': 'increíblemente cómodo de usar'
+                'oversized': [
+                    'ajuste oversized es cómodo', 'corte holgado ajusta perfectamente',
+                    'estilo oversized trae comodidad', 'ajuste relajado es increíble',
+                    'corte espacioso acomoda todo', 'silueta oversized funciona genial'
+                ],
+                'fitted': [
+                    'ajustado perfectamente al cuerpo', 'corte ajustado enfatiza silueta',
+                    'ajustado y favorecedor', 'diseño perfectamente contorneado',
+                    'pegado al cuerpo y ventajoso', 'estilo ajustado muestra forma genial'
+                ],
+                'stretchy': [
+                    'material tiene gran elasticidad', 'tela elástica da flexibilidad',
+                    'material stretch se mueve contigo', 'tela extensible es agradable',
+                    'materiales flexibles convencen', 'propiedad stretch es perfecta'
+                ],
+                'comfortable': [
+                    'increíblemente cómodo de usar', 'tan cómodo todo el día',
+                    'extremadamente acogedor y suave', 'se usa como segunda piel',
+                    'nivel comodidad es excepcional', 'no puede ser más cómodo'
+                ]
             },
             'cs': {
-                'oversized': 'oversized střih je pohodlný',
-                'fitted': 'přiléhavý dokonale k tělu',
-                'stretchy': 'materiál má skvělou pružnost',
-                'comfortable': 'neuvěřitelně pohodlný na nošení'
+                'oversized': [
+                    'oversized střih je pohodlný', 'volný střih sedí dokonale',
+                    'oversized styl přináší pohodlí', 'relaxed střih je neuvěřitelný',
+                    'prostorný střih pojme všechno', 'oversized silueta funguje skvěle'
+                ],
+                'fitted': [
+                    'přiléhavý dokonale k tělu', 'těsný střih zdůrazňuje siluetu',
+                    'přiléhavý a lichotivý', 'dokonale tvarovaný design',
+                    'těsně k tělu a výhodný', 'přiléhavý styl ukazuje skvělý tvar'
+                ],
+                'stretchy': [
+                    'materiál má skvělou pružnost', 'elastická látka dává flexibilitu',
+                    'stretch materiál se pohybuje s vámi', 'roztažitelná látka je příjemná',
+                    'flexibilní materiály přesvědčují', 'vlastnost stretch je dokonalá'
+                ],
+                'comfortable': [
+                    'neuvěřitelně pohodlný na nošení', 'tak pohodlný celý den',
+                    'extrémně útulný a měkký', 'nosí se jako druhá kůže',
+                    'úroveň pohodlí je výjimečná', 'nemůže být pohodlnější'
+                ]
             }
         }
         
         for fit in product_insights['fit']:
-            lang_comments = fit_comments.get(language, fit_comments['en'])
-            if fit in lang_comments:
-                comments.append(lang_comments[fit])
+            lang_phrases = fit_phrases.get(language, fit_phrases['en'])
+            if fit in lang_phrases:
+                phrase = get_unique_phrase(lang_phrases[fit], language, f"fit_{fit}")
+                if phrase:
+                    comments.append(phrase)
     
-    # Occasion comments
+    # Occasion comments with variety and tracking
     if product_insights['occasions']:
-        occasion_comments = {
+        occasion_phrases = {
             'de': {
-                'party': 'perfekt für Partys',
-                'casual': 'ideal für den Alltag',
-                'date': 'super für Dates',
-                'work': 'auch fürs Büro geeignet'
+                'party': [
+                    'perfekt für Partys', 'ideal zum Feiern',
+                    'party-ready und stylish', 'macht auf jeder Party eine gute Figur',
+                    'Clubbing Outfit complete', 'für Events einfach perfect'
+                ],
+                'casual': [
+                    'ideal für den Alltag', 'perfekt für jeden Tag',
+                    'casual Style on point', 'everyday Look guaranteed',
+                    'alltagstauglich und bequem', 'für entspannte Tage ideal'
+                ],
+                'date': [
+                    'super für Dates', 'date night ready',
+                    'romantic Look achieved', 'für romantische Abende perfect',
+                    'date Outfit approved', 'macht Eindruck beim Date'
+                ],
+                'work': [
+                    'auch fürs Büro geeignet', 'business casual approved',
+                    'workplace appropriate', 'für die Arbeit totally fine',
+                    'office Look möglich', 'professional und stylish'
+                ]
             },
             'en': {
-                'party': 'perfect for parties',
-                'casual': 'great for everyday wear',
-                'date': 'amazing for date nights',
-                'work': 'works for office too'
+                'party': [
+                    'perfect for parties', 'ideal for celebrations',
+                    'party-ready and stylish', 'makes great impression at parties',
+                    'clubbing outfit complete', 'event-ready and gorgeous'
+                ],
+                'casual': [
+                    'great for everyday wear', 'perfect for daily use',
+                    'casual style on point', 'everyday look guaranteed',
+                    'suitable for daily activities', 'ideal for relaxed days'
+                ],
+                'date': [
+                    'amazing for date nights', 'date night ready',
+                    'romantic look achieved', 'perfect for romantic evenings',
+                    'date outfit approved', 'makes impression on dates'
+                ],
+                'work': [
+                    'works for office too', 'business casual approved',
+                    'workplace appropriate', 'totally fine for work',
+                    'office look possible', 'professional and stylish'
+                ]
             },
             'pl': {
-                'party': 'idealne na imprezy',
-                'casual': 'świetne na co dzień',
-                'date': 'super na randki',
-                'work': 'sprawdza się też w pracy'
+                'party': [
+                    'idealne na imprezy', 'idealne na celebrację',
+                    'gotowe na imprezę i stylowe', 'robi świetne wrażenie na imprezach',
+                    'strój na clubbing kompletny', 'gotowe na wydarzenia i wspaniałe'
+                ],
+                'casual': [
+                    'świetne na co dzień', 'idealne do codziennego użytku',
+                    'casual styl na miejscu', 'codzienny look gwarantowany',
+                    'odpowiednie na codzienne aktywności', 'idealne na spokojne dni'
+                ],
+                'date': [
+                    'super na randki', 'gotowe na randkę',
+                    'romantyczny look osiągnięty', 'idealne na romantyczne wieczory',
+                    'strój na randkę zatwierdzony', 'robi wrażenie na randkach'
+                ],
+                'work': [
+                    'sprawdza się też w pracy', 'biznes casual zatwierdzone',
+                    'odpowiednie do miejsca pracy', 'całkowicie w porządku do pracy',
+                    'biurowy look możliwy', 'profesjonalne i stylowe'
+                ]
             },
             'it': {
-                'party': 'perfetto per le feste',
-                'casual': 'ottimo per tutti i giorni',
-                'date': 'fantastico per gli appuntamenti',
-                'work': 'va bene anche per l\'ufficio'
+                'party': [
+                    'perfetto per le feste', 'ideale per celebrazioni',
+                    'pronto per la festa e stiloso', 'fa ottima impressione alle feste',
+                    'outfit clubbing completo', 'pronto per eventi e stupendo'
+                ],
+                'casual': [
+                    'ottimo per tutti i giorni', 'perfetto per uso quotidiano',
+                    'stile casual centrato', 'look quotidiano garantito',
+                    'adatto per attività quotidiane', 'ideale per giorni rilassati'
+                ],
+                'date': [
+                    'fantastico per gli appuntamenti', 'pronto per appuntamento',
+                    'look romantico raggiunto', 'perfetto per serate romantiche',
+                    'outfit appuntamento approvato', 'fa impressione agli appuntamenti'
+                ],
+                'work': [
+                    'va bene anche per l\'ufficio', 'business casual approvato',
+                    'appropriato per posto lavoro', 'totalmente bene per lavoro',
+                    'look ufficio possibile', 'professionale e stiloso'
+                ]
             },
             'fr': {
-                'party': 'parfait pour les fêtes',
-                'casual': 'excellent pour tous les jours',
-                'date': 'génial pour les rendez-vous',
-                'work': 'convient aussi au bureau'
+                'party': [
+                    'parfait pour les fêtes', 'idéal pour célébrations',
+                    'prêt pour fête et stylé', 'fait excellente impression aux fêtes',
+                    'tenue clubbing complète', 'prêt pour événements et magnifique'
+                ],
+                'casual': [
+                    'excellent pour tous les jours', 'parfait pour usage quotidien',
+                    'style décontracté au point', 'look quotidien garanti',
+                    'approprié pour activités quotidiennes', 'idéal pour jours détendus'
+                ],
+                'date': [
+                    'génial pour les rendez-vous', 'prêt pour rendez-vous',
+                    'look romantique atteint', 'parfait pour soirées romantiques',
+                    'tenue rendez-vous approuvée', 'fait impression aux rendez-vous'
+                ],
+                'work': [
+                    'convient aussi au bureau', 'business décontracté approuvé',
+                    'approprié pour lieu travail', 'totalement bien pour travail',
+                    'look bureau possible', 'professionnel et stylé'
+                ]
             },
             'es': {
-                'party': 'perfecto para fiestas',
-                'casual': 'genial para el día a día',
-                'date': 'increíble para citas',
-                'work': 'funciona para la oficina también'
+                'party': [
+                    'perfecto para fiestas', 'ideal para celebraciones',
+                    'listo para fiesta y estiloso', 'hace gran impresión en fiestas',
+                    'outfit clubbing completo', 'listo para eventos y hermoso'
+                ],
+                'casual': [
+                    'genial para el día a día', 'perfecto para uso diario',
+                    'estilo casual en punto', 'look cotidiano garantizado',
+                    'apropiado para actividades diarias', 'ideal para días relajados'
+                ],
+                'date': [
+                    'increíble para citas', 'listo para cita',
+                    'look romántico logrado', 'perfecto para noches románticas',
+                    'outfit cita aprobado', 'hace impresión en citas'
+                ],
+                'work': [
+                    'funciona para la oficina también', 'business casual aprobado',
+                    'apropiado para lugar trabajo', 'totalmente bien para trabajo',
+                    'look oficina posible', 'profesional y estiloso'
+                ]
             },
             'cs': {
-                'party': 'perfektní na večírky',
-                'casual': 'skvělé na každý den',
-                'date': 'úžasné na rande',
-                'work': 'hodí se i do kanceláře'
+                'party': [
+                    'perfektní na večírky', 'ideální na oslavy',
+                    'připraveno na párty a stylové', 'dělá skvělý dojem na večírcích',
+                    'clubbing outfit kompletní', 'připraveno na události a nádherné'
+                ],
+                'casual': [
+                    'skvělé na každý den', 'perfektní pro denní použití',
+                    'casual styl na místě', 'každodenní look zaručený',
+                    'vhodné pro denní aktivity', 'ideální pro uvolněné dny'
+                ],
+                'date': [
+                    'úžasné na rande', 'připraveno na rande',
+                    'romantický look dosažen', 'perfektní pro romantické večery',
+                    'rande outfit schváleno', 'dělá dojem na randích'
+                ],
+                'work': [
+                    'hodí se i do kanceláře', 'business casual schváleno',
+                    'vhodné pro pracoviště', 'zcela v pořádku pro práci',
+                    'kancelářský look možný', 'profesionální a stylové'
+                ]
             }
         }
         
         for occasion in product_insights['occasions']:
-            lang_comments = occasion_comments.get(language, occasion_comments['en'])
-            if occasion in lang_comments:
-                comments.append(lang_comments[occasion])
+            lang_phrases = occasion_phrases.get(language, occasion_phrases['en'])
+            if occasion in lang_phrases:
+                phrase = get_unique_phrase(lang_phrases[occasion], language, f"occasion_{occasion}")
+                if phrase:
+                    comments.append(phrase)
     
     # Always return a comment if we have any insights, otherwise create a generic one
     if comments:
