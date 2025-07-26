@@ -324,10 +324,10 @@ REVIEW_COMPONENTS = {
 # Extended short reviews with more variety
 EXTENDED_SHORT_REVIEWS = {
     "de": [
-        # Pure German youth expressions
+        # Pure German youth expressions with unique cultural flavor
         "krass gut", "neues lieblingsstück", "sofort gekauft", "total verliebt",
         "absolut genial", "brauche das in allen farben", "danke fuga für dieses teil", "mein neuer favorit",
-        "bin so happy", "fuga ist einfach top", "nimm mein geld", "würde ich wieder kaufen",
+        "bin so happy", "fuga ist einfach top", "nimm mein geld", "würde sofort wieder kaufen",
         "mega zufrieden damit", "genau was ich wollte", "könnte nicht besser sein", "macht mich glücklich",
         "lebe für diesen style", "einfach perfekt", "total obsessed", "bestelle gleich mehr",
         "teuer aber jeden cent wert", "qualität überzeugt total", "glück pur", "fashion ziele erreicht",
@@ -338,7 +338,8 @@ EXTENDED_SHORT_REVIEWS = {
         "basis garderobe", "style investment", "qualität spricht bände", "statement piece",
         "sofortiger confidence boost", "magnet für komplimente", "outfit perfektion", "style zufriedenheit",
         "premium feeling", "luxus gefühl", "designer qualität", "absolut gorgeous",
-        "perfekte passform", "genau wie beschrieben", "qualität beeindruckend", "style revolution"
+        "perfekte passform", "genau wie beschrieben", "qualität beeindruckend", "style revolution",
+        "absoluter kaufrausch", "geld gut investiert", "hundert prozent zufrieden", "definitiv empfehlenswert"
     ],
     "en": [
         # Natural youth expressions without forced slang
@@ -374,52 +375,56 @@ EXTENDED_SHORT_REVIEWS = {
         "ajuste perfecto", "exactamente como describían", "calidad impresionante", "revolución de estilo"
     ],
     "fr": [
-        "obsédée avec cette pièce", "nouvelle pièce préférée", "acheté instantanément🔥", "trop contente de cet achat",
-        "absolument génial", "j'ai besoin de ça dans toutes les couleurs", "merci fuga pour ce chef-d'œuvre",
-        "confiance au top", "vraiment top fuga", "prends mon argent", "10000/10 j'achèterais encore",
-        "super heureuse avec ça", "manifesté et reçu", "exactement ce que je voulais", "style parfait pour moi",
-        "qualité exceptionnelle", "livraison rapide merci", "taille parfaite", "matière agréable au toucher",
-        "coupe très flatteuse", "couleur magnifique", "finitions soignées", "rapport qualité prix",
-        "vraiment bien fini", "confortable à porter", "style intemporel", "parfait comme décrit",
-        "aucun regret d'achat", "investissement mode", "pièce indispensable", "look complet",
-        "style transformé", "confiance boostée", "compliments assurés", "garde-robe enrichie",
-        "achat vraiment malin", "qualité premium", "rendu parfait", "satisfaction totale"
+        # French with Parisian and francophone cultural expressions
+        "obsédée avec cette pièce", "nouvelle pièce préférée", "acheté sans hésiter🔥", "trop contente de cet achat",
+        "vraiment génial", "j'en veux dans tous les coloris", "merci fuga pour cette merveille",
+        "confiance au maximum", "fuga toujours au top", "prends mes sous", "achat réussi à cent pour cent",
+        "super heureuse avec ça", "exactement ce qu'il me fallait", "pile ce que je cherchais", "style qui me va à merveille",
+        "qualité qui déchire", "livraison au poil merci", "taille nickel", "matière très douce",
+        "coupe qui sublime", "couleur de ouf", "finitions au top", "rapport qualité prix imbattable",
+        "finition vraiment propre", "hyper confortable", "style indémodable", "conforme à la description",
+        "zéro regret sur ce coup", "bon placement mode", "pièce incontournable", "tenue complète",
+        "look transformé direct", "boost de confiance assuré", "compliments à gogo", "dressing enrichi",
+        "achat très malin", "qualité de folie", "résultat parfait", "satisfaction maximale"
     ],
     "it": [
-        "ossessionata con questo pezzo", "nuovo pezzo preferito", "comprato istantaneamente🔥", "davvero soddisfatta",
-        "assolutamente fantastico", "ne ho bisogno in ogni colore", "grazie fuga per questo capolavoro",
-        "fiducia alle stelle", "fuga sempre al top", "prendi i miei soldi", "10000/10 comprerei di nuovo",
-        "super felice con questo", "manifestato e ricevuto", "esattamente quello che volevo", "stile perfetto per me",
-        "qualità eccezionale", "spedizione veloce grazie", "taglia perfetta", "materiale piacevole",
-        "taglio molto lusinghiero", "colore bellissimo", "finiture curate", "rapporto qualità prezzo",
-        "davvero ben rifinito", "comodo da indossare", "stile senza tempo", "perfetto come descritto",
-        "nessun rimpianto", "investimento moda", "pezzo indispensabile", "look completo",
-        "stile trasformato", "fiducia aumentata", "complimenti garantiti", "guardaroba arricchito",
-        "acquisto davvero intelligente", "qualità premium", "risultato perfetto", "soddisfazione totale"
+        # Italian with authentic Italian expressions and cultural flavor
+        "ossessionata con questo pezzo", "nuovo pezzo del cuore", "comprato subito senza pensarci🔥", "davvero contentissima",
+        "assolutamente fantastico", "lo voglio in tutti i colori", "grazie fuga per questa meraviglia",
+        "autostima alle stelle", "fuga sempre una garanzia", "ecco i miei soldi", "ricomprerei ad occhi chiusi",
+        "felicissima di questo acquisto", "proprio quello che cercavo", "esattamente come lo volevo", "stile che mi calza a pennello",
+        "qualità che spacca", "spedizione rapidissima grazie", "taglia che veste benissimo", "tessuto piacevolissimo",
+        "taglio che valorizza", "colore stupendo", "rifinizioni perfette", "prezzo onestissimo",
+        "lavorazione impeccabile", "comodissimo da portare", "stile intramontabile", "fedele alla descrizione",
+        "acquisto senza pentimenti", "investimento azzeccato", "capo fondamentale", "outfit completato",
+        "look rivoluzionato", "sicurezza raddoppiata", "complimenti a raffica", "armadio valorizzato",
+        "scelta davvero furba", "qualità da urlo", "effetto perfetto", "soddisfazione al massimo"
     ],
     "pl": [
-        "obsesja z tym elementem", "nowy ulubiony element", "kupione natychmiast🔥", "naprawdę zadowolona",
-        "absolutnie fantastyczne", "potrzebuję tego w każdym kolorze", "dzięki fuga za to arcydzieło",
-        "pewność siebie na maxa", "fuga zawsze najlepsza", "bierz moje pieniądze", "10000/10 kupiłabym znowu",
-        "super szczęśliwa z tym", "zamanifestowane i otrzymane", "dokładnie to czego chciałam", "idealny dla mojego stylu",
-        "jakość wyjątkowa", "szybka dostawa dzięki", "rozmiar idealny", "materiał przyjemny w dotyku",
-        "krój bardzo pochlebiający", "kolor przepiękny", "wykończenia staranne", "stosunek jakości do ceny",
-        "naprawdę dobrze wykonane", "wygodne do noszenia", "styl ponadczasowy", "dokładnie jak opisane",
-        "zero żalu za zakup", "inwestycja w modę", "element niezbędny", "kompletny look",
-        "styl przeobrażony", "pewność siebie wzrosła", "komplementy gwarantowane", "szafa wzbogacona",
-        "naprawdę mądry zakup", "jakość premium", "efekt idealny", "całkowita satysfakcja"
+        # Polish with authentic Polish slang and cultural expressions
+        "obsesja z tym elementem", "nowy ulubiony element", "kupione od razu bez zastanowienia🔥", "mega zadowolona",
+        "absolutnie zajebiste", "potrzebuję tego w każdym kolorze", "dzięki fuga za ten cud",
+        "pewność siebie w kosmos", "fuga zawsze strzela w dziesiątkę", "bierz całą kasę", "kupiłabym jeszcze raz bez myślenia",
+        "bardzo szczęśliwa z tym", "dokładnie to o czym marzyłam", "idealnie to co chciałam", "pasuje do mnie jak ulał",
+        "jakość na medal", "paczka przyszła błyskawicznie", "rozmiar perfekcyjny", "materiał super miękki",
+        "krój bardzo schlebiający", "kolor obłędny", "wykończenie na piękę", "cena adekwatna do jakości",
+        "solidnie zrobione", "super wygodne", "styl klasyczny", "wszystko się zgadza z opisem",
+        "nie żałuję ani grosza", "dobra inwestycja", "must have w szafie", "cały outfit gotów",
+        "cały look się zmienił", "pewność siebie poszła w górę", "komplementy lecą seryjnie", "szafa się wzbogaciła",
+        "bardzo przemyślany zakup", "jakość pierwsza klasa", "efekt bombowy", "jestem bardzo zadowolona"
     ],
     "cs": [
-        "posedlá tímto kouskem", "nový oblíbený kousek", "koupeno okamžitě🔥", "opravdu spokojená",
-        "absolutně fantastické", "potřebuju to v každé barvě", "díky fuga za toto mistrovské dílo",
-        "sebevědomí na vrcholu", "fuga vždy nejlepší", "ber moje peníze", "10000/10 koupila bych znovu",
-        "super šťastná s tímto", "manifestováno a přijato", "přesně co jsem chtěla", "styl ideální pro mě",
-        "kvalita výjimečná", "rychlé doručení děkuji", "velikost ideální", "materiál příjemný na dotek",
-        "střih velmi lichotivý", "barva nádherná", "zpracování pečlivé", "poměr kvality a ceny",
-        "opravdu dobře udělané", "pohodlné na nošení", "styl nadčasový", "přesně jak popsáno",
-        "nula lítosti za nákup", "investice do módy", "kousek nezbytný", "kompletní look",
-        "styl transformován", "sebevědomí vzrostlo", "komplimenty zaručené", "šatník obohacen",
-        "opravdu chytrý nákup", "kvalita premium", "efekt ideální", "úplná spokojenost"
+        # Czech with authentic Czech expressions and cultural flavor
+        "posedlá tímto kouskem", "nový srdcový kousek", "koupila jsem to hned jak jsem to viděla🔥", "mega spokojená",
+        "absolutně géniovské", "chci to ve všech barvách", "díky fuga za tenhle počin",
+        "sebevědomí až po strop", "fuga prostě vždy zasáhne", "tady máš prachy", "koupila bych to znovu bez přemýšlení",
+        "neskutečně šťastná s tím", "přesně to co jsem si přála", "přesně co jsem potřebovala", "styl co mi sedí jako ulitý",
+        "kvalita na jedničku", "doručeno rychle jako blesk", "velikost sedí pefektně", "látka příjemně hebká",
+        "střih který schlebcuje", "barva je nádherá", "zpracování na výbornou", "cena úměrná kvalitě",
+        "opravdu pořádně udělané", "super pohodlné", "nikdy nevyjde z módy", "vše sedí s popisem",
+        "ani za mák toho nelituju", "dobrá investice", "poklad v šatníku", "outfit mám kompletní",
+        "můj styl se úplně změnil", "cítím se v tom skvěle", "komplimenty jen přišijí", "šatník se rozrostl o skvost",
+        "opravdu rozumný nákup", "kvalita top", "výsledek je super", "jsem maximálně spokojená"
     ]
 }
 
@@ -1894,7 +1899,20 @@ def generate_review_content(product, rating, language="en", product_insights=Non
         if component == "opening" and random.random() < 0.7:
             openings = REVIEW_COMPONENTS["opening_reactions"].get(language, REVIEW_COMPONENTS["opening_reactions"]["en"])
             opening = random.choice(openings)
-            review_parts.append(f"{opening} {simplified_name}")
+            
+            # Use opening reactions that already contain proper grammar without adding simplified_name
+            # Some openings are complete, others expect a product name
+            standalone_openings = {
+                "de": ["super zufrieden", "echt beeindruckt", "bin total verliebt", "mega glücklich", "voll überzeugt", "komplett zufrieden", "absolut happy", "richtig begeistert", "mega zufrieden", "voll beeindruckt", "komplett überzeugt", "absolut überzeugt"],
+                "en": ["absolutely convinced by this"],
+                "pl": ["naprawdę zadowolona", "całkowicie przekonana", "niesamowicie szczęśliwa", "totalnie zakochana", "w pełni przekonana", "całkowicie usatysfakcjonowana", "absolutnie zachwycona", "totalnie oczarowana", "super zadowolona", "absolutnie przekonana"],
+                "cs": ["opravdu spokojená", "úplně přesvědčená", "extrémně šťastná", "totálně zamilovaná", "plně přesvědčená"]
+            }
+            
+            if opening in standalone_openings.get(language, []):
+                review_parts.append(opening)
+            else:
+                review_parts.append(f"{opening} {simplified_name}")
         
         elif component == "quality" and random.random() < 0.6:
             quality_comments = REVIEW_COMPONENTS["quality_comments"].get(language, REVIEW_COMPONENTS["quality_comments"]["en"])
@@ -1975,15 +1993,15 @@ def generate_review_content(product, rating, language="en", product_insights=Non
                     endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤"]
                 review += random.choice(endings)
     else:
-        # Fallback to simple review
+        # Fallback to simple review with proper grammar that doesn't depend on product names
         simple_reviews = {
-            "en": [f"love this {simplified_name}", f"great {simplified_name}", f"perfect {simplified_name}"],
-            "de": [f"liebe dieses {simplified_name}", f"tolles {simplified_name}", f"perfektes {simplified_name}"],
-            "es": [f"amo este {simplified_name}", f"gran {simplified_name}", f"perfecto {simplified_name}"],
-            "fr": [f"j'adore ce {simplified_name}", f"super {simplified_name}", f"parfait {simplified_name}"],
-            "it": [f"amo questo {simplified_name}", f"ottimo {simplified_name}", f"perfetto {simplified_name}"],
-            "pl": [f"kocham ten {simplified_name}", f"świetny {simplified_name}", f"perfekcyjny {simplified_name}"],
-            "cs": [f"miluji tento {simplified_name}", f"skvělý {simplified_name}", f"perfektní {simplified_name}"]
+            "en": ["love this piece", "amazing quality", "perfect purchase", "so happy with this", "absolutely worth it"],
+            "de": ["bin total begeistert", "qualität überzeugt", "perfekter kauf", "mega zufrieden", "absolut empfehlenswert"],
+            "es": ["totalmente enamorada", "calidad increíble", "compra perfecta", "muy feliz con esto", "vale la pena"],
+            "fr": ["totalement conquise", "qualité au top", "achat parfait", "super contente", "ça vaut le coup"],
+            "it": ["totalmente innamorata", "qualità fantastica", "acquisto perfetto", "super contenta", "ne vale la pena"],
+            "pl": ["jestem zachwycona", "jakość fantastyczna", "idealny zakup", "bardzo zadowolona", "warto było"],
+            "cs": ["jsem nadšená", "kvalita skvělá", "perfektní nákup", "velmi spokojená", "stálo to za to"]
         }
         review = random.choice(simple_reviews.get(language, simple_reviews["en"]))
     
