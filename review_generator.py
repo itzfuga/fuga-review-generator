@@ -282,7 +282,7 @@ REVIEW_COMPONENTS = {
     "personal_reactions": {
         "de": [
             "bin komplett verliebt", "könnte nicht glücklicher sein", "übertrifft alle erwartungen",
-            "genau was ich gesucht hab", "besser als erwartet", "macht mich so happy",
+            "genau was ich gesucht hab", "besser als erwartet", "macht mich total glücklich",
             "erfüllt alle wünsche", "bin total begeistert", "hätte nicht gedacht dass es so gut ist",
             "bin positiv überrascht", "macht richtig spaß zu tragen", "fühle mich super darin"
         ],
@@ -327,7 +327,7 @@ EXTENDED_SHORT_REVIEWS = {
         # Pure German youth expressions with unique cultural flavor
         "krass gut", "neues lieblingsstück", "sofort gekauft", "total verliebt",
         "absolut genial", "brauche das in allen farben", "danke fuga für dieses teil", "mein neuer favorit",
-        "bin so happy", "fuga ist einfach top", "nimm mein geld", "würde sofort wieder kaufen",
+        "bin richtig zufrieden", "fuga ist einfach top", "nimm mein geld", "würde sofort wieder kaufen",
         "mega zufrieden damit", "genau was ich wollte", "könnte nicht besser sein", "macht mich glücklich",
         "lebe für diesen style", "einfach perfekt", "total obsessed", "bestelle gleich mehr",
         "teuer aber jeden cent wert", "qualität überzeugt total", "glück pur", "fashion ziele erreicht",
@@ -1900,11 +1900,25 @@ def generate_review_content(product, rating, language="en", product_insights=Non
             openings = REVIEW_COMPONENTS["opening_reactions"].get(language, REVIEW_COMPONENTS["opening_reactions"]["en"])
             opening = random.choice(openings)
             
-            # Use opening reactions that already contain proper grammar without adding simplified_name
-            # Some openings are complete, others expect a product name
+            # Better logic: use generic product terms instead of specific product names to avoid grammar issues
+            # and reduce awkward long product names
+            generic_product_terms = {
+                "de": "Teil",  # piece/item
+                "en": "piece",
+                "es": "pieza", 
+                "fr": "pièce",
+                "it": "pezzo",
+                "pl": "element",
+                "cs": "kousek"
+            }
+            
+            # Standalone openings that don't need any product reference
             standalone_openings = {
-                "de": ["super zufrieden", "echt beeindruckt", "bin total verliebt", "mega glücklich", "voll überzeugt", "komplett zufrieden", "absolut happy", "richtig begeistert", "mega zufrieden", "voll beeindruckt", "komplett überzeugt", "absolut überzeugt"],
-                "en": ["absolutely convinced by this"],
+                "de": ["super zufrieden", "echt beeindruckt", "bin total verliebt", "mega glücklich", "voll überzeugt", "komplett zufrieden", "absolut happy", "richtig begeistert", "mega zufrieden", "voll beeindruckt", "komplett überzeugt", "absolut überzeugt", "komplett überzeugt", "richtig zufrieden damit", "so happy mit dem Kauf", "richtig stolz auf den Kauf", "komplett happy mit dem neuen Teil"],
+                "en": ["absolutely convinced by this", "super happy with this", "extremely happy with this", "super satisfied with this"],
+                "es": ["completamente convencida por este", "súper feliz con este", "extremadamente feliz con este"],
+                "fr": ["complètement convaincue par ce", "super heureuse avec ce", "extrêmement heureuse avec ce"],
+                "it": ["completamente convinta da questo", "super felice con questo", "estremamente felice con questo"],
                 "pl": ["naprawdę zadowolona", "całkowicie przekonana", "niesamowicie szczęśliwa", "totalnie zakochana", "w pełni przekonana", "całkowicie usatysfakcjonowana", "absolutnie zachwycona", "totalnie oczarowana", "super zadowolona", "absolutnie przekonana"],
                 "cs": ["opravdu spokojená", "úplně přesvědčená", "extrémně šťastná", "totálně zamilovaná", "plně přesvědčená"]
             }
@@ -1912,7 +1926,9 @@ def generate_review_content(product, rating, language="en", product_insights=Non
             if opening in standalone_openings.get(language, []):
                 review_parts.append(opening)
             else:
-                review_parts.append(f"{opening} {simplified_name}")
+                # Use generic product term instead of actual product name to avoid long/awkward constructions
+                generic_term = generic_product_terms.get(language, "piece")
+                review_parts.append(f"{opening} {generic_term}")
         
         elif component == "quality" and random.random() < 0.6:
             quality_comments = REVIEW_COMPONENTS["quality_comments"].get(language, REVIEW_COMPONENTS["quality_comments"]["en"])
@@ -1995,13 +2011,13 @@ def generate_review_content(product, rating, language="en", product_insights=Non
     else:
         # Fallback to simple review with proper grammar that doesn't depend on product names
         simple_reviews = {
-            "en": ["love this piece", "amazing quality", "perfect purchase", "so happy with this", "absolutely worth it"],
-            "de": ["bin total begeistert", "qualität überzeugt", "perfekter kauf", "mega zufrieden", "absolut empfehlenswert"],
-            "es": ["totalmente enamorada", "calidad increíble", "compra perfecta", "muy feliz con esto", "vale la pena"],
-            "fr": ["totalement conquise", "qualité au top", "achat parfait", "super contente", "ça vaut le coup"],
-            "it": ["totalmente innamorata", "qualità fantastica", "acquisto perfetto", "super contenta", "ne vale la pena"],
-            "pl": ["jestem zachwycona", "jakość fantastyczna", "idealny zakup", "bardzo zadowolona", "warto było"],
-            "cs": ["jsem nadšená", "kvalita skvělá", "perfektní nákup", "velmi spokojená", "stálo to za to"]
+            "en": ["love this piece", "amazing quality", "perfect purchase", "so happy with this", "absolutely worth it", "exceeded expectations", "couldn’t be happier", "style perfection"],
+            "de": ["bin total begeistert", "qualität überzeugt", "perfekter kauf", "mega zufrieden", "absolut empfehlenswert", "erwartungen übertroffen", "könnte nicht glücklicher sein", "style perfektion"],
+            "es": ["totalmente enamorada", "calidad increíble", "compra perfecta", "muy feliz con esto", "vale la pena", "superó expectativas", "no podría estar más feliz", "perfección de estilo"],
+            "fr": ["totalement conquise", "qualité au top", "achat parfait", "super contente", "ça vaut le coup", "dépassé les attentes", "je ne pourrais pas être plus heureuse", "perfection de style"],
+            "it": ["totalmente innamorata", "qualità fantastica", "acquisto perfetto", "super contenta", "ne vale la pena", "ha superato le aspettative", "non potrei essere più felice", "perfezione di stile"],
+            "pl": ["jestem zachwycona", "jakość fantastyczna", "idealny zakup", "bardzo zadowolona", "warto było", "przekroczyło oczekiwania", "nie mogłabym być szczęśliwsza", "perfekcja stylu"],
+            "cs": ["jsem nadšená", "kvalita skvělá", "perfektní nákup", "velmi spokojená", "stálo to za to", "překonalo očekávání", "nemohla bych být šťastnější", "dokonalost stylu"]
         }
         review = random.choice(simple_reviews.get(language, simple_reviews["en"]))
     
