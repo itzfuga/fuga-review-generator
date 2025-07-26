@@ -556,20 +556,27 @@ def generate_reviewer_info(language="en"):
         domains = ["gmail.com", "outlook.com", "icloud.com", "yahoo.com", "hotmail.com"]
         email = f"{first_name.lower()}.{last_initial[0].lower()}{random.randint(1, 999)}@{random.choice(domains)}"
     
-    # Location based on language with more variety
+    # Location based on real Shopify ORDER data (customers who actually buy)
     locations = {
-        "de": ["DE", "DE", "DE", "AT", "CH"],  # Germany weighted
-        "en": ["US", "US", "UK", "CA", "AU", "NZ", "IE"],  # US weighted
-        "es": ["ES", "ES", "MX", "AR", "CO", "CL"],  # Spain weighted
-        "fr": ["FR", "FR", "BE", "CA", "CH"],  # France weighted
-        "it": ["IT", "IT", "CH", "SM"],  # Italy weighted
-        "ru": ["RU", "RU", "BY", "KZ"],
-        "pl": ["PL", "PL", "PL"],
-        "nl": ["NL", "NL", "BE"],
-        "sv": ["SE", "SE", "FI"],
-        "ja": ["JP", "JP"],
-        "ko": ["KR", "KR"],
-        "zh": ["CN", "TW", "HK", "SG"]
+        "de": ["DE", "DE", "DE", "DE", "DE", "AT", "CH"],  # 37% DE + 4% AT + 4% CH
+        "pl": ["PL", "PL", "PL", "CZ", "SK"],  # 11% Polish customers + neighbors
+        "en": ["US", "US", "US", "UK", "UK", "CA", "AU"],  # 9% US + 4% UK + 1% CA
+        "it": ["IT", "IT", "IT", "IT", "CH"],  # 6% Italian customers
+        "fr": ["FR", "FR", "BE", "CH"],  # 2% France + Belgium
+        "es": ["ES", "ES", "ES"],  # 2% Spanish customers
+        "nl": ["NL", "NL", "BE"],  # 2% Netherlands
+        "sv": ["SE", "SE", "DK"],  # 1% Sweden + Denmark
+        "cs": ["CZ", "CZ", "SK"],  # 2% Czech Republic
+        "ja": ["JP", "JP"],  # 2% Japan
+        "ko": ["KR"],  # 1% South Korea
+        "ru": ["RU", "BY", "KZ", "LT"],  # 1% Russia + neighbors
+        "da": ["DK", "NO"],
+        "sk": ["SK", "CZ"],
+        "tr": ["TR"],
+        "fi": ["FI"],
+        "no": ["NO"],
+        "hu": ["HU"],
+        "zh": ["CN", "TW", "HK"]
     }
     
     location = random.choice(locations.get(language, ["US", "UK", "CA", "AU"]))
@@ -786,14 +793,14 @@ def generate_review_date(max_months_back=36):
     return review_date.strftime('%Y-%m-%d')
 
 def select_language():
-    """Select language with realistic distribution for European/US market"""
-    # Adjusted weights - reduced Spanish significantly, increased German/English
-    languages = ["de", "en", "es", "fr", "it", "ru", "pl", "nl", "sv", "da", 
-                "fi", "cs", "hu", "tr", "ar", "el", "ko", "ja", "zh", "id", "pt"]
+    """Select language based on real Shopify ORDER data (not sessions)"""
+    # Based on actual orders: 37% DE, 11% PL, 9% US, 6% IT, 4% UK, 4% AT, etc.
+    languages = ["de", "pl", "en", "it", "fr", "es", "nl", "sv", "da", "cs", 
+                "ja", "ko", "ru", "tr", "sk", "fi", "no", "hu", "el", "pt", "zh"]
     
-    # Better distribution: 25% EN, 20% DE, 4% ES (reduced from 8%), rest varied
-    weights = [20, 25, 4, 8, 7, 5, 5, 4, 3, 3, 
-              2, 2, 2, 2, 2, 2, 3, 3, 3, 2, 2]
+    # Real order-based weights: 37% German, 11% Polish, 9% English, 6% Italian
+    weights = [37, 11, 13, 6, 2, 2, 2, 1, 1, 2, 
+              2, 1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.5, 0.5]
     
     return random.choices(languages, weights=weights, k=1)[0]
 
