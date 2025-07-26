@@ -889,7 +889,10 @@
                     });
                 } else {
                     successMessage = `<strong>Success!</strong> Generated ${data.count} reviews for "${data.product_name}".<br/><br/>`;
-                    successMessage += `<a href="/download/${data.filename}" target="_blank" style="color: #86efac; text-decoration: underline; font-weight: bold;">📥 Download CSV File (${data.filename})</a>`;
+                    successMessage += `<a href="/download/${data.filename}" target="_blank" style="color: #86efac; text-decoration: underline; font-weight: bold;">📥 Download CSV File (${data.filename})</a><br/><br/>`;
+                    
+                    // Add Klaviyo web upload button
+                    successMessage += `<button onclick="uploadToKlaviyoWeb('${data.filename}')" class="btn btn-primary" style="margin-top: 12px; padding: 8px 16px; font-size: 13px; background: linear-gradient(135deg, #e74c3c, #c0392b);">🚀 Auto-Upload to Klaviyo</button>`;
                 }
                 
                 success.innerHTML = successMessage;
@@ -1083,6 +1086,9 @@
                 if (data.filename) {
                     message += `<a href="/download/${data.filename}" target="_blank" style="color: #86efac; text-decoration: underline; font-weight: bold; font-size: 16px; display: inline-block; padding: 12px 24px; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; margin: 8px 0;">📥 Download All Reviews CSV (${data.total_reviews} reviews)</a><br/><br/>`;
                     
+                    // Add Klaviyo web upload button for bulk
+                    message += `<button onclick="uploadToKlaviyoWeb('${data.filename}')" class="btn btn-primary" style="margin: 8px 0; padding: 12px 24px; font-size: 14px; background: linear-gradient(135deg, #e74c3c, #c0392b);">🚀 Auto-Upload to Klaviyo</button><br/><br/>`;
+                    
                     // Auto-download the file
                     window.open(`/download/${data.filename}`, '_blank');
                 }
@@ -1128,6 +1134,69 @@
                 closeBulkModal();
             }
         });
+        
+        // Klaviyo web upload function
+        async function uploadToKlaviyoWeb(filename) {
+            const success = document.getElementById('success');
+            const error = document.getElementById('error');
+            
+            // Show uploading message
+            success.innerHTML = `<strong>Uploading to Klaviyo...</strong><br/>Please wait while we automatically upload your CSV file to Klaviyo...`;
+            success.style.display = 'block';
+            error.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/klaviyo-web-upload', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ filename: filename })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok || data.error) {
+                    throw new Error(data.error || data.message || 'Upload failed');
+                }
+                
+                // Show success message
+                success.innerHTML = `<strong>🎉 Upload Complete!</strong><br/>Your CSV has been automatically uploaded to Klaviyo!<br/><br/>
+                    <div style="padding: 12px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 8px; margin-top: 12px;">
+                        ✅ File: ${filename}<br/>
+                        ✅ Status: Successfully uploaded<br/>
+                        💡 Check your Klaviyo dashboard to see the imported reviews
+                    </div>`;
+                success.style.display = 'block';
+                
+            } catch (err) {
+                let errorMessage = `<strong>❌ Upload Failed</strong><br/>${err.message}<br/><br/>`;
+                
+                if (err.message.includes('not configured') || err.message.includes('credentials')) {
+                    errorMessage += `<div style="padding: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; margin-top: 12px;">
+                        💡 <strong>Setup Required:</strong><br/>
+                        To enable automatic uploads, please set these environment variables:<br/>
+                        • KLAVIYO_LOGIN_EMAIL<br/>
+                        • KLAVIYO_LOGIN_PASSWORD<br/><br/>
+                        <a href="/download/${filename}" target="_blank" style="color: #86efac; text-decoration: underline;">📥 Download CSV for manual upload instead</a>
+                    </div>`;
+                } else if (err.message.includes('Selenium') || err.message.includes('webdriver')) {
+                    errorMessage += `<div style="padding: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; margin-top: 12px;">
+                        💡 <strong>Technical Issue:</strong><br/>
+                        Web automation dependencies are missing or not properly configured.<br/><br/>
+                        <a href="/download/${filename}" target="_blank" style="color: #86efac; text-decoration: underline;">📥 Download CSV for manual upload instead</a>
+                    </div>`;
+                } else {
+                    errorMessage += `<div style="padding: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; margin-top: 12px;">
+                        <a href="/download/${filename}" target="_blank" style="color: #86efac; text-decoration: underline;">📥 Download CSV for manual upload instead</a>
+                    </div>`;
+                }
+                
+                error.innerHTML = errorMessage;
+                error.style.display = 'block';
+                success.style.display = 'none';
+            }
+        }
     </script>
 </body>
 </html>

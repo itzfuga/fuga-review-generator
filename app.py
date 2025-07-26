@@ -792,13 +792,107 @@ def generate_bulk_and_import():
 @app.route('/api/import-status')
 def import_status():
     """Get import status for progress tracking"""
+    # Check different Klaviyo import methods
+    klaviyo_api_configured = bool(os.environ.get('KLAVIYO_API_KEY'))
+    klaviyo_web_configured = bool(os.environ.get('KLAVIYO_LOGIN_EMAIL') and os.environ.get('KLAVIYO_LOGIN_PASSWORD'))
+    
     return jsonify({
         'status': 'ready',
         'platforms_configured': {
             'reviews_io': bool(os.environ.get('REVIEWS_IO_API_KEY')),
-            'klaviyo': bool(os.environ.get('KLAVIYO_API_KEY'))
+            'klaviyo': klaviyo_api_configured,
+            'klaviyo_web': klaviyo_web_configured
+        },
+        'import_methods': {
+            'klaviyo_api': 'Available' if klaviyo_api_configured else 'Not configured (KLAVIYO_API_KEY missing)',
+            'klaviyo_web': 'Available' if klaviyo_web_configured else 'Not configured (KLAVIYO_LOGIN_EMAIL/PASSWORD missing)',
+            'reviews_io': 'Available' if os.environ.get('REVIEWS_IO_API_KEY') else 'Not configured (REVIEWS_IO_API_KEY missing)'
         }
     })
+
+@app.route('/api/klaviyo-web-upload', methods=['POST'])
+def klaviyo_web_upload():
+    """Upload CSV to Klaviyo using web automation"""
+    try:
+        data = request.json
+        filename = data.get('filename')
+        
+        if not filename:
+            return jsonify({'error': 'Filename required'}), 400
+        
+        file_path = f'exports/{filename}'
+        if not os.path.exists(file_path):
+            return jsonify({'error': f'File not found: {filename}'}), 404
+        
+        # Check if web automation credentials are configured
+        if not (os.environ.get('KLAVIYO_LOGIN_EMAIL') and os.environ.get('KLAVIYO_LOGIN_PASSWORD')):
+            return jsonify({
+                'error': 'Klaviyo web automation not configured',
+                'message': 'Please set KLAVIYO_LOGIN_EMAIL and KLAVIYO_LOGIN_PASSWORD environment variables'
+            }), 400
+        
+        # Import web automation module
+        try:
+            from klaviyo_web_automation import upload_reviews_to_klaviyo_web
+        except ImportError:
+            return jsonify({
+                'error': 'Web automation not available',
+                'message': 'Selenium web driver not installed. Install with: pip install selenium'
+            }), 500
+        
+        # Perform web upload
+        result = upload_reviews_to_klaviyo_web(file_path)
+        
+        if result['success']:
+            return jsonify({
+                'success': True,
+                'message': 'CSV uploaded to Klaviyo via web automation',
+                'filename': filename,
+                'details': result
+            })
+        else:
+            return jsonify({
+                'error': 'Web upload failed',
+                'details': result
+            }), 500
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/klaviyo-diagnostic', methods=['POST'])
+def klaviyo_diagnostic():
+    """Run Klaviyo API diagnostic to troubleshoot issues"""
+    try:
+        # Import and run diagnostic
+        try:
+            from klaviyo_diagnostic import test_klaviyo_reviews_api
+            
+            # Capture diagnostic output
+            import io
+            import sys
+            
+            old_stdout = sys.stdout
+            sys.stdout = captured_output = io.StringIO()
+            
+            test_klaviyo_reviews_api()
+            
+            sys.stdout = old_stdout
+            diagnostic_output = captured_output.getvalue()
+            
+            return jsonify({
+                'success': True,
+                'diagnostic_output': diagnostic_output,
+                'message': 'Diagnostic completed - check output for details'
+            })
+            
+        except ImportError:
+            return jsonify({
+                'error': 'Diagnostic tool not available',
+                'message': 'klaviyo_diagnostic.py not found'
+            }), 500
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/download/<filename>')
 def download(filename):
