@@ -13,6 +13,7 @@ import requests
 from datetime import datetime, timedelta
 import csv
 import random
+from review_distribution import get_natural_review_count, get_age_based_review_count, generate_bulk_review_distribution
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'dev-secret-key-change-in-production')
@@ -247,7 +248,21 @@ def generate_reviews(product_id):
     
     try:
         data = request.json
-        review_count = data.get('count', 5)
+        
+        # Variable review count - if not specified, use smart distribution
+        if 'count' in data:
+            review_count = data['count']
+        else:
+            # Use natural distribution for more realistic review counts
+            min_reviews = data.get('min_count', 10)
+            max_reviews = data.get('max_count', 30)
+            use_smart_distribution = data.get('use_smart_distribution', True)
+            
+            if use_smart_distribution:
+                # Will fetch product details below to determine age-based count
+                review_count = None  # Set after fetching product
+            else:
+                review_count = get_natural_review_count(min_reviews, max_reviews)
         
         # Fetch product details
         url = f"https://{shop}/admin/api/2024-01/products/{product_id}.json"
@@ -258,6 +273,14 @@ def generate_reviews(product_id):
             return jsonify({'error': 'Product not found'}), 404
         
         product = response.json()['product']
+        
+        # Determine review count if using smart distribution
+        if review_count is None:
+            review_count = get_age_based_review_count(
+                product.get('created_at'),
+                min_reviews,
+                max_reviews
+            )
         
         # Generate reviews using the advanced algorithm
         reviews = generate_advanced_reviews(product, review_count)
@@ -488,7 +511,13 @@ def generate_bulk_reviews():
     try:
         data = request.json
         product_ids = data.get('product_ids', [])
-        review_count = data.get('count', 5)
+        
+        # Variable review count settings
+        use_variable_count = data.get('use_variable_count', True)
+        min_reviews = data.get('min_count', 10)
+        max_reviews = data.get('max_count', 30)
+        fixed_count = data.get('count', 5)  # Fallback for fixed count
+        
         post_to_reviews_io = data.get('post_to_reviews_io', False)
         post_to_klaviyo = data.get('post_to_klaviyo', False)
         
@@ -502,6 +531,30 @@ def generate_bulk_reviews():
         
         headers = {'X-Shopify-Access-Token': access_token}
         
+        # First, fetch all product details for smart distribution
+        products = []
+        for product_id in product_ids:
+            try:
+                url = f"https://{shop}/admin/api/2024-01/products/{product_id}.json"
+                response = requests.get(url, headers=headers)
+                if response.status_code == 200:
+                    products.append(response.json()['product'])
+            except:
+                pass
+        
+        # Generate smart distribution if using variable count
+        if use_variable_count and products:
+            use_smart_distribution = data.get('use_smart_distribution', True)
+            review_distribution = generate_bulk_review_distribution(
+                products, 
+                min_reviews, 
+                max_reviews,
+                use_smart_distribution
+            )
+        else:
+            review_distribution = {}
+        
+        # Now generate reviews for each product
         for product_id in product_ids:
             try:
                 # Fetch product details
@@ -515,8 +568,18 @@ def generate_bulk_reviews():
                 
                 product = response.json()['product']
                 
+                # Determine review count for this product
+                if use_variable_count and str(product_id) in review_distribution:
+                    # Use smart distribution
+                    product_review_count = review_distribution[str(product_id)]
+                elif use_variable_count:
+                    # Fallback to natural distribution
+                    product_review_count = get_natural_review_count(min_reviews, max_reviews)
+                else:
+                    product_review_count = fixed_count
+                
                 # Generate reviews for this product
-                product_reviews = generate_advanced_reviews(product, review_count)
+                product_reviews = generate_advanced_reviews(product, product_review_count)
                 all_reviews.extend(product_reviews)
                 success_count += 1
                 
@@ -539,10 +602,17 @@ def generate_bulk_reviews():
         
         # Update tracking for all products
         review_tracking = load_review_tracking()
-        for product_id in product_ids:
+        
+        # Count reviews per product for accurate tracking
+        product_review_counts = {}
+        for review in all_reviews:
+            pid = review['product_id']
+            product_review_counts[pid] = product_review_counts.get(pid, 0) + 1
+        
+        for product_id, count in product_review_counts.items():
             if product_id not in review_tracking:
                 review_tracking[product_id] = {'count': 0}
-            review_tracking[product_id]['count'] += review_count
+            review_tracking[product_id]['count'] += count
             review_tracking[product_id]['last_generated'] = datetime.now().isoformat()
         save_review_tracking(review_tracking)
         
