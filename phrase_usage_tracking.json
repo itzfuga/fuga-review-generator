@@ -3,41 +3,79 @@
     "Bastante decente"
   ],
   "en_title_5": [
-    "Magnificent!",
     "Excellent choice!",
-    "Love it so much!"
+    "So freaking good!",
+    "Spectacular!",
+    "Simply wonderful!",
+    "Phenomenal!",
+    "Incredible!",
+    "Life changing!",
+    "Love it!",
+    "Exceptional!",
+    "Best product ever!",
+    "Highly recommend!",
+    "Absolutely amazing!",
+    "First-class quality!",
+    "Love it so much!",
+    "Magnificent!"
   ],
   "ko_title_4": [
     "Really nice"
   ],
   "en_title_3": [
-    "Middle-range",
     "Serves its purpose",
-    "Acceptable"
+    "Acceptable",
+    "Middle-range"
   ],
   "de_title_5": [
-    "Unglaublich gut!",
-    "Beste Entscheidung ever!",
+    "Top Produkt!",
+    "Ein Muss für jeden!",
+    "Außergewöhnlich!",
     "Hervorragende Wahl!",
+    "Mega Teil!",
+    "Phänomenal!",
+    "Liebe es!",
+    "Voll cool!",
     "Hammer!",
-    "Mega Teil!"
+    "Absolut fantastisch!",
+    "Überragend!",
+    "Einfach nur wow!",
+    "Bestes Produkt ever!",
+    "Spektakulär!",
+    "Einfach traumhaft!",
+    "Bombastisch!"
   ],
   "ja_title_3": [
     "Serves its purpose"
   ],
   "de_title_4": [
-    "Echt empfehlenswert",
+    "Schönes Design",
+    "Ziemlich gut",
+    "Sehr gutes Produkt",
+    "Empfehlenswert",
     "Echt cool",
-    "Gute Qualität"
+    "Gute Qualität",
+    "Macht einen tollen Eindruck",
+    "Sehr zufriedenstellend",
+    "Echt empfehlenswert",
+    "Echt gelungen",
+    "Fast perfekt",
+    "Überzeugt mich",
+    "Wirklich schön"
   ],
   "ja_title_5": [
     "Phenomenal!"
   ],
   "en_short": [
-    "thank you fuga for this masterpiece",
-    "photo dump essential"
+    "compliment magnet activated",
+    "photo dump essential",
+    "vision board realized",
+    "fyp energy",
+    "outfit main event",
+    "thank you fuga for this masterpiece"
   ],
   "tr_title_4": [
+    "Pretty awesome",
     "Makes a great impression"
   ],
   "nl_title_3": [
@@ -48,75 +86,155 @@
     "vibe check approved"
   ],
   "ar_title_5": [
-    "Pure perfection!"
+    "Pure perfection!",
+    "Literally perfect!",
+    "Love it so much!"
   ],
   "sv_title_5": [
-    "Excellent choice!"
+    "Excellent choice!",
+    "Absolutely stellar!"
   ],
   "ar_title_4": [
-    "Almost perfect"
+    "Almost perfect",
+    "Pretty nice"
   ],
   "en_title_4": [
+    "Almost perfect",
+    "Really well done",
     "Convincing",
-    "Really well done"
+    "Pretty awesome"
   ],
   "fr_title_5": [
-    "Je l'aime!",
-    "Spectaculaire!"
+    "Produit parfait!",
+    "Spectaculaire!",
+    "Je l'aime!"
   ],
   "fr_short": [
+    "manifesté et reçu",
     "nouvelle pièce préférée",
-    "manifesté et reçu"
+    "acheté instantanément🔥"
   ],
   "nl_title_5": [
+    "So freaking good!",
+    "Exceeds all expectations!",
+    "Life changing!",
     "First-class quality!",
-    "So freaking good!"
+    "Magnificent!"
   ],
   "da_title_5": [
     "Literally perfect!"
   ],
   "it_title_3": [
-    "Decente"
+    "Serve al suo scopo",
+    "Decente",
+    "Nella media"
   ],
   "id_title_5": [
+    "Excellent choice!",
     "Love it!"
   ],
   "fr_title_4": [
+    "Bon rapport qualité-prix",
+    "Assez bon",
     "Presque parfait",
-    "Bon rapport qualité-prix"
+    "Très contente"
   ],
   "pl_title_5": [
-    "Magnificent!",
-    "Spectacular!"
+    "Absolutely amazing!",
+    "Spectacular!",
+    "Perfect product!",
+    "Magnificent!"
   ],
   "it_title_4": [
-    "Design bellissimo"
+    "Design bellissimo",
+    "Positivamente sorpresa",
+    "Mi convince"
   ],
   "de_short": [
-    "closet highlight reel"
+    "compliment magnet activated",
+    "universe said yes",
+    "grid post material",
+    "closet highlight reel",
+    "style game elevated",
+    "vision board realized",
+    "serotonin boost incoming",
+    "blessed mit diesem teil",
+    "story worthy fit",
+    "nimm mein geld"
   ],
   "ru_title_5": [
     "Mind-blowing!",
+    "Outstanding!",
+    "Pure perfection!",
     "Life changing!",
     "Love it!",
     "Beyond amazing!"
   ],
   "tr_title_5": [
+    "Phenomenal!",
     "Magnificent!"
   ],
   "it_title_5": [
-    "Il miglior prodotto!"
+    "Il miglior prodotto!",
+    "Ossessionata da questo!"
   ],
   "de_title_3": [
-    "Normal"
+    "Passt schon",
+    "Normal",
+    "Entspricht den Erwartungen",
+    "Ganz okay",
+    "Standard",
+    "Durchschnittlich"
   ],
   "cs_title_5": [
-    "Totally in love!"
+    "Totally in love!",
+    "Spectacular!"
   ],
   "id_title_4": [
     "Great piece"
   ],
   "sv_title_4": [
-    "Very pleased with it"
+    "Very pleased with it",
+    "Great piece",
+    "Almost perfect"
+  ],
+  "es_title_5": [
+    "¡Excepcional!"
+  ],
+  "zh_short": [
+    "style game elevated"
+  ],
+  "pl_short": [
+    "obsession level 1000",
+    "blessed with this piece",
+    "wardrobe game changer",
+    "energy matched"
+  ],
+  "nl_title_4": [
+    "Good quality"
+  ],
+  "it_short": [
+    "10000/10 comprerei di nuovo"
+  ],
+  "ru_title_4": [
+    "Very satisfied"
+  ],
+  "pt_title_4": [
+    "Very satisfying"
+  ],
+  "ar_short": [
+    "manifestation complete"
+  ],
+  "pl_title_4": [
+    "Great piece",
+    "Really cool",
+    "Convincing",
+    "Great item"
+  ],
+  "tr_short": [
+    "thank you fuga for this masterpiece"
+  ],
+  "fi_title_4": [
+    "Very satisfying"
   ]
 }

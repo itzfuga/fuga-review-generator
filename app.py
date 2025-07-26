@@ -282,6 +282,9 @@ def generate_reviews(product_id):
                 max_reviews
             )
         
+        # Debug: print the review count
+        print(f"DEBUG: Generating {review_count} reviews for product {product_id}")
+        
         # Generate reviews using the advanced algorithm
         reviews = generate_advanced_reviews(product, review_count)
         

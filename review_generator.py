@@ -444,6 +444,247 @@ ADDITIONAL_LANGUAGES = {
     }
 }
 
+def extract_product_features(product, language="en"):
+    """Extract key features from product description for targeted reviews"""
+    title = product.get('title', '').lower()
+    description = product.get('body_html', '').lower() if product.get('body_html') else ''
+    
+    # Remove HTML tags from description
+    import re
+    description = re.sub(r'<[^>]+>', ' ', description)
+    
+    # Combine title and description for analysis
+    content = f"{title} {description}"
+    
+    insights = {
+        'material': [],
+        'style': [],
+        'features': [],
+        'occasions': [],
+        'colors': [],
+        'fit': []
+    }
+    
+    # Material detection
+    materials = {
+        'cotton': ['cotton', 'baumwolle', 'coton', 'cotone', 'algodón'],
+        'polyester': ['polyester', 'poly'],
+        'leather': ['leather', 'leder', 'cuir', 'cuero', 'pelle'],
+        'denim': ['denim', 'jeans'],
+        'silk': ['silk', 'seide', 'soie', 'seta'],
+        'lace': ['lace', 'spitze', 'dentelle', 'pizzo', 'encaje'],
+        'mesh': ['mesh', 'netz'],
+        'velvet': ['velvet', 'samt', 'velours', 'velluto'],
+        'satin': ['satin', 'raso']
+    }
+    
+    for material, keywords in materials.items():
+        if any(keyword in content for keyword in keywords):
+            insights['material'].append(material)
+    
+    # Style detection
+    styles = {
+        'gothic': ['gothic', 'goth', 'dark', 'black', 'dunkel', 'noir', 'nero'],
+        'punk': ['punk', 'rock', 'metal', 'spike', 'stud'],
+        'vintage': ['vintage', 'retro', 'classic', 'klassisch'],
+        'elegant': ['elegant', 'classy', 'sophisticated', 'chic'],
+        'casual': ['casual', 'everyday', 'comfort', 'lässig'],
+        'party': ['party', 'club', 'night', 'festive', 'celebration']
+    }
+    
+    for style, keywords in styles.items():
+        if any(keyword in content for keyword in keywords):
+            insights['style'].append(style)
+    
+    # Feature detection
+    features = {
+        'pockets': ['pocket', 'tasche', 'poche', 'tasca', 'bolsillo'],
+        'zipper': ['zipper', 'zip', 'reißverschluss', 'cremallera'],
+        'buttons': ['button', 'knopf', 'bouton', 'bottone', 'botón'],
+        'sleeves': ['sleeve', 'ärmel', 'manche', 'manica', 'manga'],
+        'hood': ['hood', 'kapuze', 'capuche', 'cappuccio', 'capucha'],
+        'belt': ['belt', 'gürtel', 'ceinture', 'cintura'],
+        'adjustable': ['adjustable', 'verstellbar', 'réglable', 'regolabile']
+    }
+    
+    for feature, keywords in features.items():
+        if any(keyword in content for keyword in keywords):
+            insights['features'].append(feature)
+    
+    # Occasions
+    occasions = {
+        'party': ['party', 'club', 'night', 'evening', 'celebration'],
+        'casual': ['casual', 'everyday', 'daily', 'comfortable'],
+        'work': ['work', 'office', 'professional', 'business'],
+        'date': ['date', 'romantic', 'dinner', 'special'],
+        'festival': ['festival', 'concert', 'music', 'event']
+    }
+    
+    for occasion, keywords in occasions.items():
+        if any(keyword in content for keyword in keywords):
+            insights['occasions'].append(occasion)
+    
+    # Colors
+    colors = {
+        'black': ['black', 'schwarz', 'noir', 'nero', 'negro'],
+        'white': ['white', 'weiß', 'blanc', 'bianco', 'blanco'],
+        'red': ['red', 'rot', 'rouge', 'rosso', 'rojo'],
+        'blue': ['blue', 'blau', 'bleu', 'blu', 'azul'],
+        'green': ['green', 'grün', 'vert', 'verde'],
+        'purple': ['purple', 'violet', 'lila', 'viola', 'morado'],
+        'pink': ['pink', 'rosa', 'rose']
+    }
+    
+    for color, keywords in colors.items():
+        if any(keyword in content for keyword in keywords):
+            insights['colors'].append(color)
+    
+    # Fit information
+    fits = {
+        'oversized': ['oversized', 'loose', 'baggy', 'weit'],
+        'fitted': ['fitted', 'tight', 'slim', 'eng', 'ajusté'],
+        'stretchy': ['stretch', 'elastic', 'flexible', 'dehnbar'],
+        'comfortable': ['comfortable', 'comfort', 'bequem', 'confortable']
+    }
+    
+    for fit, keywords in fits.items():
+        if any(keyword in content for keyword in keywords):
+            insights['fit'].append(fit)
+    
+    return insights
+
+def generate_product_specific_comment(product_insights, language="en"):
+    """Generate comments based on actual product features"""
+    comments = []
+    
+    # Material comments
+    if product_insights['material']:
+        material_comments = {
+            'de': {
+                'cotton': 'aus Baumwolle und super angenehm',
+                'leather': 'Leder fühlt sich hochwertig an',
+                'lace': 'die Spitze ist wunderschön verarbeitet',
+                'denim': 'Denim Qualität ist top',
+                'velvet': 'Samt fühlt sich luxuriös an'
+            },
+            'en': {
+                'cotton': 'cotton feels so comfortable',
+                'leather': 'leather quality is amazing',
+                'lace': 'lace detailing is gorgeous',
+                'denim': 'denim is perfect weight',
+                'velvet': 'velvet texture is so soft'
+            },
+            'pl': {
+                'cotton': 'bawełna jest bardzo wygodna',
+                'leather': 'skóra jest wysokiej jakości',
+                'lace': 'koronka jest pięknie wykonana'
+            },
+            'it': {
+                'cotton': 'cotone molto confortevole',
+                'leather': 'pelle di ottima qualità',
+                'lace': 'pizzo bellissimo'
+            }
+        }
+        
+        for material in product_insights['material']:
+            lang_comments = material_comments.get(language, material_comments['en'])
+            if material in lang_comments:
+                comments.append(lang_comments[material])
+    
+    # Feature comments
+    if product_insights['features']:
+        feature_comments = {
+            'de': {
+                'pockets': 'Taschen sind praktisch',
+                'zipper': 'Reißverschluss läuft smooth',
+                'hood': 'Kapuze ist perfekt geschnitten',
+                'sleeves': 'Ärmel haben die perfekte Länge'
+            },
+            'en': {
+                'pockets': 'pockets are so useful',
+                'zipper': 'zipper quality is great',
+                'hood': 'hood fits perfectly', 
+                'sleeves': 'sleeve length is perfect'
+            },
+            'pl': {
+                'pockets': 'kieszenie są bardzo praktyczne',
+                'zipper': 'zamek błyskawiczny działa świetnie'
+            }
+        }
+        
+        for feature in product_insights['features']:
+            lang_comments = feature_comments.get(language, feature_comments['en'])
+            if feature in lang_comments:
+                comments.append(lang_comments[feature])
+    
+    # Style comments
+    if product_insights['style']:
+        style_comments = {
+            'de': {
+                'gothic': 'der Gothic Style ist genau mein Ding',
+                'punk': 'Punk Vibe ist authentisch',
+                'vintage': 'Vintage Look ist zeitlos',
+                'elegant': 'elegant und sophisticated'
+            },
+            'en': {
+                'gothic': 'gothic aesthetic is perfect',
+                'punk': 'punk vibe is authentic',
+                'vintage': 'vintage style is timeless',
+                'elegant': 'elegant and classy'
+            }
+        }
+        
+        for style in product_insights['style']:
+            lang_comments = style_comments.get(language, style_comments['en'])
+            if style in lang_comments:
+                comments.append(lang_comments[style])
+    
+    # Fit comments
+    if product_insights['fit']:
+        fit_comments = {
+            'de': {
+                'oversized': 'oversized Fit ist mega gemütlich',
+                'fitted': 'tailliert und schmeichelt der Figur',
+                'stretchy': 'Material ist schön dehnbar',
+                'comfortable': 'unglaublich bequem zu tragen'
+            },
+            'en': {
+                'oversized': 'oversized fit is so comfy',
+                'fitted': 'fitted perfectly to my body',
+                'stretchy': 'material has great stretch',
+                'comfortable': 'incredibly comfortable to wear'
+            }
+        }
+        
+        for fit in product_insights['fit']:
+            lang_comments = fit_comments.get(language, fit_comments['en'])
+            if fit in lang_comments:
+                comments.append(lang_comments[fit])
+    
+    # Occasion comments
+    if product_insights['occasions']:
+        occasion_comments = {
+            'de': {
+                'party': 'perfekt für Partys',
+                'casual': 'ideal für den Alltag',
+                'date': 'super für Dates',
+                'work': 'auch fürs Büro geeignet'
+            },
+            'en': {
+                'party': 'perfect for parties',
+                'casual': 'great for everyday wear',
+                'date': 'amazing for date nights',
+                'work': 'works for office too'
+            }
+        }
+        
+        for occasion in product_insights['occasions']:
+            lang_comments = occasion_comments.get(language, occasion_comments['en'])
+            if occasion in lang_comments:
+                comments.append(lang_comments[occasion])
+    
+    return random.choice(comments) if comments else None
+
 def generate_youthful_username():
     """Generate trendy, youth-oriented usernames with more variety and realism"""
     
@@ -673,9 +914,12 @@ def get_product_category(product_info):
     
     return categories if categories else ['general']
 
-def generate_review_content(product, rating, language="en"):
-    """Generate authentic Gen Z style review content with better variety"""
+def generate_review_content(product, rating, language="en", product_insights=None):
+    """Generate authentic Gen Z style review content with product-specific details"""
     global USED_PHRASES
+    
+    if product_insights is None:
+        product_insights = extract_product_features(product, language)
     
     categories = get_product_category(product)
     simplified_name = get_simplified_product_name(product.get('title', ''), language)
@@ -696,12 +940,13 @@ def generate_review_content(product, rating, language="en"):
     component_patterns = [
         ["opening", "quality", "style"],
         ["personal", "fit", "usage"],
-        ["opening", "style", "personal"],
-        ["quality", "fit", "recommendation"],
+        ["opening", "product_specific", "personal"],
+        ["quality", "product_specific", "recommendation"],
         ["personal", "quality", "usage"],
-        ["opening", "fit", "style", "ending"],
-        ["style", "quality", "personal"],
-        ["usage", "personal", "quality"]
+        ["opening", "fit", "product_specific", "ending"],
+        ["style", "product_specific", "personal"],
+        ["usage", "product_specific", "quality"],
+        ["product_specific", "quality", "style"]
     ]
     
     pattern = random.choice(component_patterns)
@@ -719,6 +964,12 @@ def generate_review_content(product, rating, language="en"):
         elif component == "fit" and random.random() < 0.5:
             fit_comments = REVIEW_COMPONENTS["fit_comments"].get(language, REVIEW_COMPONENTS["fit_comments"]["en"])
             review_parts.append(random.choice(fit_comments))
+        
+        elif component == "product_specific" and random.random() < 0.8:
+            # Add product-specific insights from description
+            specific_comment = generate_product_specific_comment(product_insights, language)
+            if specific_comment:
+                review_parts.append(specific_comment)
         
         elif component == "style" and random.random() < 0.6:
             style_comments = REVIEW_COMPONENTS["style_comments"].get(language, REVIEW_COMPONENTS["style_comments"]["en"])
@@ -837,10 +1088,13 @@ def get_unique_phrase(phrase_list, language, category="general"):
     return phrase
 
 def generate_review(product, existing_reviews=0):
-    """Generate a single review for a product"""
+    """Generate a single review for a product using product description"""
     language = select_language()
     rating = generate_rating_distribution()
     reviewer_name, reviewer_email, reviewer_location = generate_reviewer_info(language)
+    
+    # Extract product insights from description
+    product_insights = extract_product_features(product, language)
     
     # Title generation with better consistency
     if random.random() < 0.12:  # 12% no title (slightly increased)
@@ -861,7 +1115,7 @@ def generate_review(product, existing_reviews=0):
             fallback = fallback_titles.get(language, fallback_titles["en"])
             review_title = random.choice(fallback)
     
-    review_content = generate_review_content(product, rating, language)
+    review_content = generate_review_content(product, rating, language, product_insights)
     
     # Less frequent endings to reduce repetition
     if len(review_content) > 100 and random.random() < 0.15:  # Only 15% chance for longer reviews
