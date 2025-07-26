@@ -324,68 +324,102 @@ REVIEW_COMPONENTS = {
 # Extended short reviews with more variety
 EXTENDED_SHORT_REVIEWS = {
     "de": [
-        # Existing ones plus many new variations
-        "krass gut!!!", "omg, neues lieblingsstück💖", "hab sofort zugeschlagen!!!", "vibes sind immaculate✨",
-        "absolut fire 🔥", "brauche das in allen farben", "danke fuga für dieses meisterwerk", "mein neuer daily driver",
-        "slay queen energy", "hauptsache fuga", "nimm mein geld", "10000/10 würde wieder kaufen",
-        "blessed mit diesem teil", "manifestiert und bekommen", "universe said yes", "main character vibes",
-        "living my best life", "no thoughts just vibes", "obsession level 1000", "brb ordering more",
-        "wallet crying but worth it", "dopamine hit secured", "serotonin boost incoming", "peak fashion achieved",
-        "style game elevated", "confidence level up", "compliment magnet activated", "outfit main event",
-        "closet highlight reel", "fashion week ready", "street style approved", "influence worthy",
-        "grid post material", "story worthy fit", "reel ready look", "tiktok famous incoming",
-        "algorithm blessed", "fyp energy", "explore page vibes", "content creator approved",
-        "photo dump essential", "feed curated", "aesthetic achieved", "vision board realized"
+        # Pure German youth expressions
+        "krass gut", "neues lieblingsstück", "sofort gekauft", "total verliebt",
+        "absolut genial", "brauche das in allen farben", "danke fuga für dieses teil", "mein neuer favorit",
+        "bin so happy", "fuga ist einfach top", "nimm mein geld", "würde ich wieder kaufen",
+        "mega zufrieden damit", "genau was ich wollte", "könnte nicht besser sein", "macht mich glücklich",
+        "lebe für diesen style", "einfach perfekt", "total obsessed", "bestelle gleich mehr",
+        "teuer aber jeden cent wert", "qualität überzeugt total", "glück pur", "fashion ziele erreicht",
+        "style komplett verwandelt", "selbstbewusstsein durch die decke", "komplimente garantiert", "outfit highlight",
+        "kleiderschrank essential", "perfekte ergänzung", "style ziele", "fashion gewinn",
+        "sieht teurer aus", "premium qualität", "absolut stunning", "erwartungen übertroffen",
+        "foto ready", "perfekt für anlässe", "ästhetik on point", "traumhaft schön",
+        "basis garderobe", "style investment", "qualität spricht bände", "statement piece",
+        "sofortiger confidence boost", "magnet für komplimente", "outfit perfektion", "style zufriedenheit",
+        "premium feeling", "luxus gefühl", "designer qualität", "absolut gorgeous",
+        "perfekte passform", "genau wie beschrieben", "qualität beeindruckend", "style revolution"
     ],
     "en": [
-        # Existing ones plus many new variations
-        "obsessed!!!!", "new fav piece no cap", "copped instantly🔥", "the vibes are immaculate✨",
-        "absolutely fire 🔥", "need this in every color", "thank you fuga for this masterpiece", "my new daily driver",
-        "slay queen energy", "fuga supremacy", "take my money", "10000/10 would buy again",
-        "blessed with this piece", "manifested and received", "universe said yes", "main character vibes",
-        "living my best life", "no thoughts just vibes", "obsession level 1000", "brb ordering more",
-        "wallet crying but worth it", "dopamine hit secured", "serotonin boost incoming", "peak fashion achieved",
-        "style game elevated", "confidence level up", "compliment magnet activated", "outfit main event",
-        "closet highlight reel", "fashion week ready", "street style approved", "influence worthy",
-        "grid post material", "story worthy fit", "reel ready look", "tiktok famous incoming",
-        "algorithm blessed", "fyp energy", "explore page vibes", "content creator approved",
-        "photo dump essential", "feed curated", "aesthetic achieved", "vision board realized",
-        "closet staple secured", "wardrobe game changer", "style evolution complete", "fashion nirvana reached",
-        "drip check passed", "fit check certified", "vibe check approved", "energy matched",
-        "frequency aligned", "manifestation complete", "abundance flowing", "gratitude overflowing"
+        # Natural youth expressions without forced slang
+        "obsessed with this piece", "new favorite item", "bought instantly", "so happy with this",
+        "absolutely love it", "need this in every color", "thank you fuga for this", "my new go-to piece",
+        "feels so premium", "worth every penny", "take my money", "would buy again instantly",
+        "blessed with this purchase", "exactly what I wanted", "couldn't be happier", "makes me so confident",
+        "living for this style", "no regrets buying this", "obsession level max", "ordering more colors",
+        "expensive but worth it", "quality exceeded expectations", "happiness delivered", "fashion goals achieved",
+        "style transformation complete", "confidence boost secured", "compliments guaranteed", "outfit game strong",
+        "wardrobe essential now", "perfect addition", "style goals", "fashion win",
+        "looks more expensive", "premium quality feel", "absolutely stunning", "exceeded expectations",
+        "photo ready", "perfect for occasions", "aesthetic on point", "vision board material",
+        "wardrobe staple", "style investment", "quality speaks volumes", "fashion statement piece",
+        "instant confidence boost", "compliment magnet", "outfit perfection", "style satisfaction",
+        "premium vibes", "luxury feel", "designer quality", "absolutely gorgeous",
+        "perfect fit achieved", "exactly as described", "quality impressive", "style revolution"
     ],
     "es": [
-        "¡obsesionada!", "nueva pieza favorita", "comprado al instante🔥", "las vibras son inmaculadas✨",
-        "absolutamente fuego 🔥", "necesito esto en todos los colores", "gracias fuga por esta obra maestra",
-        "energía de reina", "supremacía fuga", "toma mi dinero", "10000/10 compraría de nuevo",
-        "bendecida con esta pieza", "manifestado y recibido", "el universo dijo sí", "vibras de protagonista"
+        "obsesionada con esto", "nueva pieza favorita", "comprado al instante", "muy feliz con esto",
+        "absolutamente genial", "necesito esto en todos los colores", "gracias fuga por esto", "mi nueva obsesión",
+        "calidad increíble", "supremacía fuga", "toma mi dinero", "compraría de nuevo",
+        "perfecta compra", "exactamente lo que quería", "no podría estar más feliz", "me hace tan feliz",
+        "viviendo para este estilo", "sin dudas la mejor compra", "obsesión total", "pidiendo más colores",
+        "caro pero vale la pena", "calidad superó expectativas", "felicidad pura", "objetivos de moda",
+        "transformación completa", "confianza por las nubes", "cumplidos asegurados", "protagonista del outfit",
+        "esencial en el armario", "adición perfecta", "objetivos de estilo", "victoria de moda",
+        "parece más caro", "calidad premium", "absolutamente hermoso", "superó expectativas",
+        "listo para fotos", "perfecto para ocasiones", "estética perfecta", "material de sueños",
+        "básico del guardarropa", "inversión de estilo", "calidad habla por sí", "pieza declaración",
+        "confianza instantánea", "imán de cumplidos", "perfección de outfit", "satisfacción total",
+        "vibras premium", "sensación de lujo", "calidad de diseñador", "absolutamente hermoso",
+        "ajuste perfecto", "exactamente como describían", "calidad impresionante", "revolución de estilo"
     ],
     "fr": [
-        "obsédée!!!!", "nouvelle pièce préférée", "acheté instantanément🔥", "les vibes sont immaculées✨",
-        "absolument feu 🔥", "j'ai besoin de ça dans toutes les couleurs", "merci fuga pour ce chef-d'œuvre",
-        "énergie de reine", "suprématie fuga", "prends mon argent", "10000/10 j'achèterais encore",
-        "bénie avec cette pièce", "manifesté et reçu", "l'univers a dit oui", "vibes de personnage principal"
+        "obsédée avec cette pièce", "nouvelle pièce préférée", "acheté instantanément🔥", "trop contente de cet achat",
+        "absolument génial", "j'ai besoin de ça dans toutes les couleurs", "merci fuga pour ce chef-d'œuvre",
+        "confiance au top", "vraiment top fuga", "prends mon argent", "10000/10 j'achèterais encore",
+        "super heureuse avec ça", "manifesté et reçu", "exactement ce que je voulais", "style parfait pour moi",
+        "qualité exceptionnelle", "livraison rapide merci", "taille parfaite", "matière agréable au toucher",
+        "coupe très flatteuse", "couleur magnifique", "finitions soignées", "rapport qualité prix",
+        "vraiment bien fini", "confortable à porter", "style intemporel", "parfait comme décrit",
+        "aucun regret d'achat", "investissement mode", "pièce indispensable", "look complet",
+        "style transformé", "confiance boostée", "compliments assurés", "garde-robe enrichie",
+        "achat vraiment malin", "qualité premium", "rendu parfait", "satisfaction totale"
     ],
     "it": [
-        "ossessionata!!!!", "nuovo pezzo preferito", "comprato istantaneamente🔥", "le vibrazioni sono immacolate✨",
-        "assolutamente fuoco 🔥", "ne ho bisogno in ogni colore", "grazie fuga per questo capolavoro",
-        "energia da regina", "supremazia fuga", "prendi i miei soldi", "10000/10 comprerei di nuovo",
-        "benedetta con questo pezzo", "manifestato e ricevuto", "l'universo ha detto sì", "vibrazioni da protagonista"
+        "ossessionata con questo pezzo", "nuovo pezzo preferito", "comprato istantaneamente🔥", "davvero soddisfatta",
+        "assolutamente fantastico", "ne ho bisogno in ogni colore", "grazie fuga per questo capolavoro",
+        "fiducia alle stelle", "fuga sempre al top", "prendi i miei soldi", "10000/10 comprerei di nuovo",
+        "super felice con questo", "manifestato e ricevuto", "esattamente quello che volevo", "stile perfetto per me",
+        "qualità eccezionale", "spedizione veloce grazie", "taglia perfetta", "materiale piacevole",
+        "taglio molto lusinghiero", "colore bellissimo", "finiture curate", "rapporto qualità prezzo",
+        "davvero ben rifinito", "comodo da indossare", "stile senza tempo", "perfetto come descritto",
+        "nessun rimpianto", "investimento moda", "pezzo indispensabile", "look completo",
+        "stile trasformato", "fiducia aumentata", "complimenti garantiti", "guardaroba arricchito",
+        "acquisto davvero intelligente", "qualità premium", "risultato perfetto", "soddisfazione totale"
     ],
     "pl": [
-        "obsesja!!!!", "nowy ulubiony element", "kupione natychmiast🔥", "vibesy są nieskazitelne✨",
-        "absolutny ogień 🔥", "potrzebuję tego w każdym kolorze", "dzięki fuga za to arcydzieło",
-        "energia królowej", "supremacja fugi", "bierz moje pieniądze", "10000/10 kupiłabym znowu",
-        "błogosławiona tym elementem", "zamanifestowane i otrzymane", "wszechświat powiedział tak", "vibesy głównej bohaterki",
-        "żyję swoim najlepszym życiem", "zero myśli tylko vibesy", "poziom obsesji 1000", "już zamawiam więcej",
-        "portfel płacze ale warto", "dopamina dostarczona", "serotonina nadchodzi", "szczyt mody osiągnięty",
-        "gra stylowa podniesiona", "poziom pewności siebie w górę", "magnes na komplementy aktywowany", "główne wydarzenie stroju"
+        "obsesja z tym elementem", "nowy ulubiony element", "kupione natychmiast🔥", "naprawdę zadowolona",
+        "absolutnie fantastyczne", "potrzebuję tego w każdym kolorze", "dzięki fuga za to arcydzieło",
+        "pewność siebie na maxa", "fuga zawsze najlepsza", "bierz moje pieniądze", "10000/10 kupiłabym znowu",
+        "super szczęśliwa z tym", "zamanifestowane i otrzymane", "dokładnie to czego chciałam", "idealny dla mojego stylu",
+        "jakość wyjątkowa", "szybka dostawa dzięki", "rozmiar idealny", "materiał przyjemny w dotyku",
+        "krój bardzo pochlebiający", "kolor przepiękny", "wykończenia staranne", "stosunek jakości do ceny",
+        "naprawdę dobrze wykonane", "wygodne do noszenia", "styl ponadczasowy", "dokładnie jak opisane",
+        "zero żalu za zakup", "inwestycja w modę", "element niezbędny", "kompletny look",
+        "styl przeobrażony", "pewność siebie wzrosła", "komplementy gwarantowane", "szafa wzbogacona",
+        "naprawdę mądry zakup", "jakość premium", "efekt idealny", "całkowita satysfakcja"
     ],
     "cs": [
-        "posedlá!!!!", "nový oblíbený kousek", "koupeno okamžitě🔥", "vibrace jsou dokonalé✨",
-        "absolutní oheň 🔥", "potřebuju to v každé barvě", "díky fuga za toto mistrovské dílo",
-        "energie královny", "nadvláda fugy", "ber moje peníze", "10000/10 koupila bych znovu",
-        "požehnaná tímto kouskem", "manifestováno a přijato", "vesmír řekl ano", "vibrace hlavní postavy"
+        "posedlá tímto kouskem", "nový oblíbený kousek", "koupeno okamžitě🔥", "opravdu spokojená",
+        "absolutně fantastické", "potřebuju to v každé barvě", "díky fuga za toto mistrovské dílo",
+        "sebevědomí na vrcholu", "fuga vždy nejlepší", "ber moje peníze", "10000/10 koupila bych znovu",
+        "super šťastná s tímto", "manifestováno a přijato", "přesně co jsem chtěla", "styl ideální pro mě",
+        "kvalita výjimečná", "rychlé doručení děkuji", "velikost ideální", "materiál příjemný na dotek",
+        "střih velmi lichotivý", "barva nádherná", "zpracování pečlivé", "poměr kvality a ceny",
+        "opravdu dobře udělané", "pohodlné na nošení", "styl nadčasový", "přesně jak popsáno",
+        "nula lítosti za nákup", "investice do módy", "kousek nezbytný", "kompletní look",
+        "styl transformován", "sebevědomí vzrostlo", "komplimenty zaručené", "šatník obohacen",
+        "opravdu chytrý nákup", "kvalita premium", "efekt ideální", "úplná spokojenost"
     ]
 }
 
