@@ -72,6 +72,22 @@ REVIEW_COMPONENTS = {
             "davvero soddisfatta del mio", "completamente convinta da questo", "molto contenta del mio nuovo",
             "estremamente felice con questo", "davvero colpita da questo", "totalmente innamorata del mio",
             "davvero orgogliosa di questo", "incredibilmente felice con il mio", "pienamente convinta da questo"
+        ],
+        "pl": [
+            "absolutnie zakochana w tym", "totalnie zafascynowana moim nowym", "super szczęśliwa z tym",
+            "naprawdę zadowolona z mojego", "całkowicie przekonana tym", "bardzo zadowolona z mojego nowego",
+            "niesamowicie szczęśliwa z tym", "naprawdę pod wrażeniem tego", "totalnie zakochana w moim",
+            "naprawdę dumna z tego", "niewiarygodnie szczęśliwa z mojego", "w pełni przekonana tym",
+            "całkowicie usatysfakcjonowana moim", "absolutnie zachwycona tym", "totalnie oczarowana moim nowym",
+            "naprawdę podekscytowana moim", "super zadowolona z tego", "naprawdę pod wrażeniem mojego",
+            "całkowicie szczęśliwa z mojego nowego", "absolutnie przekonana tym"
+        ],
+        "cs": [
+            "absolutně zamilovaná do tohoto", "totálně posedlá mým novým", "super šťastná s tímto",
+            "opravdu spokojená s mým", "úplně přesvědčená tímto", "velmi spokojená s mým novým",
+            "extrémně šťastná s tímto", "opravdu ohromená tímto", "totálně zamilovaná do mého",
+            "opravdu hrdá na tento", "neuvěřitelně šťastná s mým", "plně přesvědčená tímto",
+            "kompletně spokojená s mým", "absolutně nadšená tímto", "totálně okouzlená mým novým"
         ]
     },
     "quality_comments": {
@@ -82,7 +98,12 @@ REVIEW_COMPONENTS = {
             "qualität übertrifft den preis", "verarbeitung ist on point", "material ist first class",
             "haptik ist einfach premium", "stoff fühlt sich luxuriös an", "nähte halten bombenfest",
             "details machen den unterschied", "material ist langlebig", "fühlt sich wertig an",
-            "qualität ist überraschend gut", "verarbeitung lässt nichts zu wünschen übrig"
+            "qualität ist überraschend gut", "verarbeitung lässt nichts zu wünschen übrig",
+            "material ist mega nice", "qualität stimmt zu 100%", "verarbeitung ist erstklassig",
+            "stoff hat eine tolle struktur", "material ist angenehm schwer", "nähte sind sauber gesetzt",
+            "haptik ist butterweich", "qualität rechtfertigt jeden cent", "material ist richtig edel",
+            "verarbeitung ist makellos", "stoff ist dick und stabil", "details sind perfekt durchdacht",
+            "material hat gewicht", "qualität ist jeden euro wert", "verarbeitung zeigt handwerkskunst"
         ],
         "en": [
             "quality is insane", "construction is top notch", "material feels premium",
@@ -110,6 +131,22 @@ REVIEW_COMPONENTS = {
             "la texture è incredibilmente buona", "il tessuto è di altissima qualità", "le cuciture sono perfettamente fatte",
             "i dettagli sono fatti con cura", "il materiale è robusto ma morbido", "sembra più costoso di quanto fosse",
             "la qualità supera il prezzo", "la costruzione è perfetta", "il materiale è di prima classe"
+        ],
+        "pl": [
+            "jakość jest niesamowita", "wykonanie pierwsza klasa", "materiał czuje się premium",
+            "tekstura jest niewiarygodnie dobra", "tkanina super wysokiej jakości", "szwy są perfekcyjnie wykonane",
+            "detale są przemyślane", "materiał jest mocny ale miękki", "czuje się drożej niż kosztował",
+            "jakość przewyższa cenę", "wykonanie na poziomie", "materiał pierwszej klasy",
+            "dotyk jest po prostu premium", "tkanina czuje się luksusowo", "szwy trzymają się idealnie",
+            "detale robią różnicę", "materiał jest trwały", "czuje się ekskluzywnie",
+            "jakość jest zaskakująco dobra", "wykonanie nie pozostawia nic do życzenia"
+        ],
+        "cs": [
+            "kvalita je šílená", "konstrukce je prvotřídní", "materiál působí prémiově",
+            "textura je neuvěřitelně dobrá", "látka je super vysoké kvality", "švy jsou perfektně provedené",
+            "detaily jsou pečlivě zpracované", "materiál je pevný ale měkký", "působí dráž než stál",
+            "kvalita převyšuje cenu", "konstrukce je na úrovni", "materiál je první třídy",
+            "na dotek je prostě prémiový", "látka působí luxusně", "švy drží perfektně"
         ]
     },
     "fit_comments": {
@@ -146,6 +183,20 @@ REVIEW_COMPONENTS = {
             "si adatta in tutti i punti giusti", "veste fedele alla taglia", "la vestibilità è un sogno",
             "la tabella taglie era precisa", "il taglio accentua perfettamente", "veste come su misura",
             "la vestibilità supera le aspettative", "la taglia veste come previsto", "il taglio è ben pensato"
+        ],
+        "pl": [
+            "pasuje jak ulał", "rozmiar jest idealny", "krój jest super pochlebny",
+            "leży we wszystkich właściwych miejscach", "rozmiar zgodny z opisem", "dopasowanie jest wymarzone",
+            "tabela rozmiarów była dokładna", "krój podkreśla idealnie", "pasuje jakby szyte na miarę",
+            "dopasowanie przekracza oczekiwania", "rozmiar pasuje jak należy", "krój jest przemyślany",
+            "siedzi wygodnie ale nie luźno", "dopasowanie jest w sam raz", "rozmiar był idealnym wyborem",
+            "krój jest super pochlebny", "pasuje jak druga skóra", "dopasowanie nie mogłoby być lepsze"
+        ],
+        "cs": [
+            "sedí jako ulité", "velikost je perfektní", "střih je super lichotivý",
+            "sedí na všech správných místech", "velikost odpovídá", "střih je sen",
+            "tabulka velikostí byla přesná", "střih zdůrazňuje perfektně", "sedí jako na míru",
+            "střih překonává očekávání", "velikost sedí jak má", "střih je promyšlený"
         ]
     },
     "style_comments": {
@@ -154,7 +205,11 @@ REVIEW_COMPONENTS = {
             "ästhetik trifft meinen geschmack", "style ist zeitlos modern", "design hebt sich ab",
             "look ist sophisticated", "ästhetik ist on point", "style macht statement",
             "design ist durchdacht", "look ist vielseitig", "ästhetik ist genau richtig",
-            "style ist perfekt ausbalanciert", "design ist eye-catching", "look ist mühellos cool"
+            "style ist perfekt ausbalanciert", "design ist eye-catching", "look ist mühellos cool",
+            "optik ist der hammer", "schnitt ist modern", "style ist voll meins",
+            "design spricht mich an", "look passt perfekt zu mir", "stil ist unverwechselbar",
+            "aussehen ist top", "design hat das gewisse etwas", "style ist fresh",
+            "optik überzeugt total", "look ist genau mein vibe", "design ist next level"
         ],
         "en": [
             "style is exactly my thing", "design is unique", "look is edgy but wearable",
@@ -177,6 +232,18 @@ REVIEW_COMPONENTS = {
             "lo stile è esattamente il mio genere", "il design è unico", "il look è edgy ma indossabile",
             "l'estetica colpisce il mio gusto", "lo stile è senza tempo e moderno", "il design si distingue",
             "il look è sofisticato", "l'estetica è perfetta", "lo stile fa una dichiarazione"
+        ],
+        "pl": [
+            "styl jest dokładnie w moim typie", "design jest unikalny", "wygląd jest edgy ale do noszenia",
+            "estetyka trafia w mój gust", "styl jest ponadczasowo nowoczesny", "design się wyróżnia",
+            "wygląd jest wyrafinowany", "estetyka jest na miejscu", "styl robi wrażenie",
+            "design jest przemyślany", "wygląd jest wszechstronny", "estetyka jest w sam raz",
+            "styl jest idealnie wyważony", "design przyciąga wzrok", "wygląd jest bezproblemowo fajny"
+        ],
+        "cs": [
+            "styl je přesně můj šálek kávy", "design je jedinečný", "vzhled je odvážný ale nositelný",
+            "estetika sedí mému vkusu", "styl je nadčasově moderní", "design vyčnívá",
+            "vzhled je sofistikovaný", "estetika je na místě", "styl dělá dojem"
         ]
     },
     "usage_scenarios": {
@@ -201,6 +268,15 @@ REVIEW_COMPONENTS = {
         "it": [
             "perfetto per i festival", "ideale per il clubbing", "ottimo per tutti i giorni", "super per gli appuntamenti",
             "fantastico per i concerti", "brillante per le feste", "incredibile per i servizi fotografici", "eccellente per gli eventi"
+        ],
+        "pl": [
+            "idealny na festiwale", "świetny do klubu", "super na co dzień", "genialny na randki",
+            "niesamowity na koncerty", "rewelacyjny na imprezy", "bomba na sesje zdjęciowe", "doskonały na eventy",
+            "optymalny na wyjścia", "najlepszy na celebracje", "wspaniały na spotkania", "wybitny na występy"
+        ],
+        "cs": [
+            "perfektní na festivaly", "ideální na kluby", "skvělý na každý den", "super na rande",
+            "úžasný na koncerty", "brilantní na párty", "bombový na focení", "vynikající na eventy"
         ]
     },
     "personal_reactions": {
@@ -230,6 +306,17 @@ REVIEW_COMPONENTS = {
             "sono completamente innamorata", "non potrei essere più felice", "supera tutte le aspettative",
             "esattamente quello che cercavo", "meglio del previsto", "mi rende così felice",
             "soddisfa tutti i desideri", "sono totalmente entusiasta", "non pensavo sarebbe stato così buono"
+        ],
+        "pl": [
+            "jestem kompletnie zakochana", "nie mogłabym być szczęśliwsza", "przekracza wszystkie oczekiwania",
+            "dokładnie to czego szukałam", "lepsze niż się spodziewałam", "sprawia że jestem taka szczęśliwa",
+            "spełnia wszystkie życzenia", "jestem totalnie zachwycona", "nie myślałam że będzie tak dobre",
+            "jestem pozytywnie zaskoczona", "naprawdę fajnie się nosi", "czuję się w tym super"
+        ],
+        "cs": [
+            "jsem úplně zamilovaná", "nemohla bych být šťastnější", "překonává všechna očekávání",
+            "přesně to co jsem hledala", "lepší než jsem čekala", "dělá mi takovou radost",
+            "splňuje všechna přání", "jsem totálně nadšená", "nemyslela jsem že to bude tak dobré"
         ]
     }
 }
@@ -284,6 +371,21 @@ EXTENDED_SHORT_REVIEWS = {
         "assolutamente fuoco 🔥", "ne ho bisogno in ogni colore", "grazie fuga per questo capolavoro",
         "energia da regina", "supremazia fuga", "prendi i miei soldi", "10000/10 comprerei di nuovo",
         "benedetta con questo pezzo", "manifestato e ricevuto", "l'universo ha detto sì", "vibrazioni da protagonista"
+    ],
+    "pl": [
+        "obsesja!!!!", "nowy ulubiony element", "kupione natychmiast🔥", "vibesy są nieskazitelne✨",
+        "absolutny ogień 🔥", "potrzebuję tego w każdym kolorze", "dzięki fuga za to arcydzieło",
+        "energia królowej", "supremacja fugi", "bierz moje pieniądze", "10000/10 kupiłabym znowu",
+        "błogosławiona tym elementem", "zamanifestowane i otrzymane", "wszechświat powiedział tak", "vibesy głównej bohaterki",
+        "żyję swoim najlepszym życiem", "zero myśli tylko vibesy", "poziom obsesji 1000", "już zamawiam więcej",
+        "portfel płacze ale warto", "dopamina dostarczona", "serotonina nadchodzi", "szczyt mody osiągnięty",
+        "gra stylowa podniesiona", "poziom pewności siebie w górę", "magnes na komplementy aktywowany", "główne wydarzenie stroju"
+    ],
+    "cs": [
+        "posedlá!!!!", "nový oblíbený kousek", "koupeno okamžitě🔥", "vibrace jsou dokonalé✨",
+        "absolutní oheň 🔥", "potřebuju to v každé barvě", "díky fuga za toto mistrovské dílo",
+        "energie královny", "nadvláda fugy", "ber moje peníze", "10000/10 koupila bych znovu",
+        "požehnaná tímto kouskem", "manifestováno a přijato", "vesmír řekl ano", "vibrace hlavní postavy"
     ]
 }
 
@@ -333,6 +435,49 @@ REVIEW_TITLES = {
             "Not bad", "Could be better", "Average", "Okay for the price", "Usable", "Middle-range",
             "Okay for everyday", "Pretty decent", "It's fine", "Acceptable", "Satisfactory", "Standard",
             "Regular", "Fair enough", "Reasonable"
+        ]
+    },
+    "pl": {
+        5: [
+            "Absolutnie niesamowite!", "Perfekcyjny produkt!", "Kocham to!", "Przekracza wszystkie oczekiwania!",
+            "Po prostu wspaniałe!", "Must-have!", "Gorąco polecam!", "Najlepszy produkt!",
+            "Jakość pierwsza klasa!", "Uwielbiam!", "Topowy produkt!", "Doskonały wybór!", "Obsesja!",
+            "Literalnie perfekcyjne!", "Totalnie zakochana!", "Tak cholernie dobre!", "Niesamowite!", "Niewiarygodne!",
+            "Wybitne!", "Fenomenalne!", "Wyjątkowe!", "Wspaniałe!", "Spektakularne!", "Zmienia grę!",
+            "Zmienia życie!", "Ponad niesamowite!", "Absolutnie genialne!", "Czysta perfekcja!"
+        ],
+        4: [
+            "Bardzo dobry produkt", "Prawie perfekcyjny", "Naprawdę ładny", "Bardzo zadowolona", "Dobra jakość",
+            "Robi świetne wrażenie", "Godny polecenia", "Pozytywnie zaskoczona", "Świetny zakup",
+            "Dobry stosunek jakości do ceny", "Piękny design", "Przekonujący", "Naprawdę fajny", "Całkiem ładny",
+            "Bardzo zadowolona", "Całkiem dobry", "Naprawdę dobrze zrobiony", "Świetna rzecz", "Całkiem niesamowity",
+            "Bardzo satysfakcjonujący", "Świetny element", "Zdecydowanie polecam", "Solidny wybór"
+        ],
+        3: [
+            "W porządku", "Spełnia swoje zadanie", "Ogólnie zadowolona", "Średni", "Spełnia oczekiwania",
+            "Nieźle", "Mogłoby być lepiej", "Przeciętny", "Ok jak na cenę", "Używalny", "Średnia półka",
+            "Ok na co dzień", "Całkiem przyzwoity", "Jest ok", "Akceptowalny", "Satysfakcjonujący", "Standardowy",
+            "Zwykły", "Wystarczająco dobry", "Rozsądny"
+        ]
+    },
+    "cs": {
+        5: [
+            "Absolutně úžasné!", "Perfektní produkt!", "Miluji to!", "Překonává všechna očekávání!",
+            "Prostě nádherné!", "Musíte mít!", "Vřele doporučuji!", "Nejlepší produkt!",
+            "Prvotřídní kvalita!", "Zbožňuji to!", "Top produkt!", "Vynikající volba!", "Posedlost!",
+            "Doslova perfektní!", "Totálně zamilovaná!", "Tak zatraceně dobré!", "Ohromující!", "Neuvěřitelné!",
+            "Vynikající!", "Fenomenální!", "Výjimečné!", "Skvělé!", "Spektakulární!"
+        ],
+        4: [
+            "Velmi dobrý produkt", "Téměř perfektní", "Opravdu pěkné", "Velmi spokojená", "Dobrá kvalita",
+            "Dělá skvělý dojem", "Doporučitelné", "Pozitivně překvapená", "Skvělý nákup",
+            "Dobrý poměr cena/výkon", "Krásný design", "Přesvědčivé", "Opravdu cool", "Docela pěkné",
+            "Velmi spokojená", "Docela dobré", "Opravdu dobře zpracované", "Skvělá věc", "Docela úžasné"
+        ],
+        3: [
+            "V pořádku", "Splňuje svůj účel", "Celkově spokojená", "Průměrné", "Splňuje očekávání",
+            "Není špatné", "Mohlo by být lepší", "Průměrné", "Ok za tu cenu", "Použitelné", "Střední třída",
+            "Ok na každý den", "Docela slušné", "Je to ok", "Přijatelné", "Uspokojivé", "Standardní"
         ]
     },
     "es": {
@@ -675,7 +820,7 @@ def generate_product_specific_comment(product_insights, language="en"):
                 'gothic': 'der Gothic Style ist genau mein Ding',
                 'punk': 'Punk Vibe ist authentisch',
                 'vintage': 'Vintage Look ist zeitlos',
-                'elegant': 'elegant und sophisticated'
+                'elegant': 'elegant und raffiniert'
             },
             'en': {
                 'gothic': 'gothic aesthetic is perfect',
@@ -938,6 +1083,18 @@ def generate_reviewer_info(language="en"):
                 "first": ["Giulia", "Francesco", "Sofia", "Alessandro", "Aurora", "Lorenzo", "Ginevra", "Matteo", "Alice", "Leonardo",
                          "Emma", "Gabriele", "Giorgia", "Riccardo", "Martina", "Tommaso", "Chiara", "Edoardo", "Anna", "Marco"],
                 "last": ["R.", "B.", "C.", "F.", "G.", "M.", "P.", "S.", "V.", "D.", "L.", "T.", "N.", "A."]
+            },
+            "pl": {
+                "first": ["Maja", "Jakub", "Zuzanna", "Kacper", "Julia", "Szymon", "Lena", "Filip", "Aleksandra", "Jan",
+                         "Zofia", "Antoni", "Oliwia", "Franciszek", "Natalia", "Mikołaj", "Maria", "Wojciech", "Alicja", "Adam",
+                         "Wiktoria", "Michał", "Emilia", "Marcel", "Hanna", "Wiktor", "Amelia", "Piotr", "Nikola", "Igor"],
+                "last": ["K.", "W.", "N.", "L.", "Z.", "S.", "M.", "B.", "G.", "P.", "C.", "J.", "D.", "R.",
+                        "T.", "A.", "O.", "E.", "F.", "H."]
+            },
+            "cs": {
+                "first": ["Tereza", "Jakub", "Eliška", "Jan", "Anna", "Tomáš", "Adéla", "Matyáš", "Natálie", "Vojtěch",
+                         "Sofie", "Adam", "Viktorie", "Ondřej", "Karolína", "Filip", "Kristýna", "Lukáš", "Barbora", "David"],
+                "last": ["N.", "K.", "P.", "S.", "V.", "M.", "H.", "D.", "C.", "B.", "L.", "T.", "J.", "R."]
             }
         }
         
@@ -990,7 +1147,9 @@ def get_simplified_product_name(product_title, language="en"):
             "de": ["Teil", "Stück", "Artikel", "Produkt"],
             "es": ["pieza", "artículo", "producto"],
             "fr": ["pièce", "article", "produit"],
-            "it": ["pezzo", "articolo", "prodotto"]
+            "it": ["pezzo", "articolo", "prodotto"],
+            "pl": ["element", "rzecz", "artykuł", "produkt"],
+            "cs": ["kousek", "věc", "produkt", "zboží"]
         }
         return random.choice(fallbacks.get(language, fallbacks["en"]))
     
@@ -1150,8 +1309,22 @@ def generate_review_content(product, rating, language="en", product_insights=Non
             if i == 0:
                 review = part
             else:
-                # Varied connectors
-                connectors = [". ", "! ", ", ", " - ", " and ", ". Also ", "!! ", "... "]
+                # Language-specific connectors
+                if language == "de":
+                    connectors = [". ", "! ", ", ", " - ", " und ", ". Außerdem ", "!! ", "... "]
+                elif language == "pl":
+                    connectors = [". ", "! ", ", ", " - ", " i ", ". Dodatkowo ", "!! ", "... "]
+                elif language == "cs":
+                    connectors = [". ", "! ", ", ", " - ", " a ", ". Také ", "!! ", "... "]
+                elif language == "it":
+                    connectors = [". ", "! ", ", ", " - ", " e ", ". Inoltre ", "!! ", "... "]
+                elif language == "fr":
+                    connectors = [". ", "! ", ", ", " - ", " et ", ". De plus ", "!! ", "... "]
+                elif language == "es":
+                    connectors = [". ", "! ", ", ", " - ", " y ", ". Además ", "!! ", "... "]
+                else:  # English default
+                    connectors = [". ", "! ", ", ", " - ", " and ", ". Also ", "!! ", "... "]
+                    
                 weights = [30, 20, 15, 10, 10, 5, 5, 5]
                 connector = random.choices(connectors, weights=weights, k=1)[0]
                 review += connector + part
@@ -1162,9 +1335,24 @@ def generate_review_content(product, rating, language="en", product_insights=Non
             if random.random() < 0.3:
                 review = review.lower()
             
-            # Add emojis/special characters
+            # Add emojis/special characters with language-appropriate slang
             if random.random() < 0.4:
-                endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤", " fr fr", " no cap", " tbh", " ngl"]
+                if language == "en":
+                    endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤", " fr fr", " no cap", " tbh", " ngl"]
+                elif language == "de":
+                    endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤", " echt jetzt", " safe", " digga", " krass"]
+                elif language == "pl":
+                    endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤", " serio", " czad", " kozak", " sztos"]
+                elif language == "cs":
+                    endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤", " fakt", " super", " paráda"]
+                elif language == "it":
+                    endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤", " davvero", " pazzesco", " top"]
+                elif language == "fr":
+                    endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤", " grave", " trop bien", " chanmé"]
+                elif language == "es":
+                    endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤", " literal", " que guay", " brutal"]
+                else:
+                    endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤"]
                 review += random.choice(endings)
     else:
         # Fallback to simple review
@@ -1173,7 +1361,9 @@ def generate_review_content(product, rating, language="en", product_insights=Non
             "de": [f"liebe dieses {simplified_name}", f"tolles {simplified_name}", f"perfektes {simplified_name}"],
             "es": [f"amo este {simplified_name}", f"gran {simplified_name}", f"perfecto {simplified_name}"],
             "fr": [f"j'adore ce {simplified_name}", f"super {simplified_name}", f"parfait {simplified_name}"],
-            "it": [f"amo questo {simplified_name}", f"ottimo {simplified_name}", f"perfetto {simplified_name}"]
+            "it": [f"amo questo {simplified_name}", f"ottimo {simplified_name}", f"perfetto {simplified_name}"],
+            "pl": [f"kocham ten {simplified_name}", f"świetny {simplified_name}", f"perfekcyjny {simplified_name}"],
+            "cs": [f"miluji tento {simplified_name}", f"skvělý {simplified_name}", f"perfektní {simplified_name}"]
         }
         review = random.choice(simple_reviews.get(language, simple_reviews["en"]))
     
@@ -1342,3 +1532,146 @@ def reset_phrase_tracking():
     if os.path.exists(PHRASE_TRACKING_FILE):
         os.remove(PHRASE_TRACKING_FILE)
     print("Phrase tracking reset")
+
+# Testing function to validate language consistency
+def test_language_consistency(num_tests=50):
+    """Test that reviews maintain language consistency"""
+    import re
+    
+    # Common cross-language contamination patterns
+    contamination_patterns = {
+        'de': {
+            'forbidden': [r'\b(and|also|the|is|for|with)\b', r'\b(no cap|tbh|fr fr|ngl)\b'],
+            'allowed': ['und', 'auch', 'der', 'die', 'das', 'ist', 'für', 'mit']
+        },
+        'pl': {
+            'forbidden': [r'\b(and|also|the|is|for|with|und|der|die|das)\b', r'\b(no cap|tbh|fr fr|ngl)\b'],
+            'allowed': ['i', 'także', 'jest', 'dla', 'z']
+        },
+        'cs': {
+            'forbidden': [r'\b(and|also|the|is|for|with|und|der|die|das)\b', r'\b(no cap|tbh|fr fr|ngl)\b'],
+            'allowed': ['a', 'také', 'je', 'pro', 's']
+        },
+        'it': {
+            'forbidden': [r'\b(and|also|the|is|for|with)\b', r'\b(no cap|tbh|fr fr|ngl)\b'],
+            'allowed': ['e', 'anche', 'il', 'la', 'è', 'per', 'con']
+        },
+        'fr': {
+            'forbidden': [r'\b(and|also|the|is|for|with)\b', r'\b(no cap|tbh|fr fr|ngl)\b'],
+            'allowed': ['et', 'aussi', 'le', 'la', 'est', 'pour', 'avec']
+        },
+        'es': {
+            'forbidden': [r'\b(and|also|the|is|for|with)\b', r'\b(no cap|tbh|fr fr|ngl)\b'],
+            'allowed': ['y', 'también', 'el', 'la', 'es', 'para', 'con']
+        }
+    }
+    
+    # Test product
+    test_product = {
+        'id': '12345',
+        'title': 'Gothic Punk Mesh Top with Chains',
+        'body_html': '<p>Edgy mesh top featuring decorative chains and punk aesthetic. Perfect for concerts and clubbing.</p>',
+        'handle': 'gothic-punk-mesh-top'
+    }
+    
+    results = {
+        'total': num_tests,
+        'passed': 0,
+        'failed': 0,
+        'errors': []
+    }
+    
+    print(f"\n🧪 Testing language consistency with {num_tests} reviews...\n")
+    
+    for i in range(num_tests):
+        # Generate a review
+        review_data = generate_review(test_product, existing_reviews=i)
+        
+        language = review_data.get('location', 'US')[:2].lower()
+        
+        # Map location to language
+        location_language_map = {
+            'de': 'de', 'at': 'de',
+            'ch': 'de',  # Switzerland is complex - could be de/fr/it but we'll default to de
+            'pl': 'pl', 
+            'cz': 'cs', 'sk': 'cs',
+            'it': 'it',
+            'fr': 'fr', 'be': 'fr',
+            'es': 'es',
+            'us': 'en', 'uk': 'en', 'ca': 'en', 'au': 'en',
+            'nl': 'nl', 'se': 'sv', 'dk': 'da', 'no': 'no',
+            'fi': 'fi', 'hu': 'hu', 'jp': 'ja', 'kr': 'ko',
+            'ru': 'ru', 'by': 'ru', 'kz': 'ru', 'lt': 'ru',
+            'tr': 'tr', 'cn': 'zh', 'tw': 'zh', 'hk': 'zh'
+        }
+        
+        expected_language = location_language_map.get(language, 'en')
+        
+        # Check title and content for contamination
+        title = review_data.get('title', '')
+        content = review_data.get('content', '')
+        full_text = f"{title} {content}".lower()
+        
+        # Skip empty reviews
+        if not full_text.strip():
+            results['passed'] += 1
+            continue
+        
+        # Check for forbidden patterns
+        has_contamination = False
+        if expected_language in contamination_patterns:
+            patterns = contamination_patterns[expected_language]
+            for pattern in patterns['forbidden']:
+                if re.search(pattern, full_text, re.IGNORECASE):
+                    has_contamination = True
+                    error = {
+                        'review_num': i + 1,
+                        'location': review_data.get('location'),
+                        'expected_language': expected_language,
+                        'pattern_found': pattern,
+                        'title': title,
+                        'content': content[:100] + '...' if len(content) > 100 else content
+                    }
+                    results['errors'].append(error)
+                    break
+        
+        if has_contamination:
+            results['failed'] += 1
+        else:
+            results['passed'] += 1
+    
+    # Print results
+    print(f"✅ Passed: {results['passed']}/{results['total']} ({results['passed']/results['total']*100:.1f}%)")
+    print(f"❌ Failed: {results['failed']}/{results['total']} ({results['failed']/results['total']*100:.1f}%)")
+    
+    if results['errors']:
+        print("\n⚠️  Language contamination detected:")
+        for error in results['errors'][:5]:  # Show first 5 errors
+            print(f"\n  Review #{error['review_num']}:")
+            print(f"  Location: {error['location']} (Expected: {error['expected_language']})")
+            print(f"  Found pattern: {error['pattern_found']}")
+            print(f"  Title: {error['title']}")
+            print(f"  Content: {error['content']}")
+    
+    # Check distribution
+    print("\n📊 Language distribution check:")
+    language_counts = {}
+    for i in range(100):
+        lang = select_language()
+        language_counts[lang] = language_counts.get(lang, 0) + 1
+    
+    expected_distribution = {
+        'de': 37, 'pl': 11, 'en': 13, 'it': 6, 'fr': 2, 'es': 2, 
+        'nl': 2, 'sv': 1, 'da': 1, 'cs': 2, 'ja': 2, 'ko': 1, 
+        'ru': 1, 'tr': 1, 'sk': 1, 'fi': 1, 'no': 1
+    }
+    
+    print(f"{'Language':<10} {'Expected':<10} {'Actual':<10} {'Diff':<10}")
+    print("-" * 40)
+    for lang in ['de', 'pl', 'en', 'it', 'cs', 'fr', 'es']:
+        expected = expected_distribution.get(lang, 0)
+        actual = language_counts.get(lang, 0)
+        diff = actual - expected
+        print(f"{lang:<10} {expected:<10} {actual:<10} {diff:+<10}")
+    
+    return results
