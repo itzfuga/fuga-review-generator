@@ -445,36 +445,42 @@ ADDITIONAL_LANGUAGES = {
 }
 
 def generate_youthful_username():
-    """Generate trendy, youth-oriented usernames with more variety"""
-    prefixes = ["xX", "x", "lil", "big", "the", "its", "im", "ur", "ya", ""]
+    """Generate trendy, youth-oriented usernames with more variety and realism"""
+    
+    # 40% chance for simple, normal usernames
+    if random.random() < 0.4:
+        normal_usernames = [
+            "sarah_m", "alex_k", "emma_95", "mike_j", "lea_s", "tom_b", "nina_x", "ben_l",
+            "mia_2024", "luke_s", "anna_k", "max_t", "lara_m", "finn_b", "zoe_l", "jan_s",
+            "lily_r", "noah_k", "maya_s", "erik_m", "luna_j", "dean_b", "ivy_x", "cole_s",
+            "ruby_k", "jude_m", "sage_l", "kai_b", "nova_s", "cruz_k", "rain_j", "fox_m",
+            "user12345", "reviewer99", "customer2024", "shopper_x", "buyer123", "guest_user"
+        ]
+        return random.choice(normal_usernames)
+    
+    # For the rest, generate trendy usernames but less obvious
+    prefixes = ["", "", "", "", "lil", "big", "the", "its", "my", "ur", "x", ""]  # More empty prefixes
     
     themes = [
-        # Dark/Gothic
-        "dark", "goth", "emo", "shadow", "night", "moon", "vampire", "witch", "mystic", "chaos",
-        "void", "abyss", "demon", "devil", "hell", "doom", "grim", "death", "soul", "spirit",
-        # Fashion/Style
-        "style", "fashion", "aesthetic", "vibe", "mood", "slay", "serve", "drip", "fit", "look",
-        # Internet culture
-        "cyber", "digital", "glitch", "pixel", "neon", "vapor", "wave", "core", "punk", "grunge",
-        # Cute/Soft
-        "baby", "angel", "fairy", "bunny", "kitty", "honey", "sugar", "cherry", "peach", "berry",
-        # Cool/Edgy
-        "rebel", "riot", "rage", "toxic", "psycho", "crazy", "wild", "savage", "beast", "monster",
-        # Celestial
-        "star", "galaxy", "cosmos", "astro", "lunar", "solar", "venus", "mars", "pluto", "nebula",
-        # Music
-        "rave", "techno", "bass", "beat", "rhythm", "melody", "harmony", "disco", "trap", "house"
+        # Reduced dark/gothic themes, added more normal ones
+        "style", "fashion", "vibe", "mood", "aesthetic", "trend", "look", "fit", "drip",
+        "music", "beat", "rhythm", "melody", "dance", "party", "fun", "cool", "chill",
+        "star", "moon", "sun", "sky", "dream", "hope", "joy", "love", "peace", "free",
+        "art", "photo", "travel", "nature", "ocean", "forest", "mountain", "city", "home",
+        "book", "game", "tech", "digital", "online", "web", "net", "social", "connect",
+        # Keep some edgy but less obvious
+        "rebel", "wild", "free", "chaos", "storm", "fire", "ice", "thunder", "shadow", "light"
     ]
     
-    suffixes = ["Xx", "x", "xo", "666", "420", "69", "13", "777", "999", "2000", ""]
+    suffixes = ["", "", "", "", "", "x", "2024", "23", "24", "99", "00", "01", "02", "03"]
     
-    # Add birth years
+    # Add some birth years (less obvious)
     current_year = datetime.now().year
     for year in range(current_year - 24, current_year - 18):
         suffixes.append(str(year % 100))
     
-    # Generate username
-    if random.random() < 0.3:  # 30% chance for complex username
+    # Generate username - simpler structure
+    if random.random() < 0.2:  # 20% chance for complex username (reduced from 30%)
         return f"{random.choice(prefixes)}{random.choice(themes)}_{random.choice(themes)}{random.choice(suffixes)}"
     else:
         return f"{random.choice(themes)}{random.choice(suffixes)}"
@@ -781,12 +787,12 @@ def generate_review_date(max_months_back=36):
 
 def select_language():
     """Select language with realistic distribution for European/US market"""
-    # Updated weights for better distribution
+    # Adjusted weights - reduced Spanish significantly, increased German/English
     languages = ["de", "en", "es", "fr", "it", "ru", "pl", "nl", "sv", "da", 
                 "fi", "cs", "hu", "tr", "ar", "el", "ko", "ja", "zh", "id", "pt"]
     
-    # Weights that ensure good variety
-    weights = [18, 22, 8, 7, 6, 4, 4, 3, 3, 2, 
+    # Better distribution: 25% EN, 20% DE, 4% ES (reduced from 8%), rest varied
+    weights = [20, 25, 4, 8, 7, 5, 5, 4, 3, 3, 
               2, 2, 2, 2, 2, 2, 3, 3, 3, 2, 2]
     
     return random.choices(languages, weights=weights, k=1)[0]
@@ -829,15 +835,24 @@ def generate_review(product, existing_reviews=0):
     rating = generate_rating_distribution()
     reviewer_name, reviewer_email, reviewer_location = generate_reviewer_info(language)
     
-    # Title generation with variety
-    if random.random() < 0.08:  # 8% no title
+    # Title generation with better consistency
+    if random.random() < 0.12:  # 12% no title (slightly increased)
         review_title = ""
     else:
         titles = REVIEW_TITLES.get(language, REVIEW_TITLES["en"])
-        if rating in titles:
+        if rating in titles and titles[rating]:
             review_title = get_unique_phrase(titles[rating], language, f"title_{rating}")
         else:
-            review_title = ""
+            # Fallback titles for missing ratings
+            fallback_titles = {
+                "de": ["Gute Qualität", "Zufrieden", "Okay", "Top!", "Empfehlenswert"],
+                "en": ["Good quality", "Satisfied", "Nice!", "Great!", "Recommended"],
+                "es": ["Buena calidad", "Satisfecho", "¡Bien!", "¡Genial!", "Recomendado"],
+                "fr": ["Bonne qualité", "Satisfait", "Sympa!", "Super!", "Recommandé"],
+                "it": ["Buona qualità", "Soddisfatto", "Bello!", "Ottimo!", "Consigliato"]
+            }
+            fallback = fallback_titles.get(language, fallback_titles["en"])
+            review_title = random.choice(fallback)
     
     review_content = generate_review_content(product, rating, language)
     
