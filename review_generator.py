@@ -38,13 +38,13 @@ USED_PHRASES = load_phrase_tracking()
 REVIEW_COMPONENTS = {
     "opening_reactions": {
         "de": [
-            "absolut verliebt in dieses", "total begeistert von diesem", "mega happy mit dem",
-            "richtig zufrieden mit diesem", "komplett überzeugt von dem", "voll happy mit meinem neuen",
-            "super zufrieden mit dem", "echt beeindruckt von diesem", "total in love mit dem",
-            "richtig stolz auf diesen", "mega glücklich mit meinem", "voll überzeugt von diesem",
-            "komplett zufrieden mit dem", "absolut happy mit diesem", "total verliebt in mein neues",
-            "richtig begeistert von meinem", "mega zufrieden mit diesem", "voll beeindruckt von dem",
-            "komplett happy mit meinem neuen", "absolut überzeugt von diesem"
+            "bin absolut verliebt in dieses", "total begeistert von diesem Teil", "so happy mit dem Kauf",
+            "richtig zufrieden damit", "komplett überzeugt", "voll happy mit meinem neuen Teil",
+            "super zufrieden", "echt beeindruckt", "bin total verliebt",
+            "richtig stolz auf den Kauf", "mega glücklich", "voll überzeugt",
+            "komplett zufrieden", "absolut happy", "total verliebt in mein neues Teil",
+            "richtig begeistert", "mega zufrieden", "voll beeindruckt",
+            "komplett happy mit dem neuen Teil", "absolut überzeugt"
         ],
         "en": [
             "absolutely in love with this", "totally obsessed with my new", "super happy with this",
@@ -74,28 +74,28 @@ REVIEW_COMPONENTS = {
             "davvero orgogliosa di questo", "incredibilmente felice con il mio", "pienamente convinta da questo"
         ],
         "pl": [
-            "absolutnie zakochana w tym", "totalnie zafascynowana moim nowym", "super szczęśliwa z tym",
-            "naprawdę zadowolona z mojego", "całkowicie przekonana tym", "bardzo zadowolona z mojego nowego",
-            "niesamowicie szczęśliwa z tym", "naprawdę pod wrażeniem tego", "totalnie zakochana w moim",
-            "naprawdę dumna z tego", "niewiarygodnie szczęśliwa z mojego", "w pełni przekonana tym",
-            "całkowicie usatysfakcjonowana moim", "absolutnie zachwycona tym", "totalnie oczarowana moim nowym",
-            "naprawdę podekscytowana moim", "super zadowolona z tego", "naprawdę pod wrażeniem mojego",
-            "całkowicie szczęśliwa z mojego nowego", "absolutnie przekonana tym"
+            "absolutnie zakochana w tym", "jestem zachwycona moim nowym", "super szczęśliwa z tym",
+            "naprawdę zadowolona", "całkowicie przekonana", "bardzo zadowolona z nowego",
+            "niesamowicie szczęśliwa", "naprawdę pod wrażeniem", "totalnie zakochana",
+            "naprawdę dumna z zakupu", "niewiarygodnie szczęśliwa", "w pełni przekonana",
+            "całkowicie usatysfakcjonowana", "absolutnie zachwycona", "totalnie oczarowana",
+            "naprawdę podekscytowana", "super zadowolona", "naprawdę pod wrażeniem",
+            "całkowicie szczęśliwa z nowego", "absolutnie przekonana"
         ],
         "cs": [
-            "absolutně zamilovaná do tohoto", "totálně posedlá mým novým", "super šťastná s tímto",
-            "opravdu spokojená s mým", "úplně přesvědčená tímto", "velmi spokojená s mým novým",
-            "extrémně šťastná s tímto", "opravdu ohromená tímto", "totálně zamilovaná do mého",
-            "opravdu hrdá na tento", "neuvěřitelně šťastná s mým", "plně přesvědčená tímto",
+            "absolutně zamilovaná do tohoto", "jsem nadšená mým novým", "super šťastná s tímto",
+            "opravdu spokojená", "úplně přesvědčená", "velmi spokojená s novým",
+            "extrémně šťastná", "opravdu ohromená", "totálně zamilovaná",
+            "opravdu hrdá na nákup", "neuvěřitelně šťastná", "plně přesvědčená",
             "kompletně spokojená s mým", "absolutně nadšená tímto", "totálně okouzlená mým novým"
         ]
     },
     "quality_comments": {
         "de": [
-            "qualität ist der wahnsinn", "verarbeitung ist top notch", "material fühlt sich premium an",
+            "qualität ist der wahnsinn", "verarbeitung ist erstklassig", "material fühlt sich premium an",
             "haptik ist unglaublich gut", "stoff ist super hochwertig", "nähte sind perfekt verarbeitet",
             "details sind liebevoll gemacht", "material ist robust aber weich", "fühlt sich teurer an als es war",
-            "qualität übertrifft den preis", "verarbeitung ist on point", "material ist first class",
+            "qualität übertrifft den preis", "verarbeitung ist perfekt", "material ist erstklassig",
             "haptik ist einfach premium", "stoff fühlt sich luxuriös an", "nähte halten bombenfest",
             "details machen den unterschied", "material ist langlebig", "fühlt sich wertig an",
             "qualität ist überraschend gut", "verarbeitung lässt nichts zu wünschen übrig",
@@ -1276,7 +1276,7 @@ def generate_product_specific_comment(product_insights, language="en"):
                 'oversized': [
                     'oversized Fit ist mega gemütlich', 'lockerer Schnitt sitzt perfekt',
                     'oversized Style bringt Komfort', 'weiter Schnitt ist so bequem',
-                    'relaxed Fit macht alles mit', 'oversized Passform liebt jeder'
+                    'relaxed Fit ist super bequem', 'oversized Schnitt ist perfekt'
                 ],
                 'fitted': [
                     'tailliert und schmeichelt der Figur', 'enger Schnitt betont Silhouette',
@@ -1931,7 +1931,7 @@ def generate_review_content(product, rating, language="en", product_insights=Non
             else:
                 # Language-specific connectors
                 if language == "de":
-                    connectors = [". ", "! ", ", ", " - ", " und ", ". Außerdem ", "!! ", "... "]
+                    connectors = [". ", "! ", ", ", " - ", " und ", ". Dazu ", "!! ", "... "]
                 elif language == "pl":
                     connectors = [". ", "! ", ", ", " - ", " i ", ". Dodatkowo ", "!! ", "... "]
                 elif language == "cs":
@@ -1958,11 +1958,11 @@ def generate_review_content(product, rating, language="en", product_insights=Non
             # Add emojis/special characters with language-appropriate slang
             if random.random() < 0.4:
                 if language == "en":
-                    endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤", " fr fr", " no cap", " tbh", " ngl"]
+                    endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤"]
                 elif language == "de":
-                    endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤", " echt jetzt", " safe", " digga", " krass"]
+                    endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤"]
                 elif language == "pl":
-                    endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤", " serio", " czad", " kozak", " sztos"]
+                    endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤"]
                 elif language == "cs":
                     endings = ["!!!", "!!", "!", "...", "💖", "✨", "🔥", "👌", "💯", "🖤", " fakt", " super", " paráda"]
                 elif language == "it":

@@ -1,24 +1,22 @@
 {
   "es_title_3": [
-    "Promedio",
-    "Bien por el precio",
+    "Bastante decente",
     "Podría ser mejor",
-    "Bastante decente"
+    "Promedio",
+    "Utilizable",
+    "Bien por el precio"
   ],
   "en_title_5": [
-    "Beyond amazing!",
-    "Spectacular!",
-    "Best product ever!",
-    "Outstanding!",
-    "Incredible!",
-    "Simply wonderful!",
-    "Obsessed with this!",
-    "First-class quality!",
-    "Mind-blowing!",
     "Totally in love!",
-    "Life changing!",
     "A must-have!",
+    "Best product ever!",
+    "Incredible!",
+    "Perfect product!",
+    "Phenomenal!",
+    "Love it!",
+    "Beyond amazing!",
     "Absolutely amazing!",
+    "First-class quality!",
     "Game changer!"
   ],
   "ko_title_4": [
@@ -26,85 +24,92 @@
     "Almost perfect"
   ],
   "en_title_3": [
+    "Serves its purpose",
+    "Regular",
+    "Pretty decent",
+    "Acceptable",
     "Satisfied overall",
     "Average",
     "Usable",
-    "Acceptable",
-    "Regular",
-    "Pretty decent",
-    "Serves its purpose",
-    "Middle-range",
+    "Okay for everyday",
     "Meets expectations",
-    "Okay for everyday"
+    "Fair enough",
+    "Middle-range"
   ],
   "de_title_5": [
-    "Einfach nur wow!",
-    "Absolut fantastisch!",
-    "Spektakulär!",
-    "Grandios!",
-    "Außergewöhnlich!",
     "Liebe es!",
     "Begeistert!",
+    "Außergewöhnlich!",
+    "Krass gut!",
+    "Top Produkt!",
+    "Absolut fantastisch!",
+    "Grandios!",
     "Phänomenal!",
-    "Hammer!",
-    "Spitzenklasse!",
-    "Beste Entscheidung ever!"
+    "Einfach traumhaft!",
+    "Voll cool!",
+    "Einfach nur wow!",
+    "Spektakulär!",
+    "Mega Teil!",
+    "Bestes Produkt ever!",
+    "Beste Entscheidung ever!",
+    "Ein Muss für jeden!"
   ],
   "ja_title_3": [
     "Serves its purpose"
   ],
   "de_title_4": [
-    "Echt empfehlenswert",
-    "Gefällt mir sehr",
-    "Positiv überrascht",
-    "Wirklich schön",
-    "Sehr gutes Produkt",
-    "Fast perfekt",
-    "Bin sehr zufrieden",
-    "Sehr zufriedenstellend",
-    "Voll gut",
-    "Richtig nice",
-    "Empfehlenswert",
-    "Toller Kauf",
+    "Echt gelungen",
     "Macht einen tollen Eindruck",
-    "Gutes Preis-Leistungs-Verhältnis",
-    "Echt cool",
-    "Echt gelungen"
+    "Positiv überrascht",
+    "Gute Qualität",
+    "Wirklich schön",
+    "Fast perfekt",
+    "Sehr zufriedenstellend",
+    "Richtig nice",
+    "Ziemlich gut",
+    "Überzeugt mich",
+    "Toller Kauf",
+    "Gefällt mir sehr"
   ],
   "ja_title_5": [
-    "Phenomenal!",
-    "Exceeds all expectations!",
+    "Pure perfection!",
     "Obsessed with this!",
-    "Pure perfection!"
+    "Exceeds all expectations!",
+    "Phenomenal!"
   ],
   "en_short": [
-    "copped instantly🔥",
-    "no thoughts just vibes",
-    "vision board realized",
-    "compliment magnet activated",
-    "obsession level 1000",
-    "thank you fuga for this",
-    "living for this style",
-    "quality speaks volumes",
-    "tiktok famous incoming",
-    "fyp energy",
-    "feed curated",
-    "story worthy fit",
-    "photo dump essential",
-    "outfit main event",
-    "drip check passed",
-    "wardrobe game changer",
-    "frequency aligned",
     "worth every penny",
-    "absolutely fire 🔥",
-    "compliment magnet",
+    "photo dump essential",
+    "exactly as described",
+    "thank you fuga for this masterpiece",
     "luxury feel",
-    "thank you fuga for this masterpiece"
+    "living for this style",
+    "thank you fuga for this",
+    "outfit main event",
+    "frequency aligned",
+    "vision board realized",
+    "no thoughts just vibes",
+    "drip check passed",
+    "absolutely fire 🔥",
+    "feed curated",
+    "ordering more colors",
+    "obsession level 1000",
+    "copped instantly🔥",
+    "feels so premium",
+    "quality speaks volumes",
+    "compliment magnet",
+    "fyp energy",
+    "my new go-to piece",
+    "compliment magnet activated",
+    "wardrobe game changer",
+    "story worthy fit",
+    "tiktok famous incoming",
+    "fashion statement piece"
   ],
   "tr_title_4": [
+    "Makes a great impression",
     "Great purchase",
-    "Pretty awesome",
-    "Makes a great impression"
+    "Pretty awesome"
   ],
   "nl_title_3": [
     "Serves its purpose"
@@ -113,271 +118,299 @@
     "frequency aligned",
     "tiktok famous incoming",
     "energy matched",
-    "vibe check approved",
-    "brb ordering more"
+    "brb ordering more",
+    "vibe check approved"
   ],
   "ar_title_5": [
-    "Literally perfect!",
     "Love it so much!",
-    "Pure perfection!"
+    "Pure perfection!",
+    "Literally perfect!"
   ],
   "sv_title_5": [
     "Absolutely stellar!",
     "Excellent choice!"
   ],
   "ar_title_4": [
-    "Pretty nice",
-    "Almost perfect"
+    "Almost perfect",
+    "Pretty nice"
   ],
   "en_title_4": [
-    "Beautiful design",
-    "Pretty nice",
-    "Pretty awesome",
-    "Good value for money",
-    "Very good product",
-    "Solid choice",
-    "Recommendable",
+    "Convincing",
     "Great item",
-    "Almost perfect",
-    "Great piece",
+    "Good value for money",
     "Positively surprised",
-    "Convincing"
+    "Pretty awesome",
+    "Beautiful design",
+    "Solid choice",
+    "Almost perfect",
+    "Great purchase",
+    "Definitely recommend",
+    "Very satisfying",
+    "Great piece",
+    "Very good product",
+    "Pretty nice",
+    "Recommendable"
   ],
   "fr_title_5": [
-    "Spectaculaire!",
-    "Produit parfait!",
-    "Produit top!",
-    "Phénoménal!",
-    "Magnifique!",
-    "Dépasse toutes les attentes!",
-    "Absolument incroyable!",
-    "Obsédée par ça!",
-    "Le meilleur produit!",
     "Exceptionnel!",
-    "Je l'aime!",
     "Tout simplement merveilleux!",
-    "Littéralement parfait!"
+    "Excellent choix!",
+    "Dépasse toutes les attentes!",
+    "Je l'adore!",
+    "Spectaculaire!",
+    "Le meilleur produit!",
+    "Je l'aime!",
+    "Produit top!"
   ],
   "fr_short": [
     "nouvelle pièce préférée",
-    "look complet",
+    "style parfait pour moi",
+    "acheté instantanément🔥",
     "manifesté et reçu",
-    "10000/10 j'achèterais encore",
-    "acheté instantanément🔥"
+    "look complet",
+    "10000/10 j'achèterais encore"
   ],
   "nl_title_5": [
-    "Pure perfection!",
-    "Life changing!",
     "Love it!",
-    "First-class quality!",
     "Magnificent!",
+    "Pure perfection!",
     "Phenomenal!",
-    "Exceeds all expectations!",
-    "So freaking good!"
+    "First-class quality!",
+    "So freaking good!",
+    "Life changing!",
+    "Exceeds all expectations!"
   ],
   "da_title_5": [
     "Spectacular!",
     "Literally perfect!"
   ],
   "it_title_3": [
-    "Soddisfa le aspettative",
-    "Nella media",
-    "Va bene per il prezzo",
-    "Decente",
-    "Fascia media",
     "Va bene per tutti i giorni",
+    "Soddisfa le aspettative",
+    "Non male",
+    "Va bene per il prezzo",
+    "Fascia media",
+    "Nella media",
+    "Decente",
     "Serve al suo scopo",
-    "Non male"
+    "Utilizzabile"
   ],
   "id_title_5": [
-    "Love it!",
-    "Excellent choice!"
+    "Excellent choice!",
+    "Love it!"
   ],
   "fr_title_4": [
-    "Positivement surprise",
-    "Recommandable",
-    "Vraiment cool",
-    "Fait une grande impression",
-    "Me convainc",
-    "Beau design",
-    "Bon rapport qualité-prix",
-    "Très contente",
+    "Excellent achat",
+    "Bonne qualité",
     "Presque parfait",
+    "Bon rapport qualité-prix",
     "Assez bon",
-    "Excellent achat"
+    "Très bon produit",
+    "Me convainc",
+    "Positivement surprise"
   ],
   "pl_title_5": [
-    "Zmienia grę!",
-    "Perfekcyjny produkt!",
-    "Przekracza wszystkie oczekiwania!",
-    "Fenomenalne!",
-    "Najlepszy produkt!",
-    "Czysta perfekcja!",
-    "Po prostu wspaniałe!",
-    "Doskonały wybór!",
-    "Kocham to!",
-    "Absolutnie genialne!",
-    "Zmienia życie!",
-    "Wspaniałe!",
-    "Ponad niesamowite!",
-    "Gorąco polecam!",
     "Wybitne!",
-    "Niewiarygodne!"
+    "Spektakularne!",
+    "Fenomenalne!",
+    "Ponad niesamowite!",
+    "Niesamowite!",
+    "Kocham to!",
+    "Niewiarygodne!",
+    "Topowy produkt!",
+    "Przekracza wszystkie oczekiwania!",
+    "Czysta perfekcja!",
+    "Zmienia życie!",
+    "Absolutnie niesamowite!",
+    "Totalnie zakochana!",
+    "Zmienia grę!",
+    "Gorąco polecam!",
+    "Obsesja!",
+    "Literalnie perfekcyjne!",
+    "Jakość pierwsza klasa!",
+    "Doskonały wybór!"
   ],
   "it_title_4": [
-    "Positivamente sorpresa",
-    "Abbastanza buono",
     "Mi convince",
-    "Davvero bello",
-    "Design bellissimo",
+    "Positivamente sorpresa",
     "Prodotto molto buono",
+    "Davvero cool",
     "Raccomandabile",
-    "Davvero cool"
+    "Buona qualità",
+    "Design bellissimo",
+    "Davvero ben fatto"
   ],
   "de_short": [
-    "living my best life",
-    "manifestiert und bekommen",
-    "selbstbewusstsein durch die decke",
-    "peak fashion achieved",
-    "serotonin boost incoming",
-    "blessed mit diesem teil",
-    "no thoughts just vibes",
-    "vision board realized",
-    "nimm mein geld",
-    "luxus gefühl",
-    "total obsessed",
-    "main character vibes",
-    "compliment magnet activated",
+    "komplimente garantiert",
     "ästhetik on point",
-    "obsession level 1000",
-    "absolut gorgeous",
-    "fashion ziele erreicht",
-    "mein neuer daily driver",
-    "fyp energy",
-    "dopamine hit secured",
-    "könnte nicht besser sein",
-    "story worthy fit",
     "photo dump essential",
-    "outfit main event",
-    "omg, neues lieblingsstück💖",
-    "vibes sind immaculate✨",
+    "mein neuer favorit",
+    "selbstbewusstsein durch die decke",
+    "absolut gorgeous",
+    "könnte nicht besser sein",
+    "mega zufrieden damit",
+    "closet highlight reel",
+    "designer qualität",
+    "10000/10 würde wieder kaufen",
     "qualität überzeugt total",
     "brauche das in allen farben",
-    "universe said yes",
-    "aesthetic achieved",
-    "danke fuga für dieses meisterwerk",
-    "total verliebt",
-    "10000/10 würde wieder kaufen",
-    "brb ordering more",
-    "komplimente garantiert",
+    "outfit main event",
+    "omg, neues lieblingsstück💖",
+    "bin so happy",
+    "peak fashion achieved",
     "slay queen energy",
-    "designer qualität",
-    "closet highlight reel"
+    "vision board realized",
+    "no thoughts just vibes",
+    "premium qualität",
+    "qualität spricht bände",
+    "style revolution",
+    "mein neuer daily driver",
+    "sofort gekauft",
+    "universe said yes",
+    "vibes sind immaculate✨",
+    "dopamine hit secured",
+    "style ziele",
+    "total verliebt",
+    "total obsessed",
+    "fashion gewinn",
+    "fuga ist einfach top",
+    "obsession level 1000",
+    "einfach perfekt",
+    "nimm mein geld",
+    "fashion ziele erreicht",
+    "danke fuga für dieses meisterwerk",
+    "aesthetic achieved",
+    "fyp energy",
+    "compliment magnet activated",
+    "perfekt für anlässe",
+    "serotonin boost incoming",
+    "manifestiert und bekommen",
+    "luxus gefühl",
+    "sofortiger confidence boost",
+    "outfit highlight",
+    "brb ordering more",
+    "lebe für diesen style",
+    "living my best life",
+    "main character vibes",
+    "story worthy fit",
+    "blessed mit diesem teil"
   ],
   "ru_title_5": [
-    "Mind-blowing!",
-    "Pure perfection!",
-    "Life changing!",
-    "Love it!",
     "Outstanding!",
-    "Beyond amazing!"
+    "Love it!",
+    "Beyond amazing!",
+    "Pure perfection!",
+    "Mind-blowing!",
+    "Life changing!"
   ],
   "tr_title_5": [
-    "Phenomenal!",
     "Excellent choice!",
-    "Magnificent!"
+    "Magnificent!",
+    "Phenomenal!"
   ],
   "it_title_5": [
-    "Un must-have!",
-    "Fenomenale!",
-    "Lo adoro!",
-    "Qualità di prima classe!",
-    "Assolutamente incredibile!",
-    "Scelta eccellente!",
-    "Il miglior prodotto!",
     "Prodotto perfetto!",
-    "Davvero fantastico!",
+    "Un must-have!",
+    "Supera tutte le aspettative!",
+    "Lo raccomando vivamente!",
+    "Lo amo!",
+    "Fenomenale!",
     "Semplicemente meraviglioso!",
-    "Magnifico!"
+    "Prodotto top!",
+    "Davvero fantastico!",
+    "Scelta eccellente!",
+    "Qualità di prima classe!",
+    "Eccezionale!"
   ],
   "de_title_3": [
-    "Okay für den Alltag",
-    "Befriedigend",
-    "Könnte besser sein",
-    "Passt schon",
-    "Ganz okay",
-    "Nicht schlecht",
     "Mittelmäßig",
-    "Brauchbar",
-    "Erfüllt seinen Zweck",
-    "Ganz nett"
+    "Ganz nett",
+    "Durchschnittlich",
+    "Passt schon",
+    "Befriedigend",
+    "Im Großen und Ganzen zufrieden",
+    "Normal",
+    "Akzeptabel",
+    "Für den Preis in Ordnung",
+    "Mittelklasse",
+    "Entspricht den Erwartungen",
+    "Ganz okay"
   ],
   "cs_title_5": [
-    "Spektakulární!",
+    "Skvělé!",
+    "Zbožňuji to!",
+    "Překonává všechna očekávání!",
     "Totally in love!",
     "Spectacular!",
-    "Vynikající!",
-    "Výjimečné!",
-    "Fenomenální!",
-    "Posedlost!",
-    "Skvělé!",
-    "Překonává všechna očekávání!",
-    "Prostě nádherné!",
     "Vřele doporučuji!",
     "Prvotřídní kvalita!",
-    "Doslova perfektní!"
+    "Doslova perfektní!",
+    "Tak zatraceně dobré!",
+    "Miluji to!",
+    "Spektakulární!",
+    "Perfektní produkt!",
+    "Výjimečné!",
+    "Vynikající!",
+    "Prostě nádherné!",
+    "Neuvěřitelné!",
+    "Fenomenální!",
+    "Posedlost!"
   ],
   "id_title_4": [
     "Great piece"
   ],
   "sv_title_4": [
     "Great piece",
-    "Very pleased with it",
-    "Almost perfect"
+    "Almost perfect",
+    "Very pleased with it"
   ],
   "es_title_5": [
+    "¡Magnífico!",
     "¡Supera todas las expectativas!",
-    "¡El mejor producto!",
-    "¡Producto top!",
-    "¡Absolutamente increíble!",
-    "¡Espectacular!",
-    "¡Obsesionada con esto!",
-    "¡Excepcional!",
-    "¡Lo recomiendo mucho!",
-    "¡Simplemente maravilloso!",
     "¡Fenomenal!",
+    "¡Me encanta!",
+    "¡Lo amo!",
+    "¡Lo recomiendo mucho!",
+    "¡El mejor producto!",
+    "¡Absolutamente increíble!",
     "¡Extraordinario!",
-    "¡Producto perfecto!"
+    "¡Excepcional!",
+    "¡Espectacular!"
   ],
   "zh_short": [
     "style game elevated"
   ],
   "pl_short": [
-    "wardrobe game changer",
-    "potrzebuję tego w każdym kolorze",
+    "dopamina dostarczona",
+    "inwestycja w modę",
     "szczyt mody osiągnięty",
-    "serotonina nadchodzi",
-    "bierz moje pieniądze",
-    "energy matched",
-    "obsession level 1000",
     "nowy ulubiony element",
+    "potrzebuję tego w każdym kolorze",
     "blessed with this piece",
     "magnes na komplementy aktywowany",
+    "obsession level 1000",
+    "serotonina nadchodzi",
+    "energy matched",
     "dokładnie to czego chciałam",
-    "dopamina dostarczona"
+    "wardrobe game changer",
+    "bierz moje pieniądze",
+    "styl przeobrażony",
+    "super szczęśliwa z tym"
   ],
   "nl_title_4": [
     "Good quality"
   ],
   "it_short": [
-    "10000/10 comprerei di nuovo",
-    "manifestato e ricevuto",
-    "ossessionata con questo pezzo",
     "assolutamente fuoco 🔥",
-    "perfetto come descritto",
-    "comprato istantaneamente🔥",
+    "look completo",
     "rapporto qualità prezzo",
-    "ne ho bisogno in ogni colore"
+    "comprato istantaneamente🔥",
+    "10000/10 comprerei di nuovo",
+    "perfetto come descritto",
+    "comodo da indossare",
+    "ossessionata con questo pezzo",
+    "ne ho bisogno in ogni colore",
+    "manifestato e ricevuto"
   ],
   "ru_title_4": [
     "Very satisfied"
@@ -389,23 +422,19 @@
     "manifestation complete"
   ],
   "pl_title_4": [
-    "Robi świetne wrażenie",
+    "Dobry stosunek jakości do ceny",
     "Całkiem niesamowity",
-    "Świetna rzecz",
-    "Całkiem ładny",
-    "Naprawdę dobrze zrobiony",
-    "Bardzo dobry produkt",
-    "Świetny element",
-    "Naprawdę fajny",
-    "Great item",
     "Bardzo satysfakcjonujący",
-    "Bardzo zadowolona",
-    "Pozytywnie zaskoczona",
-    "Great piece",
-    "Really cool",
-    "Naprawdę ładny",
     "Zdecydowanie polecam",
-    "Convincing"
+    "Całkiem ładny",
+    "Solidny wybór",
+    "Naprawdę dobrze zrobiony",
+    "Całkiem dobry",
+    "Bardzo dobry produkt",
+    "Great piece",
+    "Świetna rzecz",
+    "Świetny element",
+    "Pozytywnie zaskoczona"
   ],
   "tr_short": [
     "thank you fuga for this masterpiece"
@@ -417,11 +446,13 @@
     "influence worthy"
   ],
   "pl_title_3": [
-    "Ogólnie zadowolona",
+    "Jest ok",
     "W porządku",
     "Całkiem przyzwoity",
+    "Ok na co dzień",
     "Standardowy",
-    "Ok na co dzień"
+    "Ogólnie zadowolona",
+    "Spełnia oczekiwania"
   ],
   "da_short": [
     "explore page vibes"
@@ -446,355 +477,394 @@
     "Average"
   ],
   "es_title_4": [
+    "Buena calidad",
+    "Causa una gran impresión",
+    "Bastante bueno",
     "Casi perfecto",
     "Muy buen producto",
-    "Buena calidad",
-    "Bastante bueno",
-    "Diseño hermoso",
-    "Causa una gran impresión",
-    "Me convence"
+    "Me convence",
+    "Realmente genial",
+    "Diseño hermoso"
   ],
   "cs_short": [
-    "energie královny",
-    "koupeno okamžitě🔥",
-    "opravdu chytrý nákup",
     "opravdu dobře udělané",
+    "posedlá tímto kouskem",
     "pohodlné na nošení",
+    "energie královny",
+    "opravdu chytrý nákup",
+    "koupeno okamžitě🔥",
     "barva nádherná"
   ],
   "cs_title_3": [
-    "Není špatné",
     "Ok za tu cenu",
+    "Ok na každý den",
+    "Není špatné",
     "Mohlo by být lepší"
   ],
   "es_short": [
-    "gracias fuga por esta obra maestra",
+    "no podría estar más feliz",
     "pieza declaración",
+    "vibras de protagonista",
+    "gracias fuga por esta obra maestra",
     "manifestado y recibido",
-    "exactamente lo que quería",
-    "vibras de protagonista"
+    "exactamente lo que quería"
   ],
   "cs_title_4": [
-    "Velmi spokojená",
-    "Velmi dobrý produkt",
+    "Krásný design",
     "Dobrý poměr cena/výkon",
+    "Velmi spokojená",
     "Opravdu dobře zpracované",
-    "Pozitivně překvapená",
+    "Velmi dobrý produkt",
+    "Docela úžasné",
     "Dělá skvělý dojem",
-    "Krásný design"
+    "Pozitivně překvapená"
   ],
   "de_material_cotton": [
-    "aus Baumwolle und super angenehm",
-    "tolles Baumwoll-Gefühl auf der Haut",
     "Baumwolle ist mega comfortable",
+    "aus Baumwolle und super angenehm",
     "Baumwoll-Material fühlt sich toll an",
+    "tolles Baumwoll-Gefühl auf der Haut",
     "Baumwolle in bester Qualität"
   ],
   "de_style_gothic": [
-    "Gothic Vibe ist authentisch dark",
-    "perfekte Gothic Atmosphäre eingefangen",
+    "Gothic Ästhetik trifft meinen Geschmack",
+    "der Gothic Style ist genau mein Ding",
     "düstere Eleganz überzeugt total",
-    "Gothic Ästhetik trifft meinen Geschmack"
+    "Gothic Vibe ist authentisch dark"
   ],
   "de_style_punk": [
     "Punk Ästhetik on point",
-    "underground Feeling perfekt getroffen",
-    "raw punk attitude eingefangen",
     "echter Punk Spirit spürbar",
+    "underground Feeling perfekt getroffen",
+    "Punk Vibe ist authentisch",
     "rebellische Energie strahlt aus"
   ],
   "de_style_vintage": [
-    "nostalgischer Vibe trifft genau",
+    "vintage Ästhetik perfekt umgesetzt",
     "retro Charme überzeugt",
     "zeitlose Eleganz eingefangen",
-    "vintage Ästhetik perfekt umgesetzt",
+    "nostalgischer Vibe trifft genau",
     "klassischer vintage spirit"
   ],
   "de_fit_oversized": [
-    "weiter Schnitt ist so bequem",
     "oversized Passform liebt jeder",
-    "lockerer Schnitt sitzt perfekt",
+    "oversized Fit ist mega gemütlich",
+    "weiter Schnitt ist so bequem",
     "oversized Style bringt Komfort",
-    "relaxed Fit macht alles mit"
+    "relaxed Fit ist super bequem",
+    "oversized Schnitt ist perfekt"
   ],
   "es_material_cotton": [
     "material algodón calidad excelente"
   ],
   "es_style_gothic": [
-    "atmósfera gótica auténtica",
+    "vibe gótico golpea diferente",
     "estética oscura habla alma",
-    "estética gótica es perfecta",
+    "atmósfera gótica auténtica",
     "estado ánimo gótico perfectamente ejecutado",
-    "vibe gótico golpea diferente"
+    "estética gótica es perfecta"
   ],
   "es_style_punk": [
+    "actitud punk cruda capturada",
+    "energía rebelde irradia",
     "verdadero espíritu punk brilla",
     "sensación underground perfectamente golpeada",
-    "vibe punk es auténtico",
-    "estética punk en punto",
-    "actitud punk cruda capturada"
+    "vibe punk es auténtico"
   ],
   "es_style_vintage": [
     "vibe nostálgico golpea exactamente"
   ],
   "es_fit_oversized": [
+    "estilo oversized trae comodidad",
     "silueta oversized funciona genial",
+    "corte espacioso acomoda todo",
     "ajuste relajado es increíble",
-    "estilo oversized trae comodidad"
+    "ajuste oversized es cómodo"
   ],
   "pl_material_cotton": [
     "miękka bawełna na skórze"
   ],
   "pl_style_gothic": [
-    "gotycki styl jest idealny",
     "mroczna estetyka przemawia do duszy",
-    "gotycki klimat trafia inaczej",
-    "autentyczna gotycka atmosfera",
-    "mroczna elegancja pięknie uchwycona"
+    "gotycki styl jest idealny",
+    "mroczna elegancja pięknie uchwycona",
+    "autentyczna gotycka atmosfera"
   ],
   "pl_style_punk": [
-    "surowa postawa punk uchwycona",
     "prawdziwy duch punk świeci",
-    "punkowy klimat jest autentyczny",
+    "surowa postawa punk uchwycona",
     "podziemne uczucie idealnie trafione",
-    "buntownicza energia promieniuje"
+    "estetyka punk na miejscu"
   ],
   "pl_style_vintage": [
     "klasyczny vintage duch"
   ],
   "pl_fit_oversized": [
-    "przestronny krój pomieści wszystko",
-    "relaxed fit czuje się niesamowicie",
-    "oversized styl zapewnia komfort",
     "oversized sylwetka działa świetnie",
-    "oversized krój jest bardzo wygodny"
+    "przestronny krój pomieści wszystko",
+    "oversized krój jest bardzo wygodny",
+    "relaxed fit czuje się niesamowicie"
   ],
   "de_occasion_party": [
     "ideal zum Feiern",
+    "für Events einfach perfect",
     "perfekt für Partys",
-    "Clubbing Outfit complete",
-    "party-ready und stylish"
+    "macht auf jeder Party eine gute Figur"
   ],
   "it_style_gothic": [
     "estetica oscura parla anima",
-    "eleganza oscura catturata bellamente",
     "umore gotico perfettamente eseguito",
-    "vibe gotico colpisce diversamente"
+    "eleganza oscura catturata bellamente",
+    "vibe gotico colpisce diversamente",
+    "estetica gotica è perfetta"
   ],
   "it_style_punk": [
-    "estetica punk sul punto",
-    "vibe punk è autentico",
     "vero spirito punk risplende",
-    "energia ribelle irradia"
+    "energia ribelle irradia",
+    "vibe punk è autentico",
+    "atteggiamento punk crudo catturato",
+    "sensazione underground perfettamente colpita"
   ],
   "it_occasion_party": [
+    "outfit clubbing completo",
+    "pronto per eventi e stupendo",
     "fa ottima impressione alle feste",
     "perfetto per le feste",
-    "pronto per la festa e stiloso",
-    "outfit clubbing completo"
+    "pronto per la festa e stiloso"
   ],
   "en_style_gothic": [
-    "gothic vibe hits different",
-    "dark aesthetic speaks to my soul",
+    "authentic gothic atmosphere",
     "gothic aesthetic is perfect",
-    "gothic mood perfectly executed"
+    "dark aesthetic speaks to my soul",
+    "gothic mood perfectly executed",
+    "gothic vibe hits different"
   ],
   "en_style_punk": [
-    "underground feeling perfectly hit",
-    "raw punk attitude captured",
     "punk vibe is authentic",
-    "rebellious energy radiates"
+    "real punk spirit shines through",
+    "punk aesthetic on point",
+    "rebellious energy radiates",
+    "raw punk attitude captured"
   ],
   "en_occasion_party": [
-    "perfect for parties",
-    "event-ready and gorgeous",
+    "ideal for celebrations",
+    "clubbing outfit complete",
+    "party-ready and stylish",
     "makes great impression at parties",
-    "clubbing outfit complete"
+    "perfect for parties"
   ],
   "cs_style_gothic": [
-    "autentická gotická atmosféra",
-    "temná estetika mluví k duši",
+    "gotická nálada dokonale provedena",
     "gotický vibe zasahuje jinak",
-    "gotický styl je perfektní"
+    "gotický styl je perfektní",
+    "temná estetika mluví k duši"
   ],
   "cs_style_punk": [
-    "punkový vibe je autentický",
-    "rebelská energie vyzařuje",
-    "punk estetika na místě",
-    "surový punk postoj zachycen"
+    "underground pocit dokonale zasažen",
+    "skutečný punk duch svítí",
+    "surový punk postoj zachycen",
+    "punk estetika na místě"
   ],
   "cs_occasion_party": [
-    "připraveno na události a nádherné",
-    "perfektní na večírky",
+    "clubbing outfit kompletní",
     "ideální na oslavy",
-    "dělá skvělý dojem na večírcích"
+    "perfektní na večírky",
+    "připraveno na události a nádherné"
   ],
   "fr_style_gothic": [
-    "humeur gothique parfaitement exécutée",
+    "élégance sombre capturée magnifiquement",
+    "esthétique gothique est parfaite",
     "atmosphère gothique authentique",
-    "esthétique sombre parle âme",
-    "vibe gothique frappe différemment"
+    "vibe gothique frappe différemment",
+    "humeur gothique parfaitement exécutée"
   ],
   "fr_style_punk": [
-    "vibe punk est authentique",
+    "esthétique punk sur point",
     "attitude punk brute capturée",
-    "énergie rebelle rayonne",
-    "vrai esprit punk brille"
+    "vibe punk est authentique",
+    "vrai esprit punk brille",
+    "sensation underground parfaitement frappée"
   ],
   "fr_occasion_party": [
-    "prêt pour fête et stylé",
-    "idéal pour célébrations",
+    "parfait pour les fêtes",
+    "prêt pour événements et magnifique",
     "fait excellente impression aux fêtes",
-    "parfait pour les fêtes"
+    "idéal pour célébrations",
+    "tenue clubbing complète"
   ],
   "pl_occasion_party": [
-    "strój na clubbing kompletny",
     "idealne na celebrację",
-    "gotowe na wydarzenia i wspaniałe",
+    "idealne na imprezy",
+    "gotowe na imprezę i stylowe",
+    "strój na clubbing kompletny",
     "robi świetne wrażenie na imprezach"
   ],
   "es_occasion_party": [
-    "listo para eventos y hermoso",
-    "ideal para celebraciones",
+    "outfit clubbing completo",
     "perfecto para fiestas",
-    "outfit clubbing completo"
+    "ideal para celebraciones",
+    "listo para fiesta y estiloso"
   ],
   "pl_material_velvet": [
+    "aksamit wydaje się drogi",
     "luksusowy materiał aksamitny",
     "aksamit dodaje elegancji",
-    "aksamit wydaje się drogi",
-    "bogata tekstura aksamitu"
+    "bogata tekstura aksamitu",
+    "pluszowe wykończenie aksamitne"
   ],
   "pl_feature_zipper": [
     "zamek błyskawiczny działa gładko",
-    "wysokiej jakości hardware zamka",
-    "zamek błyskawiczny działa świetnie",
-    "zamek ślizga się jak masło"
+    "zamek ślizga się jak masło",
+    "zamek błyskawiczny działa bez zarzutu",
+    "mocny zamek zbudowany na lata",
+    "wysokiej jakości hardware zamka"
   ],
   "pl_fit_comfortable": [
-    "nosi się jak druga skóra",
-    "tak wygodny przez cały dzień",
+    "bardzo przytulny i miękki",
     "niesamowicie wygodny do noszenia",
-    "poziom komfortu jest wspaniały"
+    "tak wygodny przez cały dzień",
+    "poziom komfortu jest wspaniały",
+    "nosi się jak druga skóra"
   ],
   "de_material_velvet": [
     "samtweich und total edel",
     "Samt fühlt sich luxuriös an",
-    "weicher Samt strahlt Eleganz aus",
-    "Samt-Material ist ein Traum",
-    "Velvet bringt Luxus-Feeling"
+    "Velvet bringt Luxus-Feeling",
+    "Samtoberfläche ist butterweich"
   ],
   "de_feature_zipper": [
-    "Zipper Qualität überzeugt total",
+    "Reißverschluss funktioniert einwandfrei",
     "stabiler Zipper hält ewig",
     "Reißverschluss läuft wie Butter",
-    "Reißverschluss funktioniert einwandfrei",
-    "hochwertiger Zipper verbaut"
+    "Zipper Qualität überzeugt total"
   ],
   "de_fit_comfortable": [
-    "unglaublich bequem zu tragen",
     "bequemer geht es nicht",
-    "comfort Level ist outstanding",
-    "mega gemütlich und weich"
+    "mega gemütlich und weich",
+    "unglaublich bequem zu tragen",
+    "trägt sich wie eine zweite Haut",
+    "comfort Level ist outstanding"
   ],
   "cs_material_velvet": [
+    "samet tak měkký",
     "samet vypadá draho",
-    "luxusní sametový materiál",
-    "plyšové sametové povrchová úprava"
+    "samet dodává eleganci",
+    "plyšové sametové povrchová úprava",
+    "luxusní sametový materiál"
   ],
   "cs_feature_zipper": [
+    "robustní zip postavený vydržet",
+    "zip funguje bezchybně",
+    "kvalita zipu vynikající",
     "zip klouzá jako máslo",
-    "zip funguje hladce",
-    "kvalita zipu vynikající"
+    "zip funguje hladce"
   ],
   "cs_fit_oversized": [
     "oversized styl přináší pohodlí",
+    "oversized střih je pohodlný",
     "oversized silueta funguje skvěle",
-    "relaxed střih je neuvěřitelný"
+    "relaxed střih je neuvěřitelný",
+    "volný střih sedí dokonale"
   ],
   "cs_fit_comfortable": [
-    "extrémně útulný a měkký",
+    "nosí se jako druhá kůže",
     "úroveň pohodlí je výjimečná",
-    "neuvěřitelně pohodlný na nošení"
+    "extrémně útulný a měkký",
+    "neuvěřitelně pohodlný na nošení",
+    "tak pohodlný celý den"
   ],
   "es_material_velvet": [
+    "terciopelo tan suave",
+    "material terciopelo lujoso",
     "terciopelo parece caro",
-    "terciopelo tan suave"
+    "textura terciopelo rica"
   ],
   "es_feature_zipper": [
-    "cremallera funciona suave",
-    "calidad de la cremallera excelente"
+    "cremallera funciona perfectamente",
+    "calidad de la cremallera excelente",
+    "cremallera robusta construida durar",
+    "cremallera funciona suave"
   ],
   "es_fit_comfortable": [
-    "increíblemente cómodo de usar",
-    "se usa como segunda piel"
+    "se usa como segunda piel",
+    "extremadamente acogedor y suave",
+    "tan cómodo todo el día",
+    "increíblemente cómodo de usar"
   ],
   "fr_material_velvet": [
-    "velours semble cher",
     "matériau velours luxueux",
-    "velours ajoute élégance"
+    "velours semble cher",
+    "velours ajoute élégance",
+    "texture velours riche"
   ],
   "fr_feature_zipper": [
     "fermeture éclair robuste construite durer",
     "hardware fermeture éclair haute qualité",
+    "fermeture éclair glisse comme beurre",
     "qualité de la fermeture éclair excellente"
   ],
   "fr_fit_oversized": [
-    "coupe oversized est confortable",
+    "coupe ample s'ajuste parfaitement",
     "coupe spacieuse accueille tout",
-    "coupe décontractée est incroyable"
+    "coupe décontractée est incroyable",
+    "coupe oversized est confortable"
   ],
   "fr_fit_comfortable": [
-    "si confortable toute la journée",
+    "ne peut pas être plus confortable",
     "niveau confort est exceptionnel",
+    "si confortable toute la journée",
     "incroyablement confortable à porter"
   ],
   "en_material_velvet": [
-    "velvet feels expensive",
-    "velvet texture is so soft",
     "velvet adds elegance",
+    "velvet texture is so soft",
     "luxurious velvet material",
-    "rich velvet texture"
+    "plush velvet finish"
   ],
   "en_feature_zipper": [
-    "high-quality zipper hardware",
-    "zipper glides like butter",
     "zipper works flawlessly",
+    "zipper operates smoothly",
     "sturdy zipper built to last",
     "zipper quality is great"
   ],
   "en_fit_oversized": [
-    "roomy fit accommodates everything",
-    "oversized fit is so comfy",
-    "oversized style brings comfort",
+    "loose cut fits perfectly",
     "oversized silhouette works great",
-    "loose cut fits perfectly"
+    "oversized style brings comfort",
+    "oversized fit is so comfy"
   ],
   "en_fit_comfortable": [
     "comfort level is outstanding",
-    "extremely cozy and soft",
     "so comfortable all day long",
-    "can't get more comfortable",
+    "extremely cozy and soft",
     "wears like a second skin"
   ],
   "it_material_velvet": [
-    "materiale velluto lussuoso",
     "velluto così morbido",
-    "finitura velluto morbida"
+    "materiale velluto lussuoso",
+    "finitura velluto morbida",
+    "velluto sembra costoso",
+    "texture velluto ricca"
   ],
   "it_feature_zipper": [
+    "cerniera scivola come burro",
+    "hardware cerniera alta qualità",
+    "qualità della cerniera ottima",
     "cerniera robusta costruita per durare",
-    "cerniera funziona liscia",
-    "hardware cerniera alta qualità"
+    "cerniera funziona liscia"
   ],
   "it_fit_oversized": [
+    "vestibilità oversized è comoda",
+    "silhouette oversized funziona benissimo",
     "vestibilità rilassata è incredibile",
     "stile oversized porta comfort",
     "taglio spazioso accoglie tutto"
   ],
   "it_fit_comfortable": [
-    "incredibilmente comodo da indossare",
+    "indossa come seconda pelle",
+    "non può essere più comodo",
     "estremamente accogliente e morbido",
-    "livello comfort è eccezionale"
+    "livello comfort è eccezionale",
+    "incredibilmente comodo da indossare"
   ]
 }
