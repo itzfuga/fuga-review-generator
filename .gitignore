@@ -27,3 +27,6 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Phrase tracking (runtime data)
+phrase_usage_tracking.json
