@@ -577,12 +577,37 @@ def generate_product_specific_comment(product_insights, language="en"):
             'pl': {
                 'cotton': 'bawełna jest bardzo wygodna',
                 'leather': 'skóra jest wysokiej jakości',
-                'lace': 'koronka jest pięknie wykonana'
+                'lace': 'koronka jest pięknie wykonana',
+                'denim': 'denim ma idealną wagę',
+                'velvet': 'aksamit jest tak miękki'
             },
             'it': {
                 'cotton': 'cotone molto confortevole',
                 'leather': 'pelle di ottima qualità',
-                'lace': 'pizzo bellissimo'
+                'lace': 'pizzo bellissimo',
+                'denim': 'denim peso perfetto',
+                'velvet': 'velluto così morbido'
+            },
+            'fr': {
+                'cotton': 'coton très confortable',
+                'leather': 'cuir de qualité incroyable',
+                'lace': 'dentelle magnifique',
+                'denim': 'denim poids parfait',
+                'velvet': 'velours si doux'
+            },
+            'es': {
+                'cotton': 'algodón muy cómodo',
+                'leather': 'cuero de calidad increíble',
+                'lace': 'encaje hermoso',
+                'denim': 'denim peso perfecto',
+                'velvet': 'terciopelo tan suave'
+            },
+            'cs': {
+                'cotton': 'bavlna velmi pohodlná',
+                'leather': 'kůže skvělé kvality',
+                'lace': 'krajka nádherná',
+                'denim': 'denim perfektní váha',
+                'velvet': 'samet tak měkký'
             }
         }
         
@@ -608,7 +633,33 @@ def generate_product_specific_comment(product_insights, language="en"):
             },
             'pl': {
                 'pockets': 'kieszenie są bardzo praktyczne',
-                'zipper': 'zamek błyskawiczny działa świetnie'
+                'zipper': 'zamek błyskawiczny działa świetnie',
+                'hood': 'kaptur pasuje idealnie',
+                'sleeves': 'długość rękawów jest idealna'
+            },
+            'it': {
+                'pockets': 'tasche molto utili',
+                'zipper': 'qualità della cerniera ottima',
+                'hood': 'cappuccio veste perfettamente',
+                'sleeves': 'lunghezza maniche perfetta'
+            },
+            'fr': {
+                'pockets': 'poches très utiles',
+                'zipper': 'qualité de la fermeture éclair excellente',
+                'hood': 'capuche s\'ajuste parfaitement',
+                'sleeves': 'longueur des manches parfaite'
+            },
+            'es': {
+                'pockets': 'bolsillos muy útiles',
+                'zipper': 'calidad de la cremallera excelente',
+                'hood': 'capucha ajusta perfectamente',
+                'sleeves': 'longitud de mangas perfecta'
+            },
+            'cs': {
+                'pockets': 'kapsy velmi praktické',
+                'zipper': 'kvalita zipu vynikající',
+                'hood': 'kapuce sedí dokonale',
+                'sleeves': 'délka rukávů perfektní'
             }
         }
         
@@ -631,6 +682,36 @@ def generate_product_specific_comment(product_insights, language="en"):
                 'punk': 'punk vibe is authentic',
                 'vintage': 'vintage style is timeless',
                 'elegant': 'elegant and classy'
+            },
+            'pl': {
+                'gothic': 'gotycki styl jest idealny',
+                'punk': 'punkowy klimat jest autentyczny',
+                'vintage': 'vintage styl jest ponadczasowy',
+                'elegant': 'elegancki i stylowy'
+            },
+            'it': {
+                'gothic': 'estetica gotica è perfetta',
+                'punk': 'vibe punk è autentico',
+                'vintage': 'stile vintage è senza tempo',
+                'elegant': 'elegante e di classe'
+            },
+            'fr': {
+                'gothic': 'esthétique gothique est parfaite',
+                'punk': 'vibe punk est authentique',
+                'vintage': 'style vintage est intemporel',
+                'elegant': 'élégant et chic'
+            },
+            'es': {
+                'gothic': 'estética gótica es perfecta',
+                'punk': 'vibe punk es auténtico',
+                'vintage': 'estilo vintage es atemporal',
+                'elegant': 'elegante y con clase'
+            },
+            'cs': {
+                'gothic': 'gotický styl je perfektní',
+                'punk': 'punkový vibe je autentický',
+                'vintage': 'vintage styl je nadčasový',
+                'elegant': 'elegantní a stylový'
             }
         }
         
@@ -653,6 +734,36 @@ def generate_product_specific_comment(product_insights, language="en"):
                 'fitted': 'fitted perfectly to my body',
                 'stretchy': 'material has great stretch',
                 'comfortable': 'incredibly comfortable to wear'
+            },
+            'pl': {
+                'oversized': 'oversized krój jest bardzo wygodny',
+                'fitted': 'dopasowany idealnie do ciała',
+                'stretchy': 'materiał ma świetną elastyczność',
+                'comfortable': 'niesamowicie wygodny do noszenia'
+            },
+            'it': {
+                'oversized': 'vestibilità oversized è comoda',
+                'fitted': 'aderente perfettamente al corpo',
+                'stretchy': 'materiale ha ottima elasticità',
+                'comfortable': 'incredibilmente comodo da indossare'
+            },
+            'fr': {
+                'oversized': 'coupe oversized est confortable',
+                'fitted': 'ajusté parfaitement au corps',
+                'stretchy': 'matériau a une grande élasticité',
+                'comfortable': 'incroyablement confortable à porter'
+            },
+            'es': {
+                'oversized': 'ajuste oversized es cómodo',
+                'fitted': 'ajustado perfectamente al cuerpo',
+                'stretchy': 'material tiene gran elasticidad',
+                'comfortable': 'increíblemente cómodo de usar'
+            },
+            'cs': {
+                'oversized': 'oversized střih je pohodlný',
+                'fitted': 'přiléhavý dokonale k tělu',
+                'stretchy': 'materiál má skvělou pružnost',
+                'comfortable': 'neuvěřitelně pohodlný na nošení'
             }
         }
         
@@ -675,6 +786,36 @@ def generate_product_specific_comment(product_insights, language="en"):
                 'casual': 'great for everyday wear',
                 'date': 'amazing for date nights',
                 'work': 'works for office too'
+            },
+            'pl': {
+                'party': 'idealne na imprezy',
+                'casual': 'świetne na co dzień',
+                'date': 'super na randki',
+                'work': 'sprawdza się też w pracy'
+            },
+            'it': {
+                'party': 'perfetto per le feste',
+                'casual': 'ottimo per tutti i giorni',
+                'date': 'fantastico per gli appuntamenti',
+                'work': 'va bene anche per l\'ufficio'
+            },
+            'fr': {
+                'party': 'parfait pour les fêtes',
+                'casual': 'excellent pour tous les jours',
+                'date': 'génial pour les rendez-vous',
+                'work': 'convient aussi au bureau'
+            },
+            'es': {
+                'party': 'perfecto para fiestas',
+                'casual': 'genial para el día a día',
+                'date': 'increíble para citas',
+                'work': 'funciona para la oficina también'
+            },
+            'cs': {
+                'party': 'perfektní na večírky',
+                'casual': 'skvělé na každý den',
+                'date': 'úžasné na rande',
+                'work': 'hodí se i do kanceláře'
             }
         }
         
@@ -683,7 +824,23 @@ def generate_product_specific_comment(product_insights, language="en"):
             if occasion in lang_comments:
                 comments.append(lang_comments[occasion])
     
-    return random.choice(comments) if comments else None
+    # Always return a comment if we have any insights, otherwise create a generic one
+    if comments:
+        return random.choice(comments)
+    
+    # Fallback generic product-specific comments if no specific insights found
+    generic_comments = {
+        'de': ['genau was ich gesucht hab', 'entspricht der Beschreibung', 'wie auf den Bildern'],
+        'en': ['exactly what I was looking for', 'matches the description', 'just like in the pictures'],
+        'pl': ['dokładnie tego szukałam', 'zgodne z opisem', 'jak na zdjęciach'],
+        'it': ['esattamente quello che cercavo', 'corrisponde alla descrizione', 'come nelle foto'],
+        'fr': ['exactement ce que je cherchais', 'correspond à la description', 'comme sur les photos'],
+        'es': ['exactamente lo que buscaba', 'coincide con la descripción', 'como en las fotos'],
+        'cs': ['přesně to co jsem hledala', 'odpovídá popisu', 'jako na fotkách']
+    }
+    
+    fallback = generic_comments.get(language, generic_comments['en'])
+    return random.choice(fallback)
 
 def generate_youthful_username():
     """Generate trendy, youth-oriented usernames with more variety and realism"""
@@ -924,29 +1081,32 @@ def generate_review_content(product, rating, language="en", product_insights=Non
     categories = get_product_category(product)
     simplified_name = get_simplified_product_name(product.get('title', ''), language)
     
-    # 15% chance for empty review
-    if random.random() < 0.15:
+    # 5% chance for empty review (reduced from 15%)
+    if random.random() < 0.05:
         return ""
     
-    # 30% chance for short one-liner (reduced from 35%)
-    if random.random() < 0.30:
+    # 20% chance for short one-liner (reduced from 30%)
+    if random.random() < 0.20:
         short_reviews = EXTENDED_SHORT_REVIEWS.get(language, EXTENDED_SHORT_REVIEWS["en"])
         return get_unique_phrase(short_reviews, language, "short")
     
     # Build review with varied components
     review_parts = []
     
-    # Use different component combinations to avoid repetition
+    # Use different component combinations with more product-specific emphasis
     component_patterns = [
-        ["opening", "quality", "style"],
-        ["personal", "fit", "usage"],
+        ["opening", "product_specific", "quality"],
+        ["product_specific", "fit", "personal"],
         ["opening", "product_specific", "personal"],
-        ["quality", "product_specific", "recommendation"],
-        ["personal", "quality", "usage"],
-        ["opening", "fit", "product_specific", "ending"],
+        ["quality", "product_specific", "style"],
+        ["product_specific", "quality", "usage"],
+        ["opening", "fit", "product_specific"],
         ["style", "product_specific", "personal"],
         ["usage", "product_specific", "quality"],
-        ["product_specific", "quality", "style"]
+        ["product_specific", "quality", "style"],
+        ["personal", "product_specific", "fit"],
+        ["product_specific", "style", "usage"],
+        ["opening", "product_specific", "ending"]
     ]
     
     pattern = random.choice(component_patterns)
@@ -965,8 +1125,8 @@ def generate_review_content(product, rating, language="en", product_insights=Non
             fit_comments = REVIEW_COMPONENTS["fit_comments"].get(language, REVIEW_COMPONENTS["fit_comments"]["en"])
             review_parts.append(random.choice(fit_comments))
         
-        elif component == "product_specific" and random.random() < 0.8:
-            # Add product-specific insights from description
+        elif component == "product_specific" and random.random() < 0.95:
+            # Add product-specific insights from description (increased from 80% to 95%)
             specific_comment = generate_product_specific_comment(product_insights, language)
             if specific_comment:
                 review_parts.append(specific_comment)
