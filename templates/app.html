@@ -465,8 +465,34 @@
         <div class="modal-content">
             <h3 id="modal-title">Generate Reviews</h3>
             <div class="form-group">
-                <label for="reviewCount">Number of Reviews</label>
-                <input type="number" id="reviewCount" value="5" min="1" max="20" />
+                <label>
+                    <input type="checkbox" id="useVariableCount" checked style="margin-right: 8px;" />
+                    Use Variable Count (10-30 reviews, naturally distributed)
+                </label>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                    ✨ Recommended: Creates realistic review patterns - older products get more reviews
+                </div>
+            </div>
+            
+            <div class="form-group" id="variableCountOptions">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <label for="minCount">Min Reviews</label>
+                        <input type="number" id="minCount" value="10" min="5" max="50" />
+                    </div>
+                    <div>
+                        <label for="maxCount">Max Reviews</label>
+                        <input type="number" id="maxCount" value="30" min="10" max="50" />
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group" id="fixedCountOptions" style="display: none;">
+                <label for="reviewCount">Fixed Number of Reviews</label>
+                <input type="number" id="reviewCount" value="15" min="1" max="50" />
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                    ⚠️ All products will have exactly the same number of reviews (less realistic)
+                </div>
             </div>
             <div class="form-group">
                 <label>Action:</label>
@@ -513,8 +539,34 @@
             <h3>Generate Reviews for Multiple Products</h3>
             <p id="bulk-product-count">Selected: 0 products</p>
             <div class="form-group">
-                <label for="bulkReviewCount">Reviews per Product</label>
-                <input type="number" id="bulkReviewCount" value="3" min="1" max="10" />
+                <label>
+                    <input type="checkbox" id="bulkUseVariableCount" checked style="margin-right: 8px;" />
+                    Use Variable Count (10-30 reviews per product, naturally distributed)
+                </label>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                    ✨ Recommended: Each product gets different review counts based on age and category
+                </div>
+            </div>
+            
+            <div class="form-group" id="bulkVariableCountOptions">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <label for="bulkMinCount">Min Reviews</label>
+                        <input type="number" id="bulkMinCount" value="10" min="5" max="50" />
+                    </div>
+                    <div>
+                        <label for="bulkMaxCount">Max Reviews</label>
+                        <input type="number" id="bulkMaxCount" value="30" min="10" max="50" />
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group" id="bulkFixedCountOptions" style="display: none;">
+                <label for="bulkReviewCount">Fixed Reviews per Product</label>
+                <input type="number" id="bulkReviewCount" value="15" min="1" max="50" />
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                    ⚠️ All products will have exactly the same number of reviews (suspicious pattern)
+                </div>
             </div>
             <div class="form-group">
                 <label>
@@ -675,6 +727,21 @@
                     }
                 });
             });
+            
+            // Add event listener for variable count toggle
+            const useVariableCountCheckbox = document.getElementById('useVariableCount');
+            const variableOptions = document.getElementById('variableCountOptions');
+            const fixedOptions = document.getElementById('fixedCountOptions');
+            
+            useVariableCountCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    variableOptions.style.display = 'block';
+                    fixedOptions.style.display = 'none';
+                } else {
+                    variableOptions.style.display = 'none';
+                    fixedOptions.style.display = 'block';
+                }
+            });
         }
         
         async function updatePlatformStatus() {
@@ -743,13 +810,23 @@
         async function generateReviews() {
             if (!currentProductId) return;
             
-            const count = parseInt(document.getElementById('reviewCount').value) || 5;
+            const useVariableCount = document.getElementById('useVariableCount').checked;
             const action = document.querySelector('input[name="action"]:checked').value;
             const error = document.getElementById('error');
             const success = document.getElementById('success');
             
             error.style.display = 'none';
             success.style.display = 'none';
+            
+            // Prepare request body based on count type
+            let countParams = {};
+            if (useVariableCount) {
+                countParams.min_count = parseInt(document.getElementById('minCount').value) || 10;
+                countParams.max_count = parseInt(document.getElementById('maxCount').value) || 30;
+                countParams.use_smart_distribution = true;
+            } else {
+                countParams.count = parseInt(document.getElementById('reviewCount').value) || 15;
+            }
             
             try {
                 let endpoint, requestBody;
@@ -765,13 +842,13 @@
                     
                     endpoint = `/api/generate-and-import/${currentProductId}`;
                     requestBody = { 
-                        count: count,
+                        ...countParams,
                         platforms: selectedPlatforms
                     };
                 } else {
                     // Traditional CSV generation
                     endpoint = `/api/generate/${currentProductId}`;
-                    requestBody = { count: count };
+                    requestBody = countParams;
                 }
                 
                 const response = await fetch(endpoint, {
@@ -923,6 +1000,21 @@
             
             document.getElementById('bulk-product-count').textContent = `Selected: ${selected.length} products`;
             document.getElementById('bulkModal').style.display = 'block';
+            
+            // Add event listener for bulk variable count toggle
+            const bulkUseVariableCountCheckbox = document.getElementById('bulkUseVariableCount');
+            const bulkVariableOptions = document.getElementById('bulkVariableCountOptions');
+            const bulkFixedOptions = document.getElementById('bulkFixedCountOptions');
+            
+            bulkUseVariableCountCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    bulkVariableOptions.style.display = 'block';
+                    bulkFixedOptions.style.display = 'none';
+                } else {
+                    bulkVariableOptions.style.display = 'none';
+                    bulkFixedOptions.style.display = 'block';
+                }
+            });
         }
         
         function closeBulkModal() {
@@ -931,11 +1023,23 @@
         
         async function generateBulkReviews() {
             const selectedCheckboxes = document.querySelectorAll('.product-checkbox:checked');
-            const count = parseInt(document.getElementById('bulkReviewCount').value) || 3;
+            const useVariableCount = document.getElementById('bulkUseVariableCount').checked;
             const postToReviewsIO = document.getElementById('bulkPostToReviewsIO').checked;
             const postToKlaviyo = document.getElementById('bulkPostToKlaviyo').checked;
             
             if (selectedCheckboxes.length === 0) return;
+            
+            // Prepare count parameters
+            let countParams = {};
+            if (useVariableCount) {
+                countParams.use_variable_count = true;
+                countParams.min_count = parseInt(document.getElementById('bulkMinCount').value) || 10;
+                countParams.max_count = parseInt(document.getElementById('bulkMaxCount').value) || 30;
+                countParams.use_smart_distribution = true;
+            } else {
+                countParams.use_variable_count = false;
+                countParams.count = parseInt(document.getElementById('bulkReviewCount').value) || 15;
+            }
             
             const error = document.getElementById('error');
             const success = document.getElementById('success');
@@ -960,7 +1064,7 @@
                     },
                     body: JSON.stringify({ 
                         product_ids: productIds,
-                        count: count,
+                        ...countParams,
                         post_to_reviews_io: postToReviewsIO,
                         post_to_klaviyo: postToKlaviyo
                     })
