@@ -6,6 +6,10 @@ import random
 from datetime import datetime, timedelta
 import json
 import difflib
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 

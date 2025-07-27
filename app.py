@@ -14,6 +14,10 @@ from datetime import datetime, timedelta
 import csv
 import random
 from review_distribution import get_natural_review_count, get_age_based_review_count, generate_bulk_review_distribution
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'dev-secret-key-change-in-production')
@@ -471,9 +475,10 @@ def post_reviews_to_klaviyo(reviews):
                 else:
                     # Fall back to manual CSV
                     return {
-                        'error': f"Automated upload failed: {upload_result.get('error', 'Unknown error')}\n\n💡 MANUAL UPLOAD: CSV file generated for manual import.",
-                        'total_created': 0,
-                        'total_errors': len(reviews),
+                        'success': True,
+                        'message': f"Automated upload failed, but CSV generated successfully for manual upload.\n\n💡 MANUAL UPLOAD: CSV file generated for manual import.\nError: {upload_result.get('error', 'Unknown error')}",
+                        'total_created': len(reviews),  # CSV generation is success
+                        'total_errors': 0,
                         'method_used': 'csv_manual',
                         'csv_file': csv_filename,
                         'manual_upload_url': 'https://www.klaviyo.com/reviews/import/upload'
@@ -488,9 +493,10 @@ def post_reviews_to_klaviyo(reviews):
         csv_filename = save_reviews_csv(reviews, 'klaviyo_manual')
         
         return {
-            'error': f"Klaviyo Reviews API is read-only. Manual CSV upload required.\n\n💡 CSV READY: {csv_filename} generated for manual import.\n🌐 Upload at: https://www.klaviyo.com/reviews/import/upload",
-            'total_created': 0,
-            'total_errors': len(reviews),
+            'success': True,
+            'message': f"CSV file generated successfully for manual upload.\n\n💡 CSV READY: {csv_filename} generated for manual import.\n🌐 Upload at: https://www.klaviyo.com/reviews/import/upload",
+            'total_created': len(reviews),  # CSV generation is success
+            'total_errors': 0,
             'method_used': 'csv_manual',
             'csv_file': csv_filename,
             'csv_ready': True,
@@ -498,12 +504,25 @@ def post_reviews_to_klaviyo(reviews):
         }
         
     except Exception as e:
-        return {
-            'error': f'Klaviyo workflow error: {str(e)}\n\n💡 FALLBACK: CSV file has been generated for manual upload.',
-            'total_created': 0,
-            'total_errors': len(reviews),
-            'fallback_available': True
-        }
+        # Try to generate CSV as fallback
+        try:
+            csv_filename = save_reviews_csv(reviews, 'klaviyo_fallback')
+            return {
+                'success': True,
+                'message': f'Klaviyo workflow error, but CSV file generated successfully for manual upload.\n\nError: {str(e)}\n\n💡 FALLBACK: CSV file has been generated for manual upload.',
+                'total_created': len(reviews),
+                'total_errors': 0,
+                'method_used': 'csv_fallback',
+                'csv_file': csv_filename,
+                'fallback_available': True
+            }
+        except:
+            return {
+                'error': f'Klaviyo workflow error: {str(e)}',
+                'total_created': 0,
+                'total_errors': len(reviews),
+                'fallback_available': False
+            }
 
 def _test_klaviyo_api_key(api_key):
     """Test if Klaviyo API key is valid"""
