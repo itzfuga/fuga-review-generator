@@ -235,6 +235,102 @@ def index():
 def klaviyo_diagnostic():
     return render_template('klaviyo_diagnostic.html')
 
+@app.route('/api/test')
+def test_route():
+    return jsonify({'test': 'working', 'message': 'Test route is functional'})
+
+@app.route('/api/reviews/<product_id>')
+def get_product_reviews(product_id):
+    """Get all live reviews for a specific product"""
+    try:
+        if not KLAVIYO_API_KEY:
+            return jsonify({'error': 'Klaviyo API key not configured'}), 500
+        
+        headers = {
+            'Authorization': f'Klaviyo-API-Key {KLAVIYO_API_KEY}',
+            'Accept': 'application/json',
+            'revision': '2024-10-15'
+        }
+        
+        # Get all reviews from Klaviyo
+        all_reviews = []
+        url = "https://a.klaviyo.com/api/reviews/?page[size]=500"
+        
+        while url and len(all_reviews) < 2000:  # Safety limit
+            response = requests.get(url, headers=headers)
+            
+            if response.status_code != 200:
+                return jsonify({'error': f'Klaviyo API error: {response.status_code}'}), 500
+            
+            data = response.json()
+            reviews = data.get('data', [])
+            all_reviews.extend(reviews)
+            
+            # Check for next page
+            url = data.get('links', {}).get('next')
+        
+        # Filter reviews for this specific product
+        product_reviews = []
+        target_catalog_id = f"$shopify:::$default:::{product_id}"
+        
+        for review in all_reviews:
+            # Check if this review is for the requested product
+            relationships = review.get('relationships', {})
+            item_data = relationships.get('item', {}).get('data', {})
+            catalog_item_id = item_data.get('id', '')
+            
+            if catalog_item_id == target_catalog_id:
+                # Format the review data
+                attributes = review.get('attributes', {})
+                product_info = attributes.get('product', {})
+                
+                formatted_review = {
+                    'id': review.get('id'),
+                    'rating': attributes.get('rating'),
+                    'title': attributes.get('title', ''),
+                    'content': attributes.get('content', ''),
+                    'author': attributes.get('author', 'Anonymous'),
+                    'email': attributes.get('email', ''),
+                    'created': attributes.get('created'),
+                    'verified': attributes.get('verified', False),
+                    'status': attributes.get('status', 'published'),
+                    'product_name': product_info.get('name', ''),
+                    'product_url': product_info.get('url', ''),
+                    'product_image': product_info.get('image_url', ''),
+                    'images': attributes.get('images', [])
+                }
+                product_reviews.append(formatted_review)
+        
+        # Get product info from Shopify for context
+        product_info = {}
+        try:
+            shopify_url = f'https://{SHOP_DOMAIN}/admin/api/2023-10/products/{product_id}.json'
+            shopify_headers = {'X-Shopify-Access-Token': ACCESS_TOKEN}
+            shopify_response = requests.get(shopify_url, headers=shopify_headers)
+            
+            if shopify_response.status_code == 200:
+                shopify_data = shopify_response.json()
+                product = shopify_data.get('product', {})
+                product_info = {
+                    'title': product.get('title', ''),
+                    'handle': product.get('handle', ''),
+                    'id': product.get('id', ''),
+                    'image': product.get('image', {}).get('src', '') if product.get('image') else ''
+                }
+        except Exception as e:
+            print(f"Error fetching product info: {e}")
+        
+        return jsonify({
+            'success': True,
+            'product_info': product_info,
+            'reviews': product_reviews,
+            'total_reviews': len(product_reviews),
+            'average_rating': sum(r['rating'] for r in product_reviews) / len(product_reviews) if product_reviews else 0
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Error fetching reviews: {str(e)}'}), 500
+
 @app.route('/api/klaviyo-events', methods=['GET'])
 def get_klaviyo_events():
     """Diagnostic endpoint to discover Klaviyo event types"""
@@ -624,9 +720,7 @@ def get_products():
         # Check if we should fetch Klaviyo reviews (only if API key is set)
         fetch_klaviyo = bool(KLAVIYO_API_KEY)
         
-        # Load manually tracked live review counts (fallback if Klaviyo doesn't work)
-        live_review_counts = load_live_review_counts()
-        print(f"📋 Manual live review counts loaded: {live_review_counts}")
+        # No more manual tracking - use real API data only
         
         # Try Klaviyo first, but use manual counts as fallback
         klaviyo_review_counts = {}
@@ -658,32 +752,7 @@ def get_products():
                 klaviyo_reviews = klaviyo_review_counts.get(product_handle, 0)
                 print(f"   Klaviyo reviews by handle: {klaviyo_reviews}")
                 
-            if klaviyo_reviews == 0:
-                klaviyo_reviews = live_review_counts.get(product_handle, 0)
-                print(f"   Manual reviews by handle: {klaviyo_reviews}")
-            
-            # Try fuzzy matching as last resort
-            if klaviyo_reviews == 0:
-                # Combine all available keys for fuzzy matching
-                all_keys = list(klaviyo_review_counts.keys()) + list(live_review_counts.keys())
-                
-                if all_keys:
-                    # Try fuzzy matching with product title
-                    best_match, confidence = fuzzy_match_product(product_title, all_keys, threshold=0.7)
-                    if best_match:
-                        fuzzy_reviews = klaviyo_review_counts.get(best_match, 0) or live_review_counts.get(best_match, 0)
-                        if fuzzy_reviews > 0:
-                            klaviyo_reviews = fuzzy_reviews
-                            print(f"   🔍 Fuzzy match found: '{best_match}' (confidence: {confidence:.2f}) -> {fuzzy_reviews} reviews")
-                    
-                    # Also try fuzzy matching with product handle
-                    if klaviyo_reviews == 0:
-                        best_match, confidence = fuzzy_match_product(product_handle, all_keys, threshold=0.8)
-                        if best_match:
-                            fuzzy_reviews = klaviyo_review_counts.get(best_match, 0) or live_review_counts.get(best_match, 0)
-                            if fuzzy_reviews > 0:
-                                klaviyo_reviews = fuzzy_reviews
-                                print(f"   🔍 Fuzzy match (handle): '{best_match}' (confidence: {confidence:.2f}) -> {fuzzy_reviews} reviews")
+            # Only use real Klaviyo API data - no more manual BS
             
             print(f"   ✅ Final live review count: {klaviyo_reviews}")
             
