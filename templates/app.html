@@ -726,6 +726,13 @@
         function displayProducts(products) {
             const grid = document.getElementById('product-grid');
             
+            // Safety check for undefined products
+            if (!products || !Array.isArray(products)) {
+                console.error('Products is not an array:', products);
+                grid.innerHTML = '<div class="error-message">Error loading products. Please refresh the page.</div>';
+                return;
+            }
+            
             grid.innerHTML = products.map(product => `
                 <div class="product-card" data-product-id="${product.id}">
                     <input type="checkbox" class="product-checkbox" value="${product.id}" onchange="updateBulkButton()" style="margin-right: 8px; accent-color: var(--primary-color);" />
