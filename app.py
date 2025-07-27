@@ -233,6 +233,16 @@ def get_products():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/review-count/<product_id>')
+def get_product_review_count(product_id):
+    """Get review count for a specific product (async endpoint)"""
+    try:
+        count = get_klaviyo_review_count(product_id)
+        return jsonify({'product_id': product_id, 'count': count, 'success': True})
+    except Exception as e:
+        print(f"Error getting review count for {product_id}: {e}")
+        return jsonify({'product_id': product_id, 'count': 0, 'success': False, 'error': str(e)})
+
 @app.route('/api/reviews/<product_id>')
 def get_product_reviews(product_id):
     """Get all live reviews for a specific product"""

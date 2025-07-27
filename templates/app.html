@@ -717,6 +717,9 @@
                 displayProducts(products);
                 updateStats(products);
                 
+                // Load review counts asynchronously
+                loadReviewCountsAsync(products);
+                
             } catch (err) {
                 error.textContent = err.message;
                 error.style.display = 'block';
@@ -809,6 +812,40 @@
             document.getElementById('total-products').textContent = totalProducts;
             document.getElementById('total-reviews').textContent = totalReviews;
             document.getElementById('generated-reviews').textContent = generatedReviews;
+        }
+        
+        async function loadReviewCountsAsync(products) {
+            // Load review counts asynchronously to avoid timeouts
+            for (const product of products) {
+                try {
+                    const response = await fetch(`/api/review-count/${product.id}`);
+                    const data = await response.json();
+                    
+                    if (data.success && data.count > 0) {
+                        // Update the product card
+                        const productCard = document.querySelector(`[data-product-id="${product.id}"]`);
+                        if (productCard) {
+                            // Update live reviews stat
+                            const liveStatValue = productCard.querySelector('.stat-live .stat-value');
+                            if (liveStatValue) liveStatValue.textContent = data.count;
+                            
+                            // Update total reviews stat
+                            const totalStatValue = productCard.querySelector('.stat-total .stat-value');
+                            if (totalStatValue) totalStatValue.textContent = data.count + (product.generated_reviews || 0);
+                            
+                            // Update View Reviews button text
+                            const viewBtn = productCard.querySelector('button[onclick*="viewProductReviews"]');
+                            if (viewBtn) viewBtn.textContent = `View Reviews (${data.count})`;
+                        }
+                        
+                        // Update global stats
+                        const currentTotal = parseInt(document.getElementById('total-reviews').textContent) || 0;
+                        document.getElementById('total-reviews').textContent = currentTotal + data.count;
+                    }
+                } catch (error) {
+                    console.log(`Failed to load count for product ${product.id}:`, error);
+                }
+            }
         }
         
         async function openModal(productId, productName) {
