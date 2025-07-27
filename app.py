@@ -419,84 +419,297 @@ def save_reviews_csv(reviews, product_id):
     return filename
 
 def post_reviews_to_klaviyo(reviews):
-    """Post generated reviews directly to Klaviyo Reviews API"""
+    """Enhanced Klaviyo Reviews API with multiple endpoint testing and better error handling"""
     try:
         klaviyo_api_key = os.environ.get('KLAVIYO_API_KEY')
         if not klaviyo_api_key:
             return {'error': 'Klaviyo API key not configured', 'total_created': 0, 'total_errors': len(reviews)}
         
-        headers = {
-            'Authorization': f'Klaviyo-API-Key {klaviyo_api_key}',
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'revision': '2024-10-15'
-        }
+        # Test API key validity first
+        if not _test_klaviyo_api_key(klaviyo_api_key):
+            return {'error': 'Invalid Klaviyo API key', 'total_created': 0, 'total_errors': len(reviews)}
         
         results = {
             'success': [],
             'errors': [],
             'total_created': 0,
-            'total_errors': 0
+            'total_errors': 0,
+            'method_used': 'unknown',
+            'debug_info': []
         }
         
-        for review in reviews:
+        # Try multiple API approaches in order of preference
+        api_methods = [
+            ('reviews_api', _post_via_reviews_api),
+            ('events_api', _post_via_events_api),
+            ('profile_import', _post_via_profile_import)
+        ]
+        
+        for method_name, method_func in api_methods:
             try:
-                # Format for Klaviyo Reviews API
-                review_data = {
-                    "data": {
-                        "type": "review",
-                        "attributes": {
-                            "rating": int(float(review.get('rating', 5))),
-                            "title": review.get('review_title', ''),
-                            "body": review.get('review_content', ''),
-                            "reviewer_name": review.get('reviewer_name', ''),
-                            "reviewer_email": review.get('reviewer_email', ''),
-                            "created": review.get('review_date', datetime.now().strftime('%Y-%m-%d')),
-                            "verified": review.get('verified', 'Yes') == 'Yes'
-                        },
-                        "relationships": {
-                            "item": {
-                                "data": {
-                                    "type": "catalog-item",
-                                    "id": f"$shopify:::$default:::{review.get('product_id')}"
-                                }
-                            }
-                        }
-                    }
-                }
+                print(f"🔄 Attempting Klaviyo upload via {method_name}...")
+                method_results = method_func(reviews, klaviyo_api_key)
                 
-                # Post to Klaviyo Reviews API
-                response = requests.post(
-                    'https://a.klaviyo.com/api/reviews/',
-                    headers=headers,
-                    json=review_data
-                )
-                
-                if response.status_code in [200, 201]:
-                    results['success'].append(response.json())
-                    results['total_created'] += 1
+                if method_results['total_created'] > 0:
+                    print(f"✅ Success with {method_name}: {method_results['total_created']} reviews uploaded")
+                    results.update(method_results)
+                    results['method_used'] = method_name
+                    return results
                 else:
-                    error_msg = f"HTTP {response.status_code}: {response.text}"
-                    print(f"Klaviyo API Error: {error_msg}")
-                    print(f"Request data: {review_data}")
-                    results['errors'].append({
-                        'review': review.get('review_title', 'Untitled'),
-                        'error': error_msg
-                    })
-                    results['total_errors'] += 1
+                    print(f"❌ Failed with {method_name}: {method_results.get('error', 'Unknown error')}")
+                    results['debug_info'].append(f"{method_name}: {method_results.get('error', 'Failed')}")
                     
             except Exception as e:
-                results['errors'].append({
-                    'review': review.get('review_title', 'Untitled'),
-                    'error': str(e)
-                })
-                results['total_errors'] += 1
+                print(f"❌ Exception with {method_name}: {str(e)}")
+                results['debug_info'].append(f"{method_name}: Exception - {str(e)}")
+                continue
         
+        # If all methods failed, return consolidated error
+        results['error'] = 'All Klaviyo API methods failed. See debug_info for details.'
+        results['total_errors'] = len(reviews)
         return results
         
     except Exception as e:
         return {
-            'error': str(e),
+            'error': f'Klaviyo upload system error: {str(e)}',
+            'total_created': 0,
+            'total_errors': len(reviews)
+        }
+
+def _test_klaviyo_api_key(api_key):
+    """Test if Klaviyo API key is valid"""
+    try:
+        headers = {
+            'Authorization': f'Klaviyo-API-Key {api_key}',
+            'revision': '2024-10-15'
+        }
+        
+        response = requests.get('https://a.klaviyo.com/api/accounts/', headers=headers, timeout=10)
+        return response.status_code == 200
+    except:
+        return False
+
+def _post_via_reviews_api(reviews, api_key):
+    """Method 1: Try direct Reviews API (fixed field mapping)"""
+    headers = {
+        'Authorization': f'Klaviyo-API-Key {api_key}',
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'revision': '2024-10-15'
+    }
+    
+    results = {
+        'success': [],
+        'errors': [],
+        'total_created': 0,
+        'total_errors': 0
+    }
+    
+    for review in reviews:
+        try:
+            # Format for Klaviyo Reviews API - Fixed field mapping
+            review_data = {
+                "data": {
+                    "type": "review",
+                    "attributes": {
+                        "rating": int(float(review.get('rating', 5))),
+                        "title": review.get('title', ''),  # Fixed: was 'review_title'
+                        "body": review.get('content', ''),  # Fixed: was 'review_content'
+                        "reviewer_name": review.get('author', ''),  # Fixed: was 'reviewer_name'
+                        "reviewer_email": review.get('email', ''),  # Fixed: was 'reviewer_email'
+                        "created": review.get('date', datetime.now().strftime('%Y-%m-%d')),  # Fixed: was 'review_date'
+                        "verified": review.get('verified', 'Yes') == 'Yes'
+                    },
+                    "relationships": {
+                        "item": {
+                            "data": {
+                                "type": "catalog-item",
+                                "id": f"$shopify:::$default:::{review.get('product_id', 'unknown')}"
+                            }
+                        }
+                    }
+                }
+            }
+            
+            # Try multiple endpoints
+            endpoints = [
+                'https://a.klaviyo.com/api/reviews/',
+                'https://a.klaviyo.com/api/review/',
+                'https://a.klaviyo.com/api/reviews'
+            ]
+            
+            success = False
+            for endpoint in endpoints:
+                response = requests.post(endpoint, headers=headers, json=review_data, timeout=15)
+                
+                if response.status_code in [200, 201]:
+                    results['success'].append(response.json())
+                    results['total_created'] += 1
+                    success = True
+                    break
+                elif response.status_code == 404:
+                    continue  # Try next endpoint
+                else:
+                    error_msg = f"HTTP {response.status_code}: {response.text[:200]}"
+                    results['errors'].append({
+                        'review': review.get('title', 'Untitled'),
+                        'error': error_msg,
+                        'endpoint': endpoint
+                    })
+                    break
+            
+            if not success and not results['errors']:
+                results['errors'].append({
+                    'review': review.get('title', 'Untitled'),
+                    'error': 'All review endpoints returned 404'
+                })
+                results['total_errors'] += 1
+                    
+        except Exception as e:
+            results['errors'].append({
+                'review': review.get('title', 'Untitled'),
+                'error': str(e)
+            })
+            results['total_errors'] += 1
+    
+    return results
+
+def _post_via_events_api(reviews, api_key):
+    """Method 2: Post reviews as custom events"""
+    headers = {
+        'Authorization': f'Klaviyo-API-Key {api_key}',
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'revision': '2024-10-15'
+    }
+    
+    results = {
+        'success': [],
+        'errors': [],
+        'total_created': 0,
+        'total_errors': 0
+    }
+    
+    for review in reviews:
+        try:
+            # Format as custom event
+            event_data = {
+                "data": {
+                    "type": "event",
+                    "attributes": {
+                        "metric": {"name": "Product Review"},
+                        "properties": {
+                            "rating": int(float(review.get('rating', 5))),
+                            "review_title": review.get('title', ''),
+                            "review_content": review.get('content', ''),
+                            "product_id": review.get('product_id', ''),
+                            "verified": review.get('verified', 'Yes') == 'Yes'
+                        },
+                        "profile": {
+                            "email": review.get('email', 'anonymous@example.com'),
+                            "first_name": review.get('author', '').split(' ')[0] if review.get('author') else 'Anonymous',
+                            "last_name": ' '.join(review.get('author', '').split(' ')[1:]) if review.get('author') and len(review.get('author', '').split(' ')) > 1 else ''
+                        },
+                        "time": review.get('date', datetime.now().strftime('%Y-%m-%d'))
+                    }
+                }
+            }
+            
+            response = requests.post(
+                'https://a.klaviyo.com/api/events/',
+                headers=headers,
+                json=event_data,
+                timeout=15
+            )
+            
+            if response.status_code in [200, 201, 202]:
+                results['success'].append(response.json())
+                results['total_created'] += 1
+            else:
+                error_msg = f"HTTP {response.status_code}: {response.text[:200]}"
+                results['errors'].append({
+                    'review': review.get('title', 'Untitled'),
+                    'error': error_msg
+                })
+                results['total_errors'] += 1
+                
+        except Exception as e:
+            results['errors'].append({
+                'review': review.get('title', 'Untitled'),
+                'error': str(e)
+            })
+            results['total_errors'] += 1
+    
+    return results
+
+def _post_via_profile_import(reviews, api_key):
+    """Method 3: Bulk import as profile properties"""
+    headers = {
+        'Authorization': f'Klaviyo-API-Key {api_key}',
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'revision': '2024-10-15'
+    }
+    
+    try:
+        # Batch reviews by email to avoid duplicates
+        profiles = {}
+        for i, review in enumerate(reviews):
+            email = review.get('email', f'review_{i}@generated.com')
+            if email not in profiles:
+                profiles[email] = {
+                    "email": email,
+                    "first_name": review.get('author', '').split(' ')[0] if review.get('author') else 'Anonymous',
+                    "last_name": ' '.join(review.get('author', '').split(' ')[1:]) if review.get('author') and len(review.get('author', '').split(' ')) > 1 else '',
+                    "properties": {}
+                }
+            
+            # Add review as properties
+            review_prefix = f"review_{i}"
+            profiles[email]["properties"].update({
+                f"{review_prefix}_rating": review.get('rating', 5),
+                f"{review_prefix}_title": review.get('title', ''),
+                f"{review_prefix}_content": review.get('content', ''),
+                f"{review_prefix}_product_id": review.get('product_id', ''),
+                f"{review_prefix}_date": review.get('date', ''),
+                f"{review_prefix}_verified": review.get('verified', 'Yes')
+            })
+        
+        bulk_data = {
+            "data": {
+                "type": "profile-import",
+                "attributes": {
+                    "profiles": list(profiles.values())
+                }
+            }
+        }
+        
+        response = requests.post(
+            'https://a.klaviyo.com/api/profile-import/',
+            headers=headers,
+            json=bulk_data,
+            timeout=30
+        )
+        
+        if response.status_code in [200, 201, 202]:
+            return {
+                'success': [response.json()],
+                'errors': [],
+                'total_created': len(reviews),
+                'total_errors': 0
+            }
+        else:
+            return {
+                'success': [],
+                'errors': [f"Bulk import failed: HTTP {response.status_code}: {response.text[:200]}"],
+                'total_created': 0,
+                'total_errors': len(reviews)
+            }
+            
+    except Exception as e:
+        return {
+            'success': [],
+            'errors': [f"Bulk import exception: {str(e)}"],
             'total_created': 0,
             'total_errors': len(reviews)
         }

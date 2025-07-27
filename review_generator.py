@@ -1855,8 +1855,95 @@ def get_product_category(product_info):
     
     return categories if categories else ['general']
 
+def get_dynamic_review_length_distribution(product, rating, language="en"):
+    """Calculate dynamic review length distribution based on multiple factors"""
+    from datetime import datetime, timedelta
+    import re
+    
+    # Base percentages (realistic e-commerce patterns)
+    base_empty = 0.12    # 12% empty reviews
+    base_short = 0.35    # 35% short reviews  
+    base_medium = 0.40   # 40% medium reviews
+    base_long = 0.13     # 13% long reviews
+    
+    # Product age factor
+    product_age_days = 0
+    if product.get('created_at'):
+        try:
+            created_date = datetime.fromisoformat(product['created_at'].replace('Z', '+00:00'))
+            product_age_days = (datetime.now() - created_date.replace(tzinfo=None)).days
+        except:
+            product_age_days = 365  # Default to 1 year if parsing fails
+    
+    # Age adjustments (newer products have more empty/short reviews)
+    if product_age_days < 30:       # New product (0-30 days)
+        base_empty += 0.08          # 20% empty
+        base_short += 0.10          # 45% short
+        base_medium -= 0.15         # 25% medium
+        base_long -= 0.03           # 10% long
+    elif product_age_days < 90:     # Recent product (30-90 days)
+        base_empty += 0.03          # 15% empty
+        base_short += 0.05          # 40% short
+        base_medium -= 0.05         # 35% medium
+        base_long -= 0.03           # 10% long
+    elif product_age_days > 365:    # Established product (1+ year)
+        base_empty -= 0.02          # 10% empty
+        base_short -= 0.05          # 30% short
+        base_medium += 0.05         # 45% medium
+        base_long += 0.02           # 15% long
+    
+    # Rating adjustments (higher ratings get longer, more detailed reviews)
+    if rating >= 5:                 # 5-star reviews
+        base_empty -= 0.03          # Less empty
+        base_short -= 0.05          # Less short
+        base_medium += 0.05         # More medium
+        base_long += 0.03           # More long
+    elif rating <= 2:               # 1-2 star reviews
+        base_empty += 0.05          # More empty (disappointed buyers)
+        base_short += 0.10          # More short (brief complaints)
+        base_medium -= 0.10         # Less medium
+        base_long -= 0.05           # Less long
+    
+    # Category adjustments
+    categories = get_product_category(product)
+    if 'clothing' in categories:
+        base_medium += 0.05         # Clothing gets more detailed reviews
+        base_short -= 0.05
+    elif 'accessories' in categories:
+        base_short += 0.05          # Accessories get shorter reviews
+        base_medium -= 0.05
+    elif 'gothic' in categories or 'punk' in categories:
+        base_long += 0.03           # Niche styles get more passionate reviews
+        base_short -= 0.03
+    
+    # Language/cultural adjustments
+    if language == 'de':            # Germans tend to write longer reviews
+        base_long += 0.05
+        base_short -= 0.05
+    elif language in ['es', 'it']:  # Latin cultures more expressive
+        base_medium += 0.05
+        base_empty -= 0.05
+    elif language == 'en':          # English speakers more varied
+        pass  # Keep base distribution
+    
+    # Ensure percentages sum to 1.0 and are valid
+    total = base_empty + base_short + base_medium + base_long
+    base_empty = max(0.05, min(0.25, base_empty / total))  # Clamp between 5-25%
+    base_short = max(0.20, min(0.50, base_short / total))  # Clamp between 20-50%
+    base_medium = max(0.20, min(0.60, base_medium / total)) # Clamp between 20-60%
+    base_long = max(0.05, min(0.25, base_long / total))    # Clamp between 5-25%
+    
+    # Final normalization
+    total = base_empty + base_short + base_medium + base_long
+    return {
+        'empty': base_empty / total,
+        'short': base_short / total, 
+        'medium': base_medium / total,
+        'long': base_long / total
+    }
+
 def generate_review_content(product, rating, language="en", product_insights=None):
-    """Generate authentic Gen Z style review content with product-specific details"""
+    """Generate authentic review content with dynamic length distribution"""
     global USED_PHRASES
     
     if product_insights is None:
@@ -1865,33 +1952,52 @@ def generate_review_content(product, rating, language="en", product_insights=Non
     categories = get_product_category(product)
     simplified_name = get_simplified_product_name(product.get('title', ''), language)
     
-    # 5% chance for empty review (reduced from 15%)
-    if random.random() < 0.05:
-        return ""
+    # Get dynamic length distribution
+    length_dist = get_dynamic_review_length_distribution(product, rating, language)
     
-    # 20% chance for short one-liner (reduced from 30%)
-    if random.random() < 0.20:
+    # Determine review length based on dynamic distribution
+    rand = random.random()
+    
+    if rand < length_dist['empty']:
+        return ""  # Empty review
+    elif rand < length_dist['empty'] + length_dist['short']:
+        # Short review (1-2 sentences)
         short_reviews = EXTENDED_SHORT_REVIEWS.get(language, EXTENDED_SHORT_REVIEWS["en"])
         return get_unique_phrase(short_reviews, language, "short")
     
-    # Build review with varied components
+    # Build review with varied components based on target length
     review_parts = []
     
-    # Use different component combinations with more product-specific emphasis
-    component_patterns = [
-        ["opening", "product_specific", "quality"],
-        ["product_specific", "fit", "personal"],
-        ["opening", "product_specific", "personal"],
-        ["quality", "product_specific", "style"],
-        ["product_specific", "quality", "usage"],
-        ["opening", "fit", "product_specific"],
-        ["style", "product_specific", "personal"],
-        ["usage", "product_specific", "quality"],
-        ["product_specific", "quality", "style"],
-        ["personal", "product_specific", "fit"],
-        ["product_specific", "style", "usage"],
-        ["opening", "product_specific", "ending"]
-    ]
+    # Determine if this is medium or long review
+    is_long_review = rand >= (length_dist['empty'] + length_dist['short'] + length_dist['medium'])
+    
+    # Component patterns based on review length
+    if is_long_review:
+        # Long reviews (4-6 components)
+        component_patterns = [
+            ["opening", "product_specific", "quality", "fit", "personal", "ending"],
+            ["product_specific", "quality", "style", "usage", "personal", "ending"],
+            ["opening", "product_specific", "fit", "quality", "style", "personal"],
+            ["quality", "product_specific", "fit", "usage", "style", "ending"],
+            ["opening", "product_specific", "quality", "personal", "usage", "ending"],
+            ["product_specific", "quality", "fit", "style", "personal", "usage"]
+        ]
+    else:
+        # Medium reviews (2-4 components)
+        component_patterns = [
+            ["opening", "product_specific", "quality"],
+            ["product_specific", "fit", "personal"],
+            ["opening", "product_specific", "personal"],
+            ["quality", "product_specific", "style"],
+            ["product_specific", "quality", "usage"],
+            ["opening", "fit", "product_specific"],
+            ["style", "product_specific", "personal"],
+            ["usage", "product_specific", "quality"],
+            ["product_specific", "quality", "style"],
+            ["personal", "product_specific", "fit"],
+            ["product_specific", "style", "usage"],
+            ["opening", "product_specific", "ending"]
+        ]
     
     pattern = random.choice(component_patterns)
     
@@ -2175,7 +2281,7 @@ def generate_review(product, existing_reviews=0, use_ai=True):
     # 7% chance for unverified
     verified = 'Yes' if random.random() > 0.07 else 'No'
     
-    return {
+    review_data = {
         'rating': rating,
         'title': review_title,
         'content': review_content,
@@ -2185,8 +2291,79 @@ def generate_review(product, existing_reviews=0, use_ai=True):
         'date': review_date,
         'verified': verified,
         'generation_method': 'template_based',
-        'ai_enabled': False
+        'ai_enabled': False,
+        'language': language
     }
+    
+    # Enhanced quality integration - assess and potentially regenerate
+    quality_score = _assess_review_quality_inline(review_data, product)
+    review_data['quality_score'] = quality_score
+    
+    # If quality is below threshold, try to regenerate once
+    if quality_score < 0.6 and random.random() < 0.3:  # 30% chance to regenerate low-quality reviews
+        print(f"🔄 Regenerating low-quality review (score: {quality_score:.2f})")
+        
+        # Try different component pattern for regeneration
+        alternative_language = random.choice(['en', 'de', 'es', 'fr', 'it', 'pl', 'cs'])
+        alternative_content = generate_review_content(product, rating, alternative_language, product_insights)
+        
+        if alternative_content and len(alternative_content) > len(review_content):
+            # Use better alternative
+            review_data['content'] = alternative_content
+            review_data['language'] = alternative_language
+            review_data['regenerated'] = True
+            review_data['quality_score'] = _assess_review_quality_inline(review_data, product)
+            print(f"✨ Regenerated review quality improved to: {review_data['quality_score']:.2f}")
+    
+    return review_data
+
+def _assess_review_quality_inline(review, product):
+    """Quick inline quality assessment for review generation"""
+    try:
+        # Import the quality scorer if available
+        from ai_quality_scorer import ReviewQualityScorer
+        
+        scorer = ReviewQualityScorer()
+        quality_metrics = scorer.assess_review_quality(review, product_context=product)
+        return quality_metrics.overall_score
+        
+    except ImportError:
+        # Fallback: basic quality scoring without ML dependencies
+        return _basic_quality_assessment(review)
+
+def _basic_quality_assessment(review):
+    """Basic quality assessment without external dependencies"""
+    score = 0.5  # Base score
+    
+    content = review.get('content', '')
+    title = review.get('title', '')
+    
+    # Length appropriateness
+    content_length = len(content)
+    if 30 <= content_length <= 300:
+        score += 0.2
+    elif 10 <= content_length <= 500:
+        score += 0.1
+    
+    # Has both title and content
+    if title and content:
+        score += 0.1
+    
+    # Language consistency (basic check)
+    target_language = review.get('language', 'en')
+    if target_language == 'de' and any(char in content for char in ['ä', 'ö', 'ü', 'ß']):
+        score += 0.1
+    elif target_language == 'es' and any(word in content.lower() for word in ['el', 'la', 'es', 'con']):
+        score += 0.1
+    elif target_language == 'en' and any(word in content.lower() for word in ['the', 'and', 'is', 'with']):
+        score += 0.1
+    
+    # Not too repetitive (basic check)
+    words = content.lower().split()
+    if len(set(words)) > len(words) * 0.7:  # At least 70% unique words
+        score += 0.1
+    
+    return min(1.0, score)
 
 def generate_reviews_for_product(product_info, num_reviews=5):
     """Generate multiple reviews for a product"""

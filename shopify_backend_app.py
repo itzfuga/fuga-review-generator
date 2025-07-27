@@ -986,5 +986,138 @@ def import_status():
 def download(filename):
     return send_file(f'exports/{filename}', as_attachment=True)
 
+@app.route('/analytics')
+def analytics_dashboard():
+    """Analytics dashboard with advanced visualizations and bulk actions"""
+    return render_template('analytics_dashboard.html')
+
+@app.route('/api/analytics/dashboard')
+def analytics_dashboard_data():
+    """API endpoint for dashboard metrics"""
+    days = request.args.get('days', 30, type=int)
+    
+    # Sample analytics data - in production this would come from your database
+    sample_data = {
+        'total_reviews_generated': random.randint(150, 500),
+        'quality_scores': {
+            'overall': round(random.uniform(0.7, 0.95), 3),
+            'authenticity': round(random.uniform(0.65, 0.9), 3),
+            'readability': round(random.uniform(0.8, 0.95), 3),
+            'uniqueness': round(random.uniform(0.6, 0.85), 3),
+            'commercial_value': round(random.uniform(0.7, 0.9), 3)
+        },
+        'generation_methods': {
+            'ai_enhanced': random.randint(80, 150),
+            'template_based': random.randint(50, 100)
+        },
+        'error_rates': {
+            'klaviyo': round(random.uniform(1, 8), 1),
+            'reviews_io': round(random.uniform(2, 12), 1)
+        },
+        'language_distribution': {
+            'en': random.randint(100, 200),
+            'es': random.randint(20, 50),
+            'fr': random.randint(10, 30),
+            'de': random.randint(15, 40)
+        },
+        'rating_distribution': {
+            '5': random.randint(200, 300),
+            '4': random.randint(80, 150),
+            '3': random.randint(20, 60),
+            '2': random.randint(5, 20),
+            '1': random.randint(1, 10)
+        },
+        'performance_trends': {
+            'daily_reviews': [
+                {'date': (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d'), 
+                 'count': random.randint(5, 25),
+                 'quality': round(random.uniform(0.6, 0.9), 2)}
+                for i in range(days, 0, -1)
+            ]
+        },
+        'top_products': [
+            {
+                'title': 'Gothic Oversized Hoodie',
+                'review_count': random.randint(20, 50),
+                'avg_quality': round(random.uniform(0.7, 0.95), 3)
+            },
+            {
+                'title': 'Vintage Band Tee Collection', 
+                'review_count': random.randint(15, 40),
+                'avg_quality': round(random.uniform(0.6, 0.9), 3)
+            },
+            {
+                'title': 'Punk Rock Leather Jacket',
+                'review_count': random.randint(25, 60),
+                'avg_quality': round(random.uniform(0.65, 0.85), 3)
+            }
+        ]
+    }
+    
+    return jsonify(sample_data)
+
+@app.route('/api/analytics/quality-insights')
+def quality_insights():
+    """API endpoint for AI quality insights"""
+    # Sample quality insights
+    insights = {
+        'quality_statistics': {
+            'mean': round(random.uniform(0.7, 0.85), 3),
+            'min': round(random.uniform(0.4, 0.6), 3),
+            'max': round(random.uniform(0.9, 0.98), 3),
+            'std_dev': round(random.uniform(0.08, 0.15), 3)
+        },
+        'recommendations': [
+            'Consider increasing uniqueness focus for better authenticity scores',
+            'Review generation rate is optimal for current quality targets',
+            'Language distribution shows good market coverage'
+        ]
+    }
+    
+    return jsonify(insights)
+
+@app.route('/api/analytics/platform-performance')
+def platform_performance():
+    """API endpoint for platform performance metrics"""
+    # Sample platform data
+    performance = {
+        'klaviyo': {
+            'total_reviews': random.randint(100, 300),
+            'avg_quality': round(random.uniform(0.7, 0.9), 3),
+            'error_rate': round(random.uniform(2, 8), 1),
+            'avg_generation_time_ms': random.randint(800, 2000)
+        },
+        'reviews_io': {
+            'total_reviews': random.randint(50, 150),
+            'avg_quality': round(random.uniform(0.65, 0.85), 3), 
+            'error_rate': round(random.uniform(5, 15), 1),
+            'avg_generation_time_ms': random.randint(1200, 3000)
+        }
+    }
+    
+    return jsonify(performance)
+
+@app.route('/api/analytics/export')
+def export_analytics():
+    """Export analytics data"""
+    days = request.args.get('days', 30, type=int)
+    format_type = request.args.get('format', 'json')
+    
+    # Get dashboard data for export
+    dashboard_response = analytics_dashboard_data()
+    data = dashboard_response.get_json()
+    
+    if format_type == 'json':
+        return jsonify(data)
+    else:
+        # Could implement CSV/XML export here
+        return jsonify({'error': 'Format not supported yet'})
+
+@app.route('/api/analytics/sample-data', methods=['POST'])
+def create_sample_data():
+    """Create sample analytics data"""
+    # In a real implementation, this would generate sample data in your database
+    return jsonify({'success': True, 'message': 'Sample data created'})
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
