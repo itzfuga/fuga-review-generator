@@ -208,14 +208,9 @@ def get_products():
         for product in products:
             product_id = str(product['id'])
             
-            # Get review counts with error handling
-            try:
-                live_reviews = get_klaviyo_review_count(product_id)
-                if live_reviews > 0:
-                    print(f"Product {product_id} ({product['title'][:30]}): {live_reviews} reviews")
-            except Exception as e:
-                print(f"Error getting Klaviyo count for {product_id}: {e}")
-                live_reviews = 0
+            # Skip Klaviyo count for now to prevent timeout - set to 0
+            # TODO: Implement async loading of review counts
+            live_reviews = 0
             
             generated_reviews = review_tracking.get(product_id, {}).get('count', 0)
             
