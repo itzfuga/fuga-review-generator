@@ -945,17 +945,28 @@
                         successMessage = `<strong>Reviews Generated!</strong><br/>`;
                         successMessage += `Created ${data.generated_reviews} reviews in CSV format.<br/><br/>`;
                         
+                        // Show CSV workflow explanation
+                        successMessage += `<div style="padding: 12px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 8px; margin: 12px 0;">`;
+                        successMessage += `ℹ️ <strong>Klaviyo Reviews API is read-only.</strong><br/>`;
+                        successMessage += `Reviews must be uploaded via CSV file to Klaviyo's web interface.`;
+                        successMessage += `</div>`;
+                        
                         if (data.csv_file) {
                             successMessage += `📁 <strong>CSV Ready:</strong> ${data.csv_file}<br/>`;
                             successMessage += `<a href="/download/${data.csv_file}" target="_blank" style="color: #86efac; text-decoration: underline; font-weight: bold;">📥 Download CSV File</a><br/><br/>`;
                             
                             if (data.manual_upload_url) {
-                                successMessage += `🌐 <strong>Manual Upload:</strong><br/>`;
-                                successMessage += `<a href="${data.manual_upload_url}" target="_blank" style="color: #86efac; text-decoration: underline;">Upload to Klaviyo Reviews</a><br/><br/>`;
+                                successMessage += `🌐 <strong>Manual Upload Steps:</strong><br/>`;
+                                successMessage += `1. Download the CSV file above<br/>`;
+                                successMessage += `2. <a href="${data.manual_upload_url}" target="_blank" style="color: #86efac; text-decoration: underline;">Go to Klaviyo Reviews Upload</a><br/>`;
+                                successMessage += `3. Upload the CSV file<br/><br/>`;
                             }
                             
                             // Add automated upload button if available
-                            successMessage += `<button onclick="uploadToKlaviyoWeb('${data.csv_file}')" class="btn btn-primary" style="margin-top: 12px; padding: 8px 16px; font-size: 13px; background: linear-gradient(135deg, #e74c3c, #c0392b);">🚀 Try Auto-Upload to Klaviyo</button>`;
+                            successMessage += `<div style="padding: 12px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 8px; margin-top: 12px;">`;
+                            successMessage += `🚀 <strong>Or try automated upload:</strong><br/>`;
+                            successMessage += `<button onclick="uploadToKlaviyoWeb('${data.csv_file}')" class="btn btn-primary" style="margin-top: 8px; padding: 8px 16px; font-size: 13px; background: linear-gradient(135deg, #e74c3c, #c0392b);">Auto-Upload to Klaviyo</button>`;
+                            successMessage += `</div>`;
                         }
                     }
                 } else {

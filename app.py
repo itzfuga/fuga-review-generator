@@ -986,15 +986,69 @@ def generate_and_import(product_id):
             review_data = generate_review(product, existing_reviews=i)
             reviews.append(review_data)
         
-        # Import automatically
-        import_result = import_reviews_automatically(reviews, platforms)
+        # Save as CSV first
+        csv_filename = save_reviews_csv(reviews, product_id)
         
-        return jsonify({
-            'success': True,
-            'generated_reviews': len(reviews),
-            'import_result': import_result,
-            'message': f"Generated {len(reviews)} reviews and imported {import_result['summary']['total_success']} successfully"
-        })
+        # Try importing to platforms
+        import_results = {}
+        total_success = 0
+        total_errors = 0
+        
+        if 'klaviyo' in platforms:
+            klaviyo_result = post_reviews_to_klaviyo(reviews)
+            import_results['klaviyo'] = klaviyo_result
+            
+            if klaviyo_result.get('total_created', 0) > 0:
+                total_success += klaviyo_result['total_created']
+            else:
+                total_errors += klaviyo_result.get('total_errors', len(reviews))
+        
+        # If imports were successful, return success format
+        if total_success > 0:
+            return jsonify({
+                'success': True,
+                'generated_reviews': len(reviews),
+                'csv_file': csv_filename,
+                'method_used': import_results.get('klaviyo', {}).get('method_used', 'csv_manual'),
+                'import_result': {
+                    'summary': {
+                        'total_success': total_success,
+                        'total_failed': total_errors
+                    },
+                    'platforms': {
+                        'klaviyo': {
+                            'success_count': import_results.get('klaviyo', {}).get('total_created', 0),
+                            'error_count': import_results.get('klaviyo', {}).get('total_errors', 0)
+                        }
+                    }
+                },
+                'message': f"Generated {len(reviews)} reviews and imported {total_success} successfully"
+            })
+        else:
+            # Return CSV workflow response 
+            klaviyo_result = import_results.get('klaviyo', {})
+            return jsonify({
+                'success': True,
+                'generated_reviews': len(reviews), 
+                'csv_file': csv_filename,
+                'method_used': klaviyo_result.get('method_used', 'csv_manual'),
+                'manual_upload_url': klaviyo_result.get('manual_upload_url'),
+                'csv_ready': True,
+                'message': f"Generated {len(reviews)} reviews. CSV ready for upload.",
+                'import_result': {
+                    'summary': {
+                        'total_success': 0,
+                        'total_failed': len(reviews)
+                    },
+                    'platforms': {
+                        'klaviyo': {
+                            'success_count': 0,
+                            'error_count': len(reviews)
+                        }
+                    },
+                    'note': 'CSV workflow - manual or automated upload required'
+                }
+            })
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
