@@ -209,7 +209,7 @@ def get_products():
             product_id = str(product['id'])
             
             # Get review counts
-            live_reviews = get_reviews_io_count(product)
+            live_reviews = get_klaviyo_review_count(product_id)
             if live_reviews > 0:
                 print(f"Product {product_id} ({product['title'][:30]}): {live_reviews} reviews")
             generated_reviews = review_tracking.get(product_id, {}).get('count', 0)
@@ -632,6 +632,58 @@ def generate_advanced_reviews(product, count=5):
         })
     
     return reviews
+
+def get_klaviyo_review_count(product_id):
+    """Get review count from Klaviyo API for a specific product"""
+    try:
+        klaviyo_api_key = os.environ.get('KLAVIYO_API_KEY')
+        if not klaviyo_api_key:
+            return 0
+        
+        headers = {
+            'Authorization': f'Klaviyo-API-Key {klaviyo_api_key}',
+            'Accept': 'application/json',
+            'revision': '2024-10-15'
+        }
+        
+        target_catalog_id = f"$shopify:::$default:::{product_id}"
+        count = 0
+        
+        # Search first 200 reviews (2 pages) for this product
+        url = "https://a.klaviyo.com/api/reviews/?page[size]=100"
+        
+        for page in range(2):  # Limit to 2 pages for speed
+            try:
+                response = requests.get(url, headers=headers, timeout=5)
+                
+                if response.status_code != 200:
+                    break
+                
+                data = response.json()
+                reviews = data.get('data', [])
+                
+                # Count reviews for this product
+                for review in reviews:
+                    relationships = review.get('relationships', {})
+                    item_data = relationships.get('item', {}).get('data', {})
+                    catalog_item_id = item_data.get('id', '')
+                    
+                    if catalog_item_id == target_catalog_id:
+                        count += 1
+                
+                # Get next page URL
+                url = data.get('links', {}).get('next')
+                if not url:
+                    break
+                    
+            except:
+                break
+        
+        return count
+        
+    except Exception as e:
+        print(f"Error getting Klaviyo count for {product_id}: {e}")
+        return 0
 
 def get_reviews_io_count(product):
     """Get review count from Reviews.io API"""
