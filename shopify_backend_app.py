@@ -54,18 +54,28 @@ def get_csv_review_counts():
                 reader = csv.DictReader(f)
                 for row in reader:
                     product_id = row.get('product_id', '').strip()
+                    product_handle = row.get('product_handle', '').strip()
+                    product_name = row.get('product_name', '').strip()
                     status = row.get('status', '').strip()
                     
                     # Only count published reviews
                     if product_id and status == 'published':
+                        # Count by product ID (primary)
                         if product_id not in review_counts:
                             review_counts[product_id] = 0
                         review_counts[product_id] += 1
+                        
+                        # Also count by handle for fallback matching
+                        if product_handle and product_handle not in review_counts:
+                            review_counts[product_handle] = 0
+                        if product_handle:
+                            review_counts[product_handle] += 1
         
-        print(f"CSV review counts loaded: {len(review_counts)} products, {sum(review_counts.values())} total reviews")
+        print(f"📊 CSV review counts loaded: {len(review_counts)} products, {sum(review_counts.values())} total reviews")
+        print(f"📋 CSV products found: {list(review_counts.keys())[:10]}...")  # Show first 10
         return review_counts
     except Exception as e:
-        print(f"Error loading CSV reviews: {str(e)}")
+        print(f"❌ Error loading CSV reviews: {str(e)}")
         return {}
 
 def get_all_klaviyo_reviews():
@@ -585,29 +595,43 @@ def get_products():
         
         # Load manually tracked live review counts (fallback if Klaviyo doesn't work)
         live_review_counts = load_live_review_counts()
+        print(f"📋 Manual live review counts loaded: {live_review_counts}")
         
         # Try Klaviyo first, but use manual counts as fallback
         klaviyo_review_counts = {}
         if fetch_klaviyo:
             try:
-                print("Fetching Klaviyo reviews...")
+                print("🔄 Fetching Klaviyo reviews...")
                 klaviyo_review_counts = get_all_klaviyo_reviews()
-                print(f"Got review counts for {len(klaviyo_review_counts)} products")
+                print(f"✅ Got review counts for {len(klaviyo_review_counts)} products")
+                print(f"📊 Klaviyo review counts: {klaviyo_review_counts}")
             except Exception as e:
-                print(f"Error fetching Klaviyo reviews: {str(e)}")
+                print(f"❌ Error fetching Klaviyo reviews: {str(e)}")
                 klaviyo_review_counts = {}
         
         for product in products:
             product_id = str(product['id'])
             product_handle = product['handle']
+            product_title = product['title']
+            
+            # Debug logging for product details
+            print(f"🔍 Processing product: {product_title}")
+            print(f"   ID: {product_id}, Handle: {product_handle}")
             
             # Get live review count (Klaviyo first, then manual counts as fallback)
             # Try matching by product_id first (from Klaviyo Reviews API), then by handle (manual)
             klaviyo_reviews = klaviyo_review_counts.get(product_id, 0)
+            print(f"   Klaviyo reviews by ID: {klaviyo_reviews}")
+            
             if klaviyo_reviews == 0:
                 klaviyo_reviews = klaviyo_review_counts.get(product_handle, 0)
+                print(f"   Klaviyo reviews by handle: {klaviyo_reviews}")
+                
             if klaviyo_reviews == 0:
                 klaviyo_reviews = live_review_counts.get(product_handle, 0)
+                print(f"   Manual reviews by handle: {klaviyo_reviews}")
+            
+            print(f"   ✅ Final live review count: {klaviyo_reviews}")
             
             generated_reviews = review_tracking.get(product_id, {}).get('count', 0)
             
