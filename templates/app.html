@@ -913,24 +913,51 @@
                 
                 if (action === 'auto-import') {
                     const importResult = data.import_result;
-                    successMessage = `<strong>Success!</strong> Generated ${data.generated_reviews} reviews and imported ${importResult.summary.total_success} successfully!<br/><br/>`;
                     
-                    // Show warnings if any
-                    if (importResult.warnings && importResult.warnings.length > 0) {
-                        successMessage += `<strong>Warnings:</strong><br/>`;
-                        importResult.warnings.forEach(warning => {
-                            successMessage += `⚠️ ${warning}<br/>`;
+                    if (importResult && importResult.summary) {
+                        // Standard API import result
+                        successMessage = `<strong>Success!</strong> Generated ${data.generated_reviews} reviews and imported ${importResult.summary.total_success} successfully!<br/><br/>`;
+                        
+                        // Show warnings if any
+                        if (importResult.warnings && importResult.warnings.length > 0) {
+                            successMessage += `<strong>Warnings:</strong><br/>`;
+                            importResult.warnings.forEach(warning => {
+                                successMessage += `⚠️ ${warning}<br/>`;
+                            });
+                            successMessage += `<br/>`;
+                        }
+                        
+                        // Show platform-specific results
+                        successMessage += `<strong>Import Results:</strong><br/>`;
+                        Object.keys(importResult.platforms).forEach(platform => {
+                            const result = importResult.platforms[platform];
+                            const platformName = platform === 'reviews_io' ? 'Reviews.io' : 'Klaviyo';
+                            successMessage += `• ${platformName}: ${result.success_count} success, ${result.error_count} errors<br/>`;
                         });
-                        successMessage += `<br/>`;
+                    } else if (data.method_used === 'web_automation') {
+                        // Web automation success
+                        successMessage = `<strong>🎉 Automatic Upload Success!</strong><br/>`;
+                        successMessage += `Generated and uploaded ${data.generated_reviews} reviews to Klaviyo automatically!<br/><br/>`;
+                        successMessage += `✅ CSV file processed and uploaded via web automation<br/>`;
+                        successMessage += `📁 File: ${data.csv_file}<br/>`;
+                    } else {
+                        // Handle CSV workflow results
+                        successMessage = `<strong>Reviews Generated!</strong><br/>`;
+                        successMessage += `Created ${data.generated_reviews} reviews in CSV format.<br/><br/>`;
+                        
+                        if (data.csv_file) {
+                            successMessage += `📁 <strong>CSV Ready:</strong> ${data.csv_file}<br/>`;
+                            successMessage += `<a href="/download/${data.csv_file}" target="_blank" style="color: #86efac; text-decoration: underline; font-weight: bold;">📥 Download CSV File</a><br/><br/>`;
+                            
+                            if (data.manual_upload_url) {
+                                successMessage += `🌐 <strong>Manual Upload:</strong><br/>`;
+                                successMessage += `<a href="${data.manual_upload_url}" target="_blank" style="color: #86efac; text-decoration: underline;">Upload to Klaviyo Reviews</a><br/><br/>`;
+                            }
+                            
+                            // Add automated upload button if available
+                            successMessage += `<button onclick="uploadToKlaviyoWeb('${data.csv_file}')" class="btn btn-primary" style="margin-top: 12px; padding: 8px 16px; font-size: 13px; background: linear-gradient(135deg, #e74c3c, #c0392b);">🚀 Try Auto-Upload to Klaviyo</button>`;
+                        }
                     }
-                    
-                    // Show platform-specific results
-                    successMessage += `<strong>Import Results:</strong><br/>`;
-                    Object.keys(importResult.platforms).forEach(platform => {
-                        const result = importResult.platforms[platform];
-                        const platformName = platform === 'reviews_io' ? 'Reviews.io' : 'Klaviyo';
-                        successMessage += `• ${platformName}: ${result.success_count} success, ${result.error_count} errors<br/>`;
-                    });
                 } else {
                     successMessage = `<strong>Success!</strong> Generated ${data.count} reviews for "${data.product_name}".<br/><br/>`;
                     successMessage += `<a href="/download/${data.filename}" target="_blank" style="color: #86efac; text-decoration: underline; font-weight: bold;">📥 Download CSV File (${data.filename})</a><br/><br/>`;

@@ -419,71 +419,87 @@ def save_reviews_csv(reviews, product_id):
     return filename
 
 def post_reviews_to_klaviyo(reviews):
-    """Enhanced Klaviyo Reviews API with multiple endpoint testing and better error handling"""
+    """Klaviyo Reviews integration - CSV workflow only (API is read-only)"""
     try:
         klaviyo_api_key = os.environ.get('KLAVIYO_API_KEY')
         if not klaviyo_api_key:
-            return {'error': 'Klaviyo API key not configured', 'total_created': 0, 'total_errors': len(reviews)}
+            return {
+                'error': 'Klaviyo API key not configured. CSV workflow requires valid API key for validation.',
+                'total_created': 0, 
+                'total_errors': len(reviews),
+                'method_used': 'none'
+            }
         
         # Test API key validity first
         if not _test_klaviyo_api_key(klaviyo_api_key):
-            return {'error': 'Invalid Klaviyo API key', 'total_created': 0, 'total_errors': len(reviews)}
+            return {
+                'error': 'Invalid Klaviyo API key. Please check your KLAVIYO_API_KEY environment variable.',
+                'total_created': 0, 
+                'total_errors': len(reviews),
+                'method_used': 'none'
+            }
         
-        results = {
-            'success': [],
-            'errors': [],
-            'total_created': 0,
-            'total_errors': 0,
-            'method_used': 'unknown',
-            'debug_info': []
-        }
+        # IMPORTANT: Klaviyo Reviews API is READ-ONLY (returns 405 Method Not Allowed for POST)
+        # The only way to add reviews is via CSV upload through their web interface
+        print("ℹ️ Klaviyo Reviews API is read-only. Using CSV workflow...")
         
-        # Try multiple API approaches in order of preference
-        api_methods = [
-            ('reviews_api', _post_via_reviews_api),
-            ('events_api', _post_via_events_api),
-            ('profile_import', _post_via_profile_import)
-        ]
+        # Try automated web upload if credentials are available
+        klaviyo_login_email = os.environ.get('KLAVIYO_LOGIN_EMAIL')
+        klaviyo_login_password = os.environ.get('KLAVIYO_LOGIN_PASSWORD')
         
-        for method_name, method_func in api_methods:
+        if klaviyo_login_email and klaviyo_login_password:
+            print("🔄 Attempting automated CSV upload to Klaviyo...")
             try:
-                print(f"🔄 Attempting Klaviyo upload via {method_name}...")
-                method_results = method_func(reviews, klaviyo_api_key)
+                # Import the web automation module
+                from klaviyo_web_automation import upload_reviews_to_klaviyo_web
                 
-                if method_results['total_created'] > 0:
-                    print(f"✅ Success with {method_name}: {method_results['total_created']} reviews uploaded")
-                    results.update(method_results)
-                    results['method_used'] = method_name
-                    return results
+                # Convert reviews to CSV format first
+                csv_filename = save_reviews_csv(reviews, 'klaviyo_upload')
+                
+                # Attempt automated upload
+                upload_result = upload_reviews_to_klaviyo_web(csv_filename, klaviyo_login_email, klaviyo_login_password)
+                
+                if upload_result.get('success'):
+                    return {
+                        'success': reviews,
+                        'total_created': len(reviews),
+                        'total_errors': 0,
+                        'method_used': 'web_automation',
+                        'message': f'Successfully uploaded {len(reviews)} reviews via automated web upload',
+                        'csv_file': csv_filename
+                    }
                 else:
-                    print(f"❌ Failed with {method_name}: {method_results.get('error', 'Unknown error')}")
-                    results['debug_info'].append(f"{method_name}: {method_results.get('error', 'Failed')}")
+                    # Fall back to manual CSV
+                    return {
+                        'error': f"Automated upload failed: {upload_result.get('error', 'Unknown error')}\n\n💡 MANUAL UPLOAD: CSV file generated for manual import.",
+                        'total_created': 0,
+                        'total_errors': len(reviews),
+                        'method_used': 'csv_manual',
+                        'csv_file': csv_filename,
+                        'manual_upload_url': 'https://www.klaviyo.com/reviews/import/upload'
+                    }
                     
+            except ImportError:
+                print("⚠️ Web automation module not available, using manual CSV workflow")
             except Exception as e:
-                print(f"❌ Exception with {method_name}: {str(e)}")
-                results['debug_info'].append(f"{method_name}: Exception - {str(e)}")
-                continue
+                print(f"⚠️ Web automation failed: {e}")
         
-        # If all methods failed, return consolidated error with detailed debugging
-        detailed_error = f"All Klaviyo API methods failed.\n\nDebug Info:\n" + "\n".join(results['debug_info'])
+        # Default to manual CSV workflow
+        csv_filename = save_reviews_csv(reviews, 'klaviyo_manual')
         
-        # Add specific guidance based on common issues
-        if "401" in str(results['debug_info']):
-            detailed_error += "\n\n🔑 SOLUTION: Invalid or expired API key. Please check your KLAVIYO_API_KEY environment variable."
-        elif "403" in str(results['debug_info']):
-            detailed_error += "\n\n🔒 SOLUTION: API key lacks permissions. Reviews API might not be enabled for your account."
-        elif "404" in str(results['debug_info']):
-            detailed_error += "\n\n📍 SOLUTION: Reviews API endpoints not found. Your account might not have Reviews API access."
-        else:
-            detailed_error += "\n\n💡 SOLUTION: Try manual CSV upload or contact Klaviyo support to enable Reviews API."
-        
-        results['error'] = detailed_error
-        results['total_errors'] = len(reviews)
-        return results
+        return {
+            'error': f"Klaviyo Reviews API is read-only. Manual CSV upload required.\n\n💡 CSV READY: {csv_filename} generated for manual import.\n🌐 Upload at: https://www.klaviyo.com/reviews/import/upload",
+            'total_created': 0,
+            'total_errors': len(reviews),
+            'method_used': 'csv_manual',
+            'csv_file': csv_filename,
+            'csv_ready': True,
+            'manual_upload_url': 'https://www.klaviyo.com/reviews/import/upload'
+        }
         
     except Exception as e:
         return {
-            'error': f'Klaviyo upload system error: {str(e)}\n\n💡 FALLBACK: CSV file has been generated for manual upload.',
+            'error': f'Klaviyo workflow error: {str(e)}\n\n💡 FALLBACK: CSV file has been generated for manual upload.',
             'total_created': 0,
             'total_errors': len(reviews),
             'fallback_available': True

@@ -201,10 +201,10 @@ class KlaviyoWebUploader:
             if self.driver:
                 self.driver.quit()
 
-def upload_reviews_to_klaviyo_web(csv_file_path):
+def upload_reviews_to_klaviyo_web(csv_file_path, email=None, password=None):
     """Main function to upload reviews via web automation"""
     try:
-        uploader = KlaviyoWebUploader()
+        uploader = KlaviyoWebUploader(email=email, password=password)
         return uploader.upload_reviews_csv(csv_file_path)
         
     except ValueError as e:
