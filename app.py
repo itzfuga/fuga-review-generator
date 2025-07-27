@@ -247,13 +247,19 @@ def get_product_reviews(product_id):
             'revision': '2024-10-15'
         }
         
-        # Get all reviews from Klaviyo
-        all_reviews = []
+        # Get reviews from Klaviyo - optimized approach
+        product_reviews = []
+        target_catalog_id = f"$shopify:::$default:::{product_id}"
+        page_limit = 10  # Process 10 pages max to avoid timeout
+        page_count = 0
+        
+        print(f"Looking for reviews for product {product_id} (catalog ID: {target_catalog_id})")
+        
         url = "https://a.klaviyo.com/api/reviews/?page[size]=100"
         
-        while url and len(all_reviews) < 2000:  # Safety limit
+        while url and page_count < page_limit:
             try:
-                response = requests.get(url, headers=headers, timeout=30)
+                response = requests.get(url, headers=headers, timeout=15)
                 
                 if response.status_code != 200:
                     error_detail = f'Status {response.status_code}'
@@ -267,63 +273,60 @@ def get_product_reviews(product_id):
                 
                 data = response.json()
                 reviews = data.get('data', [])
-                all_reviews.extend(reviews)
                 
-                print(f"Fetched {len(reviews)} reviews, total: {len(all_reviews)}")
+                print(f"Page {page_count + 1}: Fetched {len(reviews)} reviews")
+                
+                # Process reviews for this page
+                for review in reviews:
+                    try:
+                        relationships = review.get('relationships', {})
+                        item_data = relationships.get('item', {}).get('data', {})
+                        catalog_item_id = item_data.get('id', '')
+                        
+                        if catalog_item_id == target_catalog_id:
+                            attributes = review.get('attributes', {})
+                            product_info = attributes.get('product', {})
+                            
+                            formatted_review = {
+                                'id': review.get('id'),
+                                'rating': attributes.get('rating', 0),
+                                'title': attributes.get('title', ''),
+                                'content': attributes.get('content', ''),
+                                'author': attributes.get('author', 'Anonymous'),
+                                'email': attributes.get('email', ''),
+                                'created': attributes.get('created'),
+                                'verified': attributes.get('verified', False),
+                                'status': attributes.get('status', 'published'),
+                                'product_name': product_info.get('name', ''),
+                                'product_url': product_info.get('url', ''),
+                                'product_image': product_info.get('image_url', ''),
+                                'images': attributes.get('images', [])
+                            }
+                            product_reviews.append(formatted_review)
+                            print(f"Found matching review: {formatted_review['id']} - {formatted_review['rating']}★")
+                    except Exception as e:
+                        print(f"Error processing review: {e}")
+                        continue
                 
                 # Check for next page
                 url = data.get('links', {}).get('next')
+                page_count += 1
+                
+                # If we found enough reviews for this product, we can stop early
+                if len(product_reviews) >= 50:
+                    print(f"Found {len(product_reviews)} reviews, stopping pagination")
+                    break
                 
             except requests.exceptions.Timeout:
-                return jsonify({'error': 'Klaviyo API timeout - request took too long'}), 500
+                print(f"Timeout on page {page_count + 1}, returning what we have")
+                break
             except requests.exceptions.RequestException as e:
-                return jsonify({'error': f'Network error connecting to Klaviyo: {str(e)}'}), 500
+                print(f"Network error on page {page_count + 1}: {e}")
+                break
             except Exception as e:
-                return jsonify({'error': f'Error processing Klaviyo response: {str(e)}'}), 500
+                print(f"Error on page {page_count + 1}: {e}")
+                break
         
-        # Filter reviews for this specific product
-        product_reviews = []
-        target_catalog_id = f"$shopify:::$default:::{product_id}"
-        
-        print(f"Looking for reviews for product {product_id} (catalog ID: {target_catalog_id})")
-        
-        try:
-            for review in all_reviews:
-                try:
-                    # Check if this review is for the requested product
-                    relationships = review.get('relationships', {})
-                    item_data = relationships.get('item', {}).get('data', {})
-                    catalog_item_id = item_data.get('id', '')
-                    
-                    if catalog_item_id == target_catalog_id:
-                        # Format the review data
-                        attributes = review.get('attributes', {})
-                        product_info = attributes.get('product', {})
-                        
-                        formatted_review = {
-                            'id': review.get('id'),
-                            'rating': attributes.get('rating', 0),
-                            'title': attributes.get('title', ''),
-                            'content': attributes.get('content', ''),
-                            'author': attributes.get('author', 'Anonymous'),
-                            'email': attributes.get('email', ''),
-                            'created': attributes.get('created'),
-                            'verified': attributes.get('verified', False),
-                            'status': attributes.get('status', 'published'),
-                            'product_name': product_info.get('name', ''),
-                            'product_url': product_info.get('url', ''),
-                            'product_image': product_info.get('image_url', ''),
-                            'images': attributes.get('images', [])
-                        }
-                        product_reviews.append(formatted_review)
-                        print(f"Found matching review: {formatted_review['id']} - {formatted_review['rating']}★")
-                        
-                except Exception as e:
-                    print(f"Error processing review {review.get('id', 'unknown')}: {e}")
-                    continue
-        
-        except Exception as e:
-            return jsonify({'error': f'Error filtering reviews: {str(e)}'}), 500
         
         print(f"Found {len(product_reviews)} reviews for product {product_id}")
         
@@ -353,6 +356,68 @@ def get_product_reviews(product_id):
         return jsonify({
             'success': True,
             'product_info': product_info,
+            'reviews': product_reviews,
+            'total_reviews': len(product_reviews),
+            'average_rating': sum(r['rating'] for r in product_reviews) / len(product_reviews) if product_reviews else 0
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Error fetching reviews: {str(e)}'}), 500
+
+@app.route('/api/reviews/by-handle/<product_handle>')
+def get_reviews_by_handle(product_handle):
+    """Get reviews by product handle - searches through review product names"""
+    try:
+        klaviyo_api_key = os.environ.get('KLAVIYO_API_KEY')
+        if not klaviyo_api_key:
+            return jsonify({'error': 'Klaviyo API key not configured'}), 500
+        
+        headers = {
+            'Authorization': f'Klaviyo-API-Key {klaviyo_api_key}',
+            'Accept': 'application/json',
+            'revision': '2024-10-15'
+        }
+        
+        # Search through reviews to find ones matching the product handle
+        product_reviews = []
+        url = "https://a.klaviyo.com/api/reviews/?page[size]=100"
+        page_count = 0
+        
+        while url and page_count < 5:  # Limit pages for handle search
+            response = requests.get(url, headers=headers, timeout=10)
+            
+            if response.status_code != 200:
+                return jsonify({'error': f'Klaviyo API error: {response.status_code}'}), 500
+            
+            data = response.json()
+            reviews = data.get('data', [])
+            
+            for review in reviews:
+                attributes = review.get('attributes', {})
+                product_info = attributes.get('product', {})
+                product_url = product_info.get('url', '')
+                
+                # Check if product URL contains the handle
+                if product_handle.lower() in product_url.lower():
+                    formatted_review = {
+                        'id': review.get('id'),
+                        'rating': attributes.get('rating', 0),
+                        'title': attributes.get('title', ''),
+                        'content': attributes.get('content', ''),
+                        'author': attributes.get('author', 'Anonymous'),
+                        'created': attributes.get('created'),
+                        'verified': attributes.get('verified', False),
+                        'product_name': product_info.get('name', ''),
+                        'catalog_id': review.get('relationships', {}).get('item', {}).get('data', {}).get('id', '')
+                    }
+                    product_reviews.append(formatted_review)
+            
+            url = data.get('links', {}).get('next')
+            page_count += 1
+        
+        return jsonify({
+            'success': True,
+            'handle': product_handle,
             'reviews': product_reviews,
             'total_reviews': len(product_reviews),
             'average_rating': sum(r['rating'] for r in product_reviews) / len(product_reviews) if product_reviews else 0
