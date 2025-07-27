@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Review Generator Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #a855f7;
+            --secondary-color: #6366f1;
+            --accent-color: #ec4899;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --bg-dark: #0f0f23;
+            --bg-card: #1a1a2e;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --border-color: #27272a;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a40 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .header h1 {
+            margin: 0 0 0.5rem 0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .header p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .metric-trend {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        .trend-up { color: var(--success-color); }
+        .trend-down { color: var(--danger-color); }
+        .trend-neutral { color: var(--text-secondary); }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .insights-section {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+        
+        .insights-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .recommendations-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+        
+        .recommendations-list li {
+            background: rgba(168, 85, 247, 0.1);
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .controls {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .control-group label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .control-group select,
+        .control-group button {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        
+        .control-group button {
+            background: var(--primary-color);
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .control-group button:hover {
+            background: #9333ea;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+        
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .table-container {
+            background: var(--bg-card);
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .table-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .table-content {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background: rgba(168, 85, 247, 0.1);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .status-excellent { background: var(--success-color); }
+        .status-good { background: var(--warning-color); }
+        .status-poor { background: var(--danger-color); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Review Generator Analytics</h1>
+            <p>Advanced analytics and performance insights for your AI-powered review generation system</p>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>Time Period</label>
+                <select id="daysPeriod">
+                    <option value="7">Last 7 days</option>
+                    <option value="30" selected>Last 30 days</option>
+                    <option value="90">Last 90 days</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Actions</label>
+                <button onclick="refreshDashboard()">🔄 Refresh</button>
+            </div>
+            <div class="control-group">
+                <label>Export</label>
+                <button onclick="exportData()">📊 Export Data</button>
+            </div>
+            <div class="control-group">
+                <label>Sample Data</label>
+                <button onclick="createSampleData()">🎯 Create Sample</button>
+            </div>
+        </div>
+        
+        <div id="loadingIndicator" class="loading" style="display: none;">
+            Loading analytics data...
+        </div>
+        
+        <div id="errorContainer"></div>
+        
+        <div id="dashboardContent" style="display: none;">
+            <!-- Key Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="totalReviews">0</div>
+                    <div class="metric-label">Total Reviews</div>
+                    <div class="metric-trend trend-up" id="reviewsTrend">📈 +12% vs last period</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="avgQuality">0.0</div>
+                    <div class="metric-label">Average Quality</div>
+                    <div class="metric-trend trend-up" id="qualityTrend">🎯 Excellent</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="aiUsage">0%</div>
+                    <div class="metric-label">AI Usage</div>
+                    <div class="metric-trend trend-up" id="aiTrend">🤖 Growing</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="errorRate">0%</div>
+                    <div class="metric-label">Error Rate</div>
+                    <div class="metric-trend trend-down" id="errorTrend">✅ Stable</div>
+                </div>
+            </div>
+            
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-title">📈 Daily Review Generation</div>
+                    <div class="chart-container">
+                        <canvas id="dailyReviewsChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">🎯 Quality Distribution</div>
+                    <div class="chart-container">
+                        <canvas id="qualityDistributionChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">🌍 Language Distribution</div>
+                    <div class="chart-container">
+                        <canvas id="languageDistributionChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">⭐ Rating Distribution</div>
+                    <div class="chart-container">
+                        <canvas id="ratingDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI Quality Insights -->
+            <div class="insights-section">
+                <div class="insights-title">🧠 AI Quality Insights</div>
+                <div id="qualityInsights">
+                    <p>Loading quality insights...</p>
+                </div>
+                <div class="insights-title">💡 Recommendations</div>
+                <ul class="recommendations-list" id="recommendationsList">
+                    <li>Loading recommendations...</li>
+                </ul>
+            </div>
+            
+            <!-- Top Performing Products -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>🏆 Top Performing Products</h3>
+                </div>
+                <div class="table-content">
+                    <table id="topProductsTable">
+                        <thead>
+                            <tr>
+                                <th>Product Title</th>
+                                <th>Reviews Generated</th>
+                                <th>Average Quality</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topProductsBody">
+                            <tr><td colspan="4">Loading data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Platform Performance -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>🔗 Platform Performance</h3>
+                </div>
+                <div class="table-content">
+                    <table id="platformTable">
+                        <thead>
+                            <tr>
+                                <th>Platform</th>
+                                <th>Total Reviews</th>
+                                <th>Average Quality</th>
+                                <th>Error Rate</th>
+                                <th>Avg Generation Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="platformBody">
+                            <tr><td colspan="5">Loading data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let dashboardData = {};
+        let charts = {};
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshDashboard();
+        });
+        
+        async function refreshDashboard() {
+            const days = document.getElementById('daysPeriod').value;
+            showLoading(true);
+            clearError();
+            
+            try {
+                // Fetch dashboard metrics
+                const [dashboardResponse, qualityResponse, platformResponse] = await Promise.all([
+                    fetch(`/api/analytics/dashboard?days=${days}`),
+                    fetch(`/api/analytics/quality-insights?days=${days}`),
+                    fetch(`/api/analytics/platform-performance?days=${days}`)
+                ]);
+                
+                if (!dashboardResponse.ok || !qualityResponse.ok || !platformResponse.ok) {
+                    throw new Error('Failed to fetch analytics data');
+                }
+                
+                const dashboardMetrics = await dashboardResponse.json();
+                const qualityInsights = await qualityResponse.json();
+                const platformPerformance = await platformResponse.json();
+                
+                // Update dashboard
+                updateMetrics(dashboardMetrics);
+                updateCharts(dashboardMetrics);
+                updateQualityInsights(qualityInsights);
+                updateTopProducts(dashboardMetrics.top_products);
+                updatePlatformPerformance(platformPerformance);
+                
+                showLoading(false);
+                document.getElementById('dashboardContent').style.display = 'block';
+                
+            } catch (error) {
+                showError(`Error loading dashboard: ${error.message}`);
+                showLoading(false);
+            }
+        }
+        
+        function updateMetrics(data) {
+            document.getElementById('totalReviews').textContent = data.total_reviews_generated || 0;
+            document.getElementById('avgQuality').textContent = (data.quality_scores?.overall || 0).toFixed(2);
+            
+            // Calculate AI usage percentage
+            const aiReviews = data.generation_methods?.ai_enhanced || 0;
+            const totalReviews = data.total_reviews_generated || 1;
+            const aiPercentage = ((aiReviews / totalReviews) * 100).toFixed(1);
+            document.getElementById('aiUsage').textContent = aiPercentage + '%';
+            
+            // Calculate overall error rate
+            const errorRates = Object.values(data.error_rates || {});
+            const avgErrorRate = errorRates.length > 0 ? 
+                (errorRates.reduce((a, b) => a + b, 0) / errorRates.length).toFixed(1) : 0;
+            document.getElementById('errorRate').textContent = avgErrorRate + '%';
+        }
+        
+        function updateCharts(data) {
+            // Daily Reviews Chart
+            updateDailyReviewsChart(data.performance_trends?.daily_reviews || []);
+            
+            // Quality Distribution Chart
+            updateQualityDistributionChart(data.quality_scores || {});
+            
+            // Language Distribution Chart
+            updateLanguageDistributionChart(data.language_distribution || {});
+            
+            // Rating Distribution Chart
+            updateRatingDistributionChart(data.rating_distribution || {});
+        }
+        
+        function updateDailyReviewsChart(dailyData) {
+            const ctx = document.getElementById('dailyReviewsChart').getContext('2d');
+            
+            if (charts.dailyReviews) {
+                charts.dailyReviews.destroy();
+            }
+            
+            charts.dailyReviews = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dailyData.map(d => new Date(d.date).toLocaleDateString()),
+                    datasets: [{
+                        label: 'Reviews Generated',
+                        data: dailyData.map(d => d.count),
+                        borderColor: '#a855f7',
+                        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#ffffff' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#a1a1aa' } },
+                        y: { ticks: { color: '#a1a1aa' } }
+                    }
+                }
+            });
+        }
+        
+        function updateQualityDistributionChart(qualityData) {
+            const ctx = document.getElementById('qualityDistributionChart').getContext('2d');
+            
+            if (charts.qualityDistribution) {
+                charts.qualityDistribution.destroy();
+            }
+            
+            charts.qualityDistribution = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Authenticity', 'Readability', 'Uniqueness', 'Commercial Value'],
+                    datasets: [{
+                        data: [
+                            qualityData.authenticity || 0,
+                            qualityData.readability || 0,
+                            qualityData.uniqueness || 0,
+                            qualityData.commercial_value || 0
+                        ],
+                        backgroundColor: ['#a855f7', '#6366f1', '#ec4899', '#10b981']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#ffffff' } }
+                    }
+                }
+            });
+        }
+        
+        function updateLanguageDistributionChart(languageData) {
+            const ctx = document.getElementById('languageDistributionChart').getContext('2d');
+            
+            if (charts.languageDistribution) {
+                charts.languageDistribution.destroy();
+            }
+            
+            charts.languageDistribution = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(languageData),
+                    datasets: [{
+                        label: 'Reviews by Language',
+                        data: Object.values(languageData),
+                        backgroundColor: '#6366f1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#ffffff' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#a1a1aa' } },
+                        y: { ticks: { color: '#a1a1aa' } }
+                    }
+                }
+            });
+        }
+        
+        function updateRatingDistributionChart(ratingData) {
+            const ctx = document.getElementById('ratingDistributionChart').getContext('2d');
+            
+            if (charts.ratingDistribution) {
+                charts.ratingDistribution.destroy();
+            }
+            
+            const ratings = ['1', '2', '3', '4', '5'];
+            const data = ratings.map(r => ratingData[r] || 0);
+            
+            charts.ratingDistribution = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ratings.map(r => r + ' Star'),
+                    datasets: [{
+                        label: 'Review Count',
+                        data: data,
+                        backgroundColor: ['#ef4444', '#f59e0b', '#6b7280', '#10b981', '#10b981']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#ffffff' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#a1a1aa' } },
+                        y: { ticks: { color: '#a1a1aa' } }
+                    }
+                }
+            });
+        }
+        
+        function updateQualityInsights(insights) {
+            const container = document.getElementById('qualityInsights');
+            const stats = insights.quality_statistics || {};
+            
+            container.innerHTML = `
+                <p><strong>Quality Statistics:</strong></p>
+                <ul>
+                    <li>Average Quality: ${(stats.mean || 0).toFixed(3)}</li>
+                    <li>Quality Range: ${(stats.min || 0).toFixed(2)} - ${(stats.max || 0).toFixed(2)}</li>
+                    <li>Standard Deviation: ${(stats.std_dev || 0).toFixed(3)}</li>
+                </ul>
+            `;
+            
+            const recommendations = insights.recommendations || [];
+            const recList = document.getElementById('recommendationsList');
+            recList.innerHTML = '';
+            
+            if (recommendations.length === 0) {
+                recList.innerHTML = '<li>No specific recommendations at this time. Quality metrics look good!</li>';
+            } else {
+                recommendations.forEach(rec => {
+                    const li = document.createElement('li');
+                    li.textContent = rec;
+                    recList.appendChild(li);
+                });
+            }
+        }
+        
+        function updateTopProducts(products) {
+            const tbody = document.getElementById('topProductsBody');
+            tbody.innerHTML = '';
+            
+            if (!products || products.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">No product data available</td></tr>';
+                return;
+            }
+            
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                const quality = product.avg_quality || 0;
+                const statusClass = quality >= 0.8 ? 'status-excellent' : 
+                                   quality >= 0.6 ? 'status-good' : 'status-poor';
+                const statusText = quality >= 0.8 ? 'Excellent' : 
+                                  quality >= 0.6 ? 'Good' : 'Needs Improvement';
+                
+                row.innerHTML = `
+                    <td>${product.title || 'Unknown Product'}</td>
+                    <td>${product.review_count || 0}</td>
+                    <td>${quality.toFixed(2)}</td>
+                    <td><span class="status-indicator ${statusClass}"></span>${statusText}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function updatePlatformPerformance(platformData) {
+            const tbody = document.getElementById('platformBody');
+            tbody.innerHTML = '';
+            
+            if (!platformData || Object.keys(platformData).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">No platform data available</td></tr>';
+                return;
+            }
+            
+            Object.entries(platformData).forEach(([platform, data]) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${platform}</td>
+                    <td>${data.total_reviews || 0}</td>
+                    <td>${(data.avg_quality || 0).toFixed(2)}</td>
+                    <td>${(data.error_rate || 0).toFixed(1)}%</td>
+                    <td>${(data.avg_generation_time_ms || 0).toFixed(0)}ms</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        async function exportData() {
+            const days = document.getElementById('daysPeriod').value;
+            try {
+                const response = await fetch(`/api/analytics/export?days=${days}&format=json`);
+                const data = await response.json();
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `analytics_export_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                showError(`Export failed: ${error.message}`);
+            }
+        }
+        
+        async function createSampleData() {
+            try {
+                const response = await fetch('/api/analytics/sample-data', { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Sample data created successfully! Refreshing dashboard...');
+                    refreshDashboard();
+                } else {
+                    showError('Failed to create sample data');
+                }
+            } catch (error) {
+                showError(`Error creating sample data: ${error.message}`);
+            }
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+        }
+        
+        function showError(message) {
+            const container = document.getElementById('errorContainer');
+            container.innerHTML = `<div class="error">❌ ${message}</div>`;
+        }
+        
+        function clearError() {
+            document.getElementById('errorContainer').innerHTML = '';
+        }
+        
+        // Auto-refresh every 5 minutes
+        setInterval(() => {
+            refreshDashboard();
+        }, 5 * 60 * 1000);
+    </script>
+</body>
+</html>

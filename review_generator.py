@@ -2092,8 +2092,37 @@ def get_unique_phrase(phrase_list, language, category="general"):
     
     return phrase
 
-def generate_review(product, existing_reviews=0):
-    """Generate a single review for a product using product description"""
+def generate_review(product, existing_reviews=0, use_ai=True):
+    """
+    Generate a single review for a product using AI when available or fallback to templates
+    
+    Args:
+        product: Product information dictionary
+        existing_reviews: Number of existing reviews for phrase tracking
+        use_ai: Whether to attempt AI generation (default: True)
+    """
+    
+    # Try AI-enhanced generation first if enabled and configured
+    if use_ai and os.environ.get('OPENAI_API_KEY'):
+        try:
+            from ai_review_generator import generate_ai_enhanced_review
+            ai_review = generate_ai_enhanced_review(product, existing_reviews)
+            
+            # Add generation metadata
+            ai_review['generation_method'] = ai_review.get('generation_method', 'ai_enhanced')
+            ai_review['ai_enabled'] = True
+            
+            # Quality check - if AI review quality is good, use it
+            if ai_review.get('ai_quality_score', 0) >= 0.7:
+                print(f"✨ Generated AI review with quality score: {ai_review.get('ai_quality_score', 'N/A')}")
+                return ai_review
+            else:
+                print(f"⚠️ AI review quality low ({ai_review.get('ai_quality_score', 'N/A')}), falling back to templates")
+        
+        except Exception as e:
+            print(f"🔄 AI generation failed: {str(e)}, falling back to template generation")
+    
+    # Fallback to original template-based generation
     language = select_language()
     rating = generate_rating_distribution()
     reviewer_name, reviewer_email, reviewer_location = generate_reviewer_info(language)
@@ -2154,7 +2183,9 @@ def generate_review(product, existing_reviews=0):
         'email': reviewer_email,
         'location': reviewer_location,
         'date': review_date,
-        'verified': verified
+        'verified': verified,
+        'generation_method': 'template_based',
+        'ai_enabled': False
     }
 
 def generate_reviews_for_product(product_info, num_reviews=5):

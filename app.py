@@ -286,7 +286,30 @@ def generate_reviews(product_id):
         print(f"DEBUG: Generating {review_count} reviews for product {product_id}")
         
         # Generate reviews using the advanced algorithm
+        start_time = datetime.now()
         reviews = generate_advanced_reviews(product, review_count)
+        generation_time = (datetime.now() - start_time).total_seconds() * 1000  # Convert to milliseconds
+        
+        # Log analytics data
+        try:
+            from analytics_dashboard import AnalyticsDashboard
+            dashboard = AnalyticsDashboard()
+            
+            for i, review in enumerate(reviews):
+                dashboard.log_review_generation(
+                    review_data=review,
+                    generation_metadata={
+                        'product_id': product_id,
+                        'product_title': product.get('title', ''),
+                        'platform': 'shopify',
+                        'session_id': session.get('session_id', ''),
+                        'generation_time_ms': generation_time / len(reviews),  # Avg per review
+                        'error_occurred': False,
+                        'review_id': f"{product_id}_{i}"
+                    }
+                )
+        except Exception as e:
+            print(f"Analytics logging failed: {str(e)}")
         
         # Save to CSV for Reviews.io import
         filename = save_reviews_csv(reviews, product_id)
@@ -908,6 +931,101 @@ def download(filename):
             return jsonify({'error': f'File not found: {filename}'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# Analytics Dashboard Endpoints
+@app.route('/api/analytics/dashboard')
+def analytics_dashboard():
+    """Get comprehensive dashboard metrics"""
+    try:
+        from analytics_dashboard import AnalyticsDashboard
+        from dataclasses import asdict
+        
+        days = int(request.args.get('days', 30))
+        dashboard = AnalyticsDashboard()
+        metrics = dashboard.get_dashboard_metrics(days)
+        return jsonify(asdict(metrics))
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/analytics/quality-insights')
+def quality_insights():
+    """Get detailed quality insights"""
+    try:
+        from analytics_dashboard import AnalyticsDashboard
+        
+        days = int(request.args.get('days', 30))
+        dashboard = AnalyticsDashboard()
+        insights = dashboard.get_quality_insights(days)
+        return jsonify(insights)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/analytics/platform-performance')
+def platform_performance():
+    """Get platform-specific performance metrics"""
+    try:
+        from analytics_dashboard import AnalyticsDashboard
+        
+        days = int(request.args.get('days', 30))
+        dashboard = AnalyticsDashboard()
+        performance = dashboard.get_platform_performance(days)
+        return jsonify(performance)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/analytics/export')
+def export_analytics():
+    """Export analytics data"""
+    try:
+        from analytics_dashboard import AnalyticsDashboard
+        import json
+        
+        days = int(request.args.get('days', 30))
+        format_type = request.args.get('format', 'json')
+        dashboard = AnalyticsDashboard()
+        
+        export_data = dashboard.export_analytics_data(days, format_type)
+        
+        if format_type == 'json':
+            return jsonify(json.loads(export_data))
+        else:
+            return export_data, 200, {'Content-Type': 'text/plain'}
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/analytics/quality-assessment', methods=['POST'])
+def assess_review_quality():
+    """Assess quality of provided reviews"""
+    try:
+        from ai_quality_scorer import assess_generated_reviews
+        
+        data = request.json
+        reviews = data.get('reviews', [])
+        product_context = data.get('product_context')
+        
+        if not reviews:
+            return jsonify({'error': 'No reviews provided'}), 400
+        
+        assessment_results = assess_generated_reviews(reviews, product_context)
+        return jsonify(assessment_results)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/analytics/sample-data', methods=['POST'])
+def create_sample_data():
+    """Create sample analytics data for testing"""
+    try:
+        from analytics_dashboard import create_sample_analytics_data
+        
+        result = create_sample_analytics_data()
+        return jsonify({'success': True, 'message': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/analytics')
+def analytics_dashboard_page():
+    """Render the analytics dashboard page"""
+    return render_template('analytics_dashboard.html')
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
