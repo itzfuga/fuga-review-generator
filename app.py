@@ -252,49 +252,80 @@ def get_product_reviews(product_id):
         url = "https://a.klaviyo.com/api/reviews/?page[size]=100"
         
         while url and len(all_reviews) < 2000:  # Safety limit
-            response = requests.get(url, headers=headers)
-            
-            if response.status_code != 200:
-                return jsonify({'error': f'Klaviyo API error: {response.status_code}'}), 500
-            
-            data = response.json()
-            reviews = data.get('data', [])
-            all_reviews.extend(reviews)
-            
-            # Check for next page
-            url = data.get('links', {}).get('next')
+            try:
+                response = requests.get(url, headers=headers, timeout=30)
+                
+                if response.status_code != 200:
+                    error_detail = f'Status {response.status_code}'
+                    try:
+                        error_data = response.json()
+                        if 'errors' in error_data and error_data['errors']:
+                            error_detail += f": {error_data['errors'][0].get('detail', 'Unknown API error')}"
+                    except:
+                        error_detail += f": {response.text[:200]}"
+                    return jsonify({'error': f'Klaviyo API error: {error_detail}'}), 500
+                
+                data = response.json()
+                reviews = data.get('data', [])
+                all_reviews.extend(reviews)
+                
+                print(f"Fetched {len(reviews)} reviews, total: {len(all_reviews)}")
+                
+                # Check for next page
+                url = data.get('links', {}).get('next')
+                
+            except requests.exceptions.Timeout:
+                return jsonify({'error': 'Klaviyo API timeout - request took too long'}), 500
+            except requests.exceptions.RequestException as e:
+                return jsonify({'error': f'Network error connecting to Klaviyo: {str(e)}'}), 500
+            except Exception as e:
+                return jsonify({'error': f'Error processing Klaviyo response: {str(e)}'}), 500
         
         # Filter reviews for this specific product
         product_reviews = []
         target_catalog_id = f"$shopify:::$default:::{product_id}"
         
-        for review in all_reviews:
-            # Check if this review is for the requested product
-            relationships = review.get('relationships', {})
-            item_data = relationships.get('item', {}).get('data', {})
-            catalog_item_id = item_data.get('id', '')
-            
-            if catalog_item_id == target_catalog_id:
-                # Format the review data
-                attributes = review.get('attributes', {})
-                product_info = attributes.get('product', {})
-                
-                formatted_review = {
-                    'id': review.get('id'),
-                    'rating': attributes.get('rating'),
-                    'title': attributes.get('title', ''),
-                    'content': attributes.get('content', ''),
-                    'author': attributes.get('author', 'Anonymous'),
-                    'email': attributes.get('email', ''),
-                    'created': attributes.get('created'),
-                    'verified': attributes.get('verified', False),
-                    'status': attributes.get('status', 'published'),
-                    'product_name': product_info.get('name', ''),
-                    'product_url': product_info.get('url', ''),
-                    'product_image': product_info.get('image_url', ''),
-                    'images': attributes.get('images', [])
-                }
-                product_reviews.append(formatted_review)
+        print(f"Looking for reviews for product {product_id} (catalog ID: {target_catalog_id})")
+        
+        try:
+            for review in all_reviews:
+                try:
+                    # Check if this review is for the requested product
+                    relationships = review.get('relationships', {})
+                    item_data = relationships.get('item', {}).get('data', {})
+                    catalog_item_id = item_data.get('id', '')
+                    
+                    if catalog_item_id == target_catalog_id:
+                        # Format the review data
+                        attributes = review.get('attributes', {})
+                        product_info = attributes.get('product', {})
+                        
+                        formatted_review = {
+                            'id': review.get('id'),
+                            'rating': attributes.get('rating', 0),
+                            'title': attributes.get('title', ''),
+                            'content': attributes.get('content', ''),
+                            'author': attributes.get('author', 'Anonymous'),
+                            'email': attributes.get('email', ''),
+                            'created': attributes.get('created'),
+                            'verified': attributes.get('verified', False),
+                            'status': attributes.get('status', 'published'),
+                            'product_name': product_info.get('name', ''),
+                            'product_url': product_info.get('url', ''),
+                            'product_image': product_info.get('image_url', ''),
+                            'images': attributes.get('images', [])
+                        }
+                        product_reviews.append(formatted_review)
+                        print(f"Found matching review: {formatted_review['id']} - {formatted_review['rating']}★")
+                        
+                except Exception as e:
+                    print(f"Error processing review {review.get('id', 'unknown')}: {e}")
+                    continue
+        
+        except Exception as e:
+            return jsonify({'error': f'Error filtering reviews: {str(e)}'}), 500
+        
+        print(f"Found {len(product_reviews)} reviews for product {product_id}")
         
         # Get product info from Shopify for context
         product_info = {}
@@ -329,6 +360,54 @@ def get_product_reviews(product_id):
         
     except Exception as e:
         return jsonify({'error': f'Error fetching reviews: {str(e)}'}), 500
+
+@app.route('/api/reviews/debug')
+def debug_reviews():
+    """Debug endpoint to see all available reviews and their product IDs"""
+    try:
+        klaviyo_api_key = os.environ.get('KLAVIYO_API_KEY')
+        if not klaviyo_api_key:
+            return jsonify({'error': 'Klaviyo API key not configured'}), 500
+        
+        headers = {
+            'Authorization': f'Klaviyo-API-Key {klaviyo_api_key}',
+            'Accept': 'application/json',
+            'revision': '2024-10-15'
+        }
+        
+        # Get first page of reviews for debugging
+        url = "https://a.klaviyo.com/api/reviews/?page[size]=10"
+        response = requests.get(url, headers=headers, timeout=15)
+        
+        if response.status_code != 200:
+            return jsonify({'error': f'Klaviyo API error: {response.status_code}'}), 500
+        
+        data = response.json()
+        reviews = data.get('data', [])
+        
+        debug_info = {
+            'total_found': len(reviews),
+            'reviews': []
+        }
+        
+        for review in reviews:
+            relationships = review.get('relationships', {})
+            item_data = relationships.get('item', {}).get('data', {})
+            attributes = review.get('attributes', {})
+            
+            debug_info['reviews'].append({
+                'review_id': review.get('id'),
+                'catalog_item_id': item_data.get('id', ''),
+                'product_name': attributes.get('product', {}).get('name', ''),
+                'rating': attributes.get('rating'),
+                'title': attributes.get('title', ''),
+                'author': attributes.get('author', 'Anonymous')
+            })
+        
+        return jsonify(debug_info)
+        
+    except Exception as e:
+        return jsonify({'error': f'Debug error: {str(e)}'}), 500
 
 @app.route('/api/generate/<product_id>', methods=['POST'])
 def generate_reviews(product_id):
