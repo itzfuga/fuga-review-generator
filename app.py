@@ -249,7 +249,7 @@ def get_product_reviews(product_id):
         
         # Get all reviews from Klaviyo
         all_reviews = []
-        url = "https://a.klaviyo.com/api/reviews/?page[size]=500"
+        url = "https://a.klaviyo.com/api/reviews/?page[size]=100"
         
         while url and len(all_reviews) < 2000:  # Safety limit
             response = requests.get(url, headers=headers)

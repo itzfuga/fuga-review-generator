@@ -129,7 +129,7 @@ def get_all_klaviyo_reviews():
         
         # Try to access Klaviyo Reviews API directly
         # This is the actual reviews database, not events
-        reviews_url = "https://a.klaviyo.com/api/reviews/?page[size]=500"
+        reviews_url = "https://a.klaviyo.com/api/reviews/?page[size]=100"
         
         try:
             response = requests.get(reviews_url, headers=headers)
@@ -189,7 +189,7 @@ def get_all_klaviyo_reviews():
         # Fallback to events-based approach
         print("Falling back to events-based review counting...")
         for metric_name in ['Submitted review', 'ReviewsIOProductReview']:
-            url = f"https://a.klaviyo.com/api/events/?filter=equals(metric.name,'{metric_name}')&page[size]=500"
+            url = f"https://a.klaviyo.com/api/events/?filter=equals(metric.name,'{metric_name}')&page[size]=100"
             response = requests.get(url, headers=headers)
             
             if response.status_code == 200:
@@ -254,7 +254,7 @@ def get_product_reviews(product_id):
         
         # Get all reviews from Klaviyo
         all_reviews = []
-        url = "https://a.klaviyo.com/api/reviews/?page[size]=500"
+        url = "https://a.klaviyo.com/api/reviews/?page[size]=100"
         
         while url and len(all_reviews) < 2000:  # Safety limit
             response = requests.get(url, headers=headers)
