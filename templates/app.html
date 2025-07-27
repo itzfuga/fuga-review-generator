@@ -712,8 +712,10 @@
                     throw new Error(data.error);
                 }
                 
-                displayProducts(data.products);
-                updateStats(data.products);
+                // Ensure products exist before processing
+                const products = data.products || [];
+                displayProducts(products);
+                updateStats(products);
                 
             } catch (err) {
                 error.textContent = err.message;
@@ -790,9 +792,19 @@
         }
         
         function updateStats(products) {
+            // Safety check for undefined products
+            if (!products || !Array.isArray(products)) {
+                console.error('Products is not an array in updateStats:', products);
+                // Set stats to 0 if products is invalid
+                document.getElementById('total-products').textContent = '0';
+                document.getElementById('total-reviews').textContent = '0';
+                document.getElementById('generated-reviews').textContent = '0';
+                return;
+            }
+            
             const totalProducts = products.length;
-            const totalReviews = products.reduce((sum, p) => sum + p.live_reviews, 0);
-            const generatedReviews = products.reduce((sum, p) => sum + p.generated_reviews, 0);
+            const totalReviews = products.reduce((sum, p) => sum + (p.live_reviews || 0), 0);
+            const generatedReviews = products.reduce((sum, p) => sum + (p.generated_reviews || 0), 0);
             
             document.getElementById('total-products').textContent = totalProducts;
             document.getElementById('total-reviews').textContent = totalReviews;
