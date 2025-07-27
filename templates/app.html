@@ -629,6 +629,45 @@
         </div>
     </div>
 
+    <!-- Reviews Viewer Modal -->
+    <div id="reviewsModal" class="modal">
+        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h3>Reviews for <span id="reviews-product-name"></span></h3>
+                <button onclick="closeReviewsModal()" style="background: none; border: none; color: var(--text-secondary); font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            
+            <div id="reviews-loading" style="text-align: center; padding: 40px;">
+                <div style="font-size: 18px; color: var(--text-secondary);">Loading reviews...</div>
+            </div>
+            
+            <div id="reviews-content" style="display: none;">
+                <div id="reviews-summary" style="background: var(--bg-dark); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 24px; font-weight: bold; color: var(--text-primary);" id="total-reviews-count">0</div>
+                            <div style="color: var(--text-secondary);">Total Reviews</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 24px; font-weight: bold; color: #fbbf24;" id="average-rating">0.0</div>
+                            <div style="color: var(--text-secondary);">Average Rating</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="reviews-list">
+                    <!-- Reviews will be loaded here -->
+                </div>
+                
+                <div id="no-reviews" style="display: none; text-align: center; padding: 40px; color: var(--text-secondary);">
+                    <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
+                    <div style="font-size: 18px;">No reviews found for this product</div>
+                    <div style="font-size: 14px; margin-top: 8px;">Reviews will appear here once customers leave them</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentProductId = null;
         let currentProductName = null;
@@ -725,6 +764,12 @@
                             onclick="openModal('${product.id}', '${product.title.replace(/'/g, "\\'")}')"
                         >
                             Generate Reviews
+                        </button>
+                        <button 
+                            class="btn btn-secondary" 
+                            onclick="viewProductReviews('${product.id}', '${product.title.replace(/'/g, "\\'")}')"
+                        >
+                            View Reviews (${product.live_reviews || 0})
                         </button>
                         ${product.generated_reviews > 0 ? 
                             `<button class="btn btn-secondary" onclick="viewGenerated('${product.id}')">View Generated</button>` : 
@@ -849,6 +894,106 @@
             document.getElementById('reviewModal').style.display = 'none';
             currentProductId = null;
             currentProductName = null;
+        }
+
+        function viewProductReviews(productId, productName) {
+            document.getElementById('reviews-product-name').textContent = productName;
+            document.getElementById('reviewsModal').style.display = 'block';
+            document.getElementById('reviews-loading').style.display = 'block';
+            document.getElementById('reviews-content').style.display = 'none';
+            
+            // Fetch reviews for this product
+            fetch(`/api/reviews/${productId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('reviews-loading').style.display = 'none';
+                    document.getElementById('reviews-content').style.display = 'block';
+                    
+                    if (data.success) {
+                        displayReviews(data);
+                    } else {
+                        showReviewError('Failed to load reviews: ' + (data.error || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('reviews-loading').style.display = 'none';
+                    document.getElementById('reviews-content').style.display = 'block';
+                    showReviewError('Error loading reviews: ' + error.message);
+                });
+        }
+
+        function displayReviews(data) {
+            const reviews = data.reviews || [];
+            const totalCount = reviews.length;
+            const averageRating = data.average_rating || 0;
+            
+            // Update summary
+            document.getElementById('total-reviews-count').textContent = totalCount;
+            document.getElementById('average-rating').textContent = averageRating.toFixed(1);
+            
+            const reviewsList = document.getElementById('reviews-list');
+            const noReviews = document.getElementById('no-reviews');
+            
+            if (totalCount === 0) {
+                reviewsList.style.display = 'none';
+                noReviews.style.display = 'block';
+                return;
+            }
+            
+            noReviews.style.display = 'none';
+            reviewsList.style.display = 'block';
+            reviewsList.innerHTML = '';
+            
+            reviews.forEach(review => {
+                const reviewCard = document.createElement('div');
+                reviewCard.style.cssText = `
+                    background: var(--bg-card);
+                    border-radius: 12px;
+                    padding: 20px;
+                    margin-bottom: 16px;
+                    border: 1px solid var(--border-color);
+                `;
+                
+                const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+                const reviewDate = new Date(review.created).toLocaleDateString();
+                const verified = review.verified ? '<span style="color: #10b981; font-size: 12px;">✓ Verified</span>' : '';
+                
+                reviewCard.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                        <div>
+                            <div style="color: #fbbf24; font-size: 18px; margin-bottom: 4px;">${stars}</div>
+                            <div style="font-weight: 600; color: var(--text-primary);">${review.title || 'No title'}</div>
+                        </div>
+                        <div style="text-align: right; font-size: 12px; color: var(--text-secondary);">
+                            <div>${reviewDate}</div>
+                            ${verified}
+                        </div>
+                    </div>
+                    <div style="color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+                        ${review.content || '<em>No review text</em>'}
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted);">
+                        by ${review.author || 'Anonymous'}
+                    </div>
+                `;
+                
+                reviewsList.appendChild(reviewCard);
+            });
+        }
+
+        function closeReviewsModal() {
+            document.getElementById('reviewsModal').style.display = 'none';
+        }
+
+        function showReviewError(message) {
+            const reviewsList = document.getElementById('reviews-list');
+            reviewsList.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #ef4444;">
+                    <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+                    <div style="font-size: 18px;">Error Loading Reviews</div>
+                    <div style="font-size: 14px; margin-top: 8px;">${message}</div>
+                </div>
+            `;
         }
         
         async function generateReviews() {

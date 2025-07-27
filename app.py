@@ -233,6 +233,103 @@ def get_products():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/reviews/<product_id>')
+def get_product_reviews(product_id):
+    """Get all live reviews for a specific product"""
+    try:
+        klaviyo_api_key = os.environ.get('KLAVIYO_API_KEY')
+        if not klaviyo_api_key:
+            return jsonify({'error': 'Klaviyo API key not configured'}), 500
+        
+        headers = {
+            'Authorization': f'Klaviyo-API-Key {klaviyo_api_key}',
+            'Accept': 'application/json',
+            'revision': '2024-10-15'
+        }
+        
+        # Get all reviews from Klaviyo
+        all_reviews = []
+        url = "https://a.klaviyo.com/api/reviews/?page[size]=500"
+        
+        while url and len(all_reviews) < 2000:  # Safety limit
+            response = requests.get(url, headers=headers)
+            
+            if response.status_code != 200:
+                return jsonify({'error': f'Klaviyo API error: {response.status_code}'}), 500
+            
+            data = response.json()
+            reviews = data.get('data', [])
+            all_reviews.extend(reviews)
+            
+            # Check for next page
+            url = data.get('links', {}).get('next')
+        
+        # Filter reviews for this specific product
+        product_reviews = []
+        target_catalog_id = f"$shopify:::$default:::{product_id}"
+        
+        for review in all_reviews:
+            # Check if this review is for the requested product
+            relationships = review.get('relationships', {})
+            item_data = relationships.get('item', {}).get('data', {})
+            catalog_item_id = item_data.get('id', '')
+            
+            if catalog_item_id == target_catalog_id:
+                # Format the review data
+                attributes = review.get('attributes', {})
+                product_info = attributes.get('product', {})
+                
+                formatted_review = {
+                    'id': review.get('id'),
+                    'rating': attributes.get('rating'),
+                    'title': attributes.get('title', ''),
+                    'content': attributes.get('content', ''),
+                    'author': attributes.get('author', 'Anonymous'),
+                    'email': attributes.get('email', ''),
+                    'created': attributes.get('created'),
+                    'verified': attributes.get('verified', False),
+                    'status': attributes.get('status', 'published'),
+                    'product_name': product_info.get('name', ''),
+                    'product_url': product_info.get('url', ''),
+                    'product_image': product_info.get('image_url', ''),
+                    'images': attributes.get('images', [])
+                }
+                product_reviews.append(formatted_review)
+        
+        # Get product info from Shopify for context
+        product_info = {}
+        try:
+            shop_domain = os.environ.get('SHOPIFY_SHOP_DOMAIN', session.get('shop'))
+            access_token = get_access_token(shop_domain)
+            
+            if access_token:
+                shopify_url = f'https://{shop_domain}/admin/api/2023-10/products/{product_id}.json'
+                shopify_headers = {'X-Shopify-Access-Token': access_token}
+                shopify_response = requests.get(shopify_url, headers=shopify_headers)
+                
+                if shopify_response.status_code == 200:
+                    shopify_data = shopify_response.json()
+                    product = shopify_data.get('product', {})
+                    product_info = {
+                        'title': product.get('title', ''),
+                        'handle': product.get('handle', ''),
+                        'id': product.get('id', ''),
+                        'image': product.get('image', {}).get('src', '') if product.get('image') else ''
+                    }
+        except Exception as e:
+            print(f"Error fetching product info: {e}")
+        
+        return jsonify({
+            'success': True,
+            'product_info': product_info,
+            'reviews': product_reviews,
+            'total_reviews': len(product_reviews),
+            'average_rating': sum(r['rating'] for r in product_reviews) / len(product_reviews) if product_reviews else 0
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Error fetching reviews: {str(e)}'}), 500
+
 @app.route('/api/generate/<product_id>', methods=['POST'])
 def generate_reviews(product_id):
     """Generate reviews for a specific product"""
