@@ -11,7 +11,7 @@ app = Flask(__name__)
 # Your credentials from environment variables
 SHOP_DOMAIN = os.environ.get('SHOPIFY_SHOP_DOMAIN', 'your-shop.myshopify.com')
 ACCESS_TOKEN = os.environ.get('SHOPIFY_ACCESS_TOKEN', 'your-access-token')
-KLAVIYO_API_KEY = os.environ.get('KLAVIYO_API_KEY', 'your-klaviyo-key')
+KLAVIYO_API_KEY = os.environ.get('KLAVIYO_API_KEY')
 
 # File to track generated reviews
 REVIEW_TRACKING_FILE = 'review_tracking.json'
@@ -73,6 +73,11 @@ def get_all_klaviyo_reviews():
     try:
         # Start with CSV data (imported reviews)
         review_counts = get_csv_review_counts()
+        
+        # Check if Klaviyo API key is available
+        if not KLAVIYO_API_KEY:
+            print("⚠️ KLAVIYO_API_KEY not configured, using CSV counts only")
+            return review_counts
         
         # Add live Klaviyo reviews (from email workflow)
         headers = {
@@ -193,7 +198,7 @@ def klaviyo_diagnostic():
 def get_klaviyo_events():
     """Diagnostic endpoint to discover Klaviyo event types"""
     try:
-        if KLAVIYO_API_KEY == 'your-klaviyo-key':
+        if not KLAVIYO_API_KEY:
             return jsonify({
                 'success': False, 
                 'error': 'Klaviyo API key not configured'
@@ -269,7 +274,7 @@ def get_klaviyo_events():
 def get_klaviyo_review_samples():
     """Get sample review events to understand their structure"""
     try:
-        if KLAVIYO_API_KEY == 'your-klaviyo-key':
+        if not KLAVIYO_API_KEY:
             return jsonify({
                 'success': False, 
                 'error': 'Klaviyo API key not configured'
@@ -334,7 +339,7 @@ def get_klaviyo_review_samples():
 def debug_reviews():
     """Debug where reviews might be stored"""
     try:
-        if KLAVIYO_API_KEY == 'your-klaviyo-key':
+        if not KLAVIYO_API_KEY:
             return jsonify({
                 'success': False, 
                 'error': 'Klaviyo API key not configured'
@@ -443,7 +448,7 @@ def debug_reviews():
 def test_klaviyo_reviews():
     """Test endpoint to check Klaviyo Reviews API access"""
     try:
-        if KLAVIYO_API_KEY == 'your-klaviyo-key':
+        if not KLAVIYO_API_KEY:
             return jsonify({
                 'success': False, 
                 'error': 'Klaviyo API key not configured'
@@ -576,7 +581,7 @@ def get_products():
         products_data = []
         
         # Check if we should fetch Klaviyo reviews (only if API key is set)
-        fetch_klaviyo = KLAVIYO_API_KEY != 'your-klaviyo-key'
+        fetch_klaviyo = bool(KLAVIYO_API_KEY)
         
         # Load manually tracked live review counts (fallback if Klaviyo doesn't work)
         live_review_counts = load_live_review_counts()

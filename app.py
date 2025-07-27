@@ -464,16 +464,29 @@ def post_reviews_to_klaviyo(reviews):
                 results['debug_info'].append(f"{method_name}: Exception - {str(e)}")
                 continue
         
-        # If all methods failed, return consolidated error
-        results['error'] = 'All Klaviyo API methods failed. See debug_info for details.'
+        # If all methods failed, return consolidated error with detailed debugging
+        detailed_error = f"All Klaviyo API methods failed.\n\nDebug Info:\n" + "\n".join(results['debug_info'])
+        
+        # Add specific guidance based on common issues
+        if "401" in str(results['debug_info']):
+            detailed_error += "\n\n🔑 SOLUTION: Invalid or expired API key. Please check your KLAVIYO_API_KEY environment variable."
+        elif "403" in str(results['debug_info']):
+            detailed_error += "\n\n🔒 SOLUTION: API key lacks permissions. Reviews API might not be enabled for your account."
+        elif "404" in str(results['debug_info']):
+            detailed_error += "\n\n📍 SOLUTION: Reviews API endpoints not found. Your account might not have Reviews API access."
+        else:
+            detailed_error += "\n\n💡 SOLUTION: Try manual CSV upload or contact Klaviyo support to enable Reviews API."
+        
+        results['error'] = detailed_error
         results['total_errors'] = len(reviews)
         return results
         
     except Exception as e:
         return {
-            'error': f'Klaviyo upload system error: {str(e)}',
+            'error': f'Klaviyo upload system error: {str(e)}\n\n💡 FALLBACK: CSV file has been generated for manual upload.',
             'total_created': 0,
-            'total_errors': len(reviews)
+            'total_errors': len(reviews),
+            'fallback_available': True
         }
 
 def _test_klaviyo_api_key(api_key):
@@ -485,8 +498,13 @@ def _test_klaviyo_api_key(api_key):
         }
         
         response = requests.get('https://a.klaviyo.com/api/accounts/', headers=headers, timeout=10)
-        return response.status_code == 200
-    except:
+        if response.status_code == 200:
+            return True
+        else:
+            print(f"🔑 Klaviyo API Key validation failed: {response.status_code} - {response.text[:100]}")
+            return False
+    except Exception as e:
+        print(f"🔑 Klaviyo API Key test error: {e}")
         return False
 
 def _post_via_reviews_api(reviews, api_key):
