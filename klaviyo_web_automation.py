@@ -107,74 +107,140 @@ class KlaviyoWebUploader:
         except Exception as e:
             raise Exception(f"Navigation failed: {e}")
     
-    def upload_csv_file(self, csv_file_path):
-        """Upload CSV file to Klaviyo"""
-        try:
-            print(f"📤 Uploading CSV file: {csv_file_path}")
-            
-            if not os.path.exists(csv_file_path):
-                raise Exception(f"CSV file not found: {csv_file_path}")
-            
-            # Find file input
-            file_input = self.driver.find_element(By.XPATH, "//input[@type='file']")
-            file_input.send_keys(os.path.abspath(csv_file_path))
-            
-            # Wait a bit for file to be processed
-            time.sleep(2)
-            
-            # Look for upload/submit button
-            upload_buttons = [
-                "//button[contains(text(), 'Upload')]",
-                "//button[contains(text(), 'Import')]", 
-                "//button[contains(text(), 'Submit')]",
-                "//input[@type='submit']",
-                "//button[@type='submit']"
-            ]
-            
-            upload_button = None
-            for xpath in upload_buttons:
-                try:
-                    upload_button = self.driver.find_element(By.XPATH, xpath)
-                    break
-                except NoSuchElementException:
-                    continue
-            
-            if not upload_button:
-                raise Exception("Could not find upload/submit button")
-            
-            upload_button.click()
-            
-            # Wait for upload to complete
-            print("⏳ Waiting for upload to complete...")
-            
-            # Look for success indicators
-            success_indicators = [
-                "//div[contains(text(), 'success')]",
-                "//div[contains(text(), 'uploaded')]",
-                "//div[contains(text(), 'imported')]",
-                "//span[contains(text(), 'complete')]"
-            ]
-            
-            success = False
-            for xpath in success_indicators:
-                try:
-                    WebDriverWait(self.driver, 30).until(
-                        EC.presence_of_element_located((By.XPATH, xpath))
-                    )
-                    success = True
-                    break
-                except TimeoutException:
-                    continue
-            
-            if success:
-                print("✅ CSV upload completed successfully!")
-                return True
-            else:
-                print("⚠️ Upload may have completed (no clear success indicator found)")
-                return True
+    def upload_csv_file(self, csv_file_path, max_retries=3):
+        """Upload CSV file to Klaviyo with retry logic"""
+        for attempt in range(max_retries):
+            try:
+                print(f"📤 Uploading CSV file (attempt {attempt + 1}/{max_retries}): {csv_file_path}")
                 
-        except Exception as e:
-            raise Exception(f"CSV upload failed: {e}")
+                if not os.path.exists(csv_file_path):
+                    raise Exception(f"CSV file not found: {csv_file_path}")
+                
+                # Find file input with better error handling
+                file_input = None
+                input_selectors = [
+                    "//input[@type='file']",
+                    "//input[@accept='.csv']",
+                    "//input[contains(@class, 'file')]",
+                    "//input[contains(@id, 'file')]"
+                ]
+                
+                for selector in input_selectors:
+                    try:
+                        file_input = WebDriverWait(self.driver, 5).until(
+                            EC.presence_of_element_located((By.XPATH, selector))
+                        )
+                        print(f"   ✅ Found file input with selector: {selector}")
+                        break
+                    except TimeoutException:
+                        continue
+                
+                if not file_input:
+                    raise Exception("Could not find file input element")
+                
+                # Clear any existing file selection
+                file_input.clear()
+                
+                # Upload file
+                file_input.send_keys(os.path.abspath(csv_file_path))
+                print(f"   📁 File selected: {os.path.basename(csv_file_path)}")
+                
+                # Wait for file to be processed
+                time.sleep(3)
+            
+                # Look for upload/submit button with enhanced detection
+                upload_buttons = [
+                    "//button[contains(text(), 'Upload')]",
+                    "//button[contains(text(), 'Import')]", 
+                    "//button[contains(text(), 'Submit')]",
+                    "//input[@type='submit']",
+                    "//button[@type='submit']",
+                    "//button[contains(@class, 'upload')]",
+                    "//button[contains(@class, 'submit')]",
+                    "//a[contains(text(), 'Upload')]"
+                ]
+                
+                upload_button = None
+                for xpath in upload_buttons:
+                    try:
+                        upload_button = WebDriverWait(self.driver, 5).until(
+                            EC.element_to_be_clickable((By.XPATH, xpath))
+                        )
+                        print(f"   🎯 Found upload button: {xpath}")
+                        break
+                    except (TimeoutException, NoSuchElementException):
+                        continue
+                
+                if not upload_button:
+                    # Take screenshot for debugging
+                    screenshot_path = f"klaviyo_error_{attempt + 1}.png"
+                    self.driver.save_screenshot(screenshot_path)
+                    print(f"   📷 Screenshot saved: {screenshot_path}")
+                    
+                    if attempt < max_retries - 1:
+                        print(f"   🔄 Retrying in 5 seconds...")
+                        time.sleep(5)
+                        continue
+                    else:
+                        raise Exception("Could not find upload/submit button after all retries")
+                
+                # Click upload button
+                upload_button.click()
+                print(f"   🖱️ Clicked upload button")
+                
+                # Wait for upload to complete with better indicators
+                print("⏳ Waiting for upload to complete...")
+                
+                # Look for success indicators
+                success_indicators = [
+                    "//div[contains(text(), 'success')]",
+                    "//div[contains(text(), 'uploaded')]",
+                    "//div[contains(text(), 'imported')]",
+                    "//span[contains(text(), 'complete')]",
+                    "//div[contains(@class, 'success')]",
+                    "//div[contains(@class, 'uploaded')]",
+                    "//p[contains(text(), 'reviews have been imported')]"
+                ]
+                
+                success = False
+                for xpath in success_indicators:
+                    try:
+                        WebDriverWait(self.driver, 30).until(
+                            EC.presence_of_element_located((By.XPATH, xpath))
+                        )
+                        print(f"   ✅ Success indicator found: {xpath}")
+                        success = True
+                        break
+                    except TimeoutException:
+                        continue
+                
+                if success:
+                    print("✅ CSV upload completed successfully!")
+                    return True
+                else:
+                    print("⚠️ Upload may have completed (no clear success indicator found)")
+                    # Take final screenshot
+                    screenshot_path = f"klaviyo_final_{attempt + 1}.png"
+                    self.driver.save_screenshot(screenshot_path)
+                    print(f"   📷 Final screenshot saved: {screenshot_path}")
+                    return True
+                    
+            except Exception as e:
+                print(f"   ❌ Attempt {attempt + 1} failed: {e}")
+                if attempt < max_retries - 1:
+                    print(f"   🔄 Retrying in 10 seconds...")
+                    time.sleep(10)
+                    # Refresh page for retry
+                    self.driver.refresh()
+                    time.sleep(3)
+                else:
+                    # Take error screenshot
+                    screenshot_path = f"klaviyo_error_final.png"
+                    self.driver.save_screenshot(screenshot_path)
+                    print(f"   📷 Error screenshot saved: {screenshot_path}")
+                    raise Exception(f"CSV upload failed after {max_retries} attempts: {e}")
+        
+        return False
     
     def upload_reviews_csv(self, csv_file_path):
         """Complete process to upload reviews CSV"""

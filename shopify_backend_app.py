@@ -5,6 +5,7 @@ import csv
 import random
 from datetime import datetime, timedelta
 import json
+import difflib
 
 app = Flask(__name__)
 
@@ -41,6 +42,32 @@ def save_live_review_counts(data):
     """Save manually tracked live review counts"""
     with open(LIVE_REVIEW_TRACKING_FILE, 'w') as f:
         json.dump(data, f, indent=2)
+
+def fuzzy_match_product(target_name, available_keys, threshold=0.6):
+    """Find the best fuzzy match for a product name among available keys"""
+    target_clean = target_name.lower().strip()
+    
+    best_match = None
+    best_ratio = 0
+    
+    for key in available_keys:
+        key_clean = str(key).lower().strip()
+        
+        # Try different matching approaches
+        ratios = [
+            difflib.SequenceMatcher(None, target_clean, key_clean).ratio(),
+            difflib.SequenceMatcher(None, target_clean.replace('-', ' '), key_clean.replace('-', ' ')).ratio(),
+            # Check if key words are contained
+            len([word for word in target_clean.split() if word in key_clean]) / max(len(target_clean.split()), 1)
+        ]
+        
+        max_ratio = max(ratios)
+        
+        if max_ratio > best_ratio and max_ratio >= threshold:
+            best_ratio = max_ratio
+            best_match = key
+    
+    return best_match, best_ratio
 
 def get_csv_review_counts():
     """Get review counts from the CSV export file"""
@@ -630,6 +657,29 @@ def get_products():
             if klaviyo_reviews == 0:
                 klaviyo_reviews = live_review_counts.get(product_handle, 0)
                 print(f"   Manual reviews by handle: {klaviyo_reviews}")
+            
+            # Try fuzzy matching as last resort
+            if klaviyo_reviews == 0:
+                # Combine all available keys for fuzzy matching
+                all_keys = list(klaviyo_review_counts.keys()) + list(live_review_counts.keys())
+                
+                if all_keys:
+                    # Try fuzzy matching with product title
+                    best_match, confidence = fuzzy_match_product(product_title, all_keys, threshold=0.7)
+                    if best_match:
+                        fuzzy_reviews = klaviyo_review_counts.get(best_match, 0) or live_review_counts.get(best_match, 0)
+                        if fuzzy_reviews > 0:
+                            klaviyo_reviews = fuzzy_reviews
+                            print(f"   🔍 Fuzzy match found: '{best_match}' (confidence: {confidence:.2f}) -> {fuzzy_reviews} reviews")
+                    
+                    # Also try fuzzy matching with product handle
+                    if klaviyo_reviews == 0:
+                        best_match, confidence = fuzzy_match_product(product_handle, all_keys, threshold=0.8)
+                        if best_match:
+                            fuzzy_reviews = klaviyo_review_counts.get(best_match, 0) or live_review_counts.get(best_match, 0)
+                            if fuzzy_reviews > 0:
+                                klaviyo_reviews = fuzzy_reviews
+                                print(f"   🔍 Fuzzy match (handle): '{best_match}' (confidence: {confidence:.2f}) -> {fuzzy_reviews} reviews")
             
             print(f"   ✅ Final live review count: {klaviyo_reviews}")
             
