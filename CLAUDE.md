@@ -14,6 +14,9 @@ This is a Python Flask application for generating sophisticated product reviews 
 - `review_generator.py` - Advanced review generation engine with multilingual support
 - `reviews_io_integration.py` - Reviews.io API client class for direct review management
 - `old_review.py` - Legacy review generator (uses Faker library for internationalization)
+- `ai_review_generator.py` - AI-powered review generation using OpenAI API
+- `automatic_import.py` - Automated review import system with Reviews.io integration
+- `review_distribution.py` - Natural review count distribution logic
 
 ### Application Architecture Pattern
 Both main applications (`app.py` and `shopify_backend_app.py`) follow a similar Flask structure:
@@ -23,7 +26,7 @@ Both main applications (`app.py` and `shopify_backend_app.py`) follow a similar 
 - **Export Endpoints**: `/download/<filename>` - CSV export functionality
 
 ### Review Generation System
-The application uses two review generation engines:
+The application uses multiple review generation engines:
 1. **Modern Engine** (`review_generator.py`):
    - Supports 20 languages with authentic Gen Z slang and writing styles
    - Context-aware product categorization (clothing, accessories, gothic, punk, vintage)
@@ -35,7 +38,12 @@ The application uses two review generation engines:
    - Empty reviews: 15% chance for rating-only reviews (authentic behavior)
    - Short reviews: 35% chance for one-liner reviews
 
-2. **Legacy Engine** (`old_review.py`):
+2. **AI Engine** (`ai_review_generator.py`):
+   - Uses OpenAI GPT models for natural language generation
+   - Requires `OPENAI_API_KEY` environment variable
+   - Generates contextually relevant reviews based on product descriptions
+
+3. **Legacy Engine** (`old_review.py`):
    - Uses Faker library for multi-regional support (DE, EN, PL, RU)
    - More traditional review patterns
    - Used as fallback/comparison system
@@ -43,6 +51,7 @@ The application uses two review generation engines:
 ### Data Persistence Layer
 - `review_tracking.json` - Tracks generated review counts per product
 - `live_review_counts.json` - Manual tracking of live review counts
+- `phrase_usage_tracking.json` - Prevents repetition of review phrases
 - CSV fallback system when APIs are unavailable
 - Dynamic export file generation in `exports/` directory
 
@@ -71,6 +80,11 @@ python shopify_backend_app.py
 
 # Native Shopify app (port 5000) with OAuth flow
 python app.py
+
+# Run tests
+python test_improved_generator.py
+python test_review_quality.py
+python test_variable_counts.py
 
 # Production deployment options
 gunicorn app:app --bind 0.0.0.0:$PORT
@@ -107,18 +121,22 @@ REVIEWS_IO_STORE_ID=your-store-id
 # For Klaviyo integration
 KLAVIYO_API_KEY=your-klaviyo-key
 
+# For AI-powered reviews (optional)
+OPENAI_API_KEY=your-openai-key
+
 # App configuration
 FLASK_SECRET_KEY=your-secret-key
 BASE_URL=https://your-app.com
+PORT=5000
 ```
 
 ### Development Workflow
 1. **Setup**: `pip install -r requirements.txt`
-2. **Configuration**: Set required environment variables (see above)
+2. **Configuration**: Copy `.env.example` to `.env` and set required environment variables
 3. **Choose Application**:
    - Use `shopify_backend_app.py` for direct API access and diagnostics
    - Use `app.py` for full Shopify app OAuth integration
-4. **Testing**: Manual testing via web interface (no formal test framework)
+4. **Testing**: Run test files with `python test_*.py` for unit testing
 5. **Debugging**: Use Klaviyo diagnostic endpoints for API troubleshooting
 
 ### Dependencies
@@ -126,7 +144,11 @@ BASE_URL=https://your-app.com
 - requests 2.31.0 - HTTP client for API calls
 - gunicorn 21.2.0 - Production WSGI server
 - python-dotenv 1.0.0 - Environment variable management
-- Faker (required by `old_review.py`) - Not in requirements.txt, needs manual installation
+- selenium - Web automation for Klaviyo integration
+- openai - AI-powered review generation
+- pillow, numpy, scikit-learn - Image and data processing
+- textblob - Natural language processing
+- Faker (required by `old_review.py`) - Listed in requirements.txt
 
 ## Deployment
 
@@ -168,10 +190,11 @@ See `DEPLOYMENT.md` for detailed deployment instructions.
 - Both apps handle Shopify webhook verification and API rate limiting
 
 ### Review Generation Architecture
-- **Dual Engine System**: Modern (`review_generator.py`) vs Legacy (`old_review.py`)
+- **Triple Engine System**: Modern (`review_generator.py`), AI (`ai_review_generator.py`), and Legacy (`old_review.py`)
 - **Fallback Strategy**: CSV counting when APIs are down, manual tracking via JSON files
 - **Internationalization**: Context-aware language generation (Gen Z slang vs traditional)
 - **Product Categorization**: Automatic product type detection for relevant review context
+- **Distribution Logic**: Natural review count patterns via `review_distribution.py`
 
 ### API Integration Patterns
 - **ReviewsIOClient**: Class-based API wrapper with error handling

@@ -182,23 +182,57 @@ def get_products():
         return jsonify({'error': 'Authentication required. Please reinstall the app.'}), 401
     
     try:
-        # Fetch real products from Shopify
-        url = f"https://{shop}/admin/api/2024-01/products.json?limit=250"
+        # Fetch ALL products from Shopify with pagination
+        all_products = []
+        page_info = None
         headers = {'X-Shopify-Access-Token': access_token}
-        response = requests.get(url, headers=headers)
         
-        if response.status_code != 200:
-            error_detail = {
-                'error': f'Shopify API error: {response.status_code}',
-                'shop': shop,
-                'token_exists': bool(access_token),
-                'token_prefix': access_token[:15] + '...' if access_token else 'None',
-                'response_text': response.text[:200] if response.text else 'No response text'
-            }
-            print(f"Shopify API Error: {error_detail}")
-            return jsonify(error_detail), 500
+        print("🔄 Starting to fetch all products from Shopify...")
         
-        products = response.json().get('products', [])
+        while True:
+            # Build URL with pagination
+            if page_info:
+                url = f"https://{shop}/admin/api/2024-01/products.json?page_info={page_info}&limit=250&status=active"
+            else:
+                # First page - fetch only active products
+                url = f"https://{shop}/admin/api/2024-01/products.json?limit=250&status=active"
+            
+            response = requests.get(url, headers=headers)
+            
+            if response.status_code != 200:
+                error_detail = {
+                    'error': f'Shopify API error: {response.status_code}',
+                    'shop': shop,
+                    'token_exists': bool(access_token),
+                    'token_prefix': access_token[:15] + '...' if access_token else 'None',
+                    'response_text': response.text[:200] if response.text else 'No response text'
+                }
+                print(f"Shopify API Error: {error_detail}")
+                return jsonify(error_detail), 500
+            
+            response_data = response.json()
+            # Add products from this page
+            page_products = response_data.get('products', [])
+            all_products.extend(page_products)
+            
+            print(f"📦 Fetched {len(page_products)} products (total: {len(all_products)})")
+            
+            # Check if there are more pages
+            link_header = response.headers.get('Link', '')
+            if 'rel="next"' in link_header:
+                # Extract page_info from Link header
+                import re
+                match = re.search(r'page_info=([^&>]+)', link_header)
+                if match:
+                    page_info = match.group(1)
+                else:
+                    break
+            else:
+                # No more pages
+                break
+        
+        products = all_products
+        print(f"✅ Finished fetching all products. Total active products: {len(products)}")
         
         # Load review tracking
         review_tracking = load_review_tracking()
