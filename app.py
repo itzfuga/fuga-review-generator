@@ -186,10 +186,12 @@ def get_products():
         all_products = []
         page_info = None
         headers = {'X-Shopify-Access-Token': access_token}
+        page_count = 0
+        max_pages = 20  # Safety limit to prevent infinite loops
         
         print("🔄 Starting to fetch all products from Shopify...")
         
-        while True:
+        while page_count < max_pages:
             # Build URL with pagination
             if page_info:
                 url = f"https://{shop}/admin/api/2024-01/products.json?page_info={page_info}&limit=250"
@@ -217,20 +219,33 @@ def get_products():
             active_products = [p for p in page_products if p.get('status') == 'active']
             all_products.extend(active_products)
             
-            print(f"📦 Fetched {len(page_products)} products, {len(active_products)} active (total active: {len(all_products)})")
+            page_count += 1
+            print(f"📦 Page {page_count}: Fetched {len(page_products)} products, {len(active_products)} active (total active: {len(all_products)})")
+            
+            # If we got less than 250 products, we've reached the end
+            if len(page_products) < 250:
+                print("✅ Reached the last page (less than 250 products)")
+                break
             
             # Check if there are more pages
             link_header = response.headers.get('Link', '')
             if 'rel="next"' in link_header:
                 # Extract page_info from Link header
                 import re
-                match = re.search(r'page_info=([^&>]+)', link_header)
+                match = re.search(r'<[^>]+page_info=([^&>]+)[^>]*>; rel="next"', link_header)
                 if match:
-                    page_info = match.group(1)
+                    new_page_info = match.group(1)
+                    # Check if we're stuck in a loop
+                    if new_page_info == page_info:
+                        print("⚠️ Pagination loop detected, stopping")
+                        break
+                    page_info = new_page_info
                 else:
+                    print("✅ No more pages (couldn't extract page_info)")
                     break
             else:
                 # No more pages
+                print("✅ No more pages (no next link)")
                 break
         
         products = all_products
