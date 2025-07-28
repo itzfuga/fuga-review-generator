@@ -703,10 +703,10 @@ def get_products():
         while True:
             # Build URL with pagination
             if page_info:
-                url = f"https://{SHOP_DOMAIN}/admin/api/2024-01/products.json?page_info={page_info}&limit=250&status=active"
+                url = f"https://{SHOP_DOMAIN}/admin/api/2024-01/products.json?page_info={page_info}&limit=250"
             else:
-                # First page - fetch only active products
-                url = f"https://{SHOP_DOMAIN}/admin/api/2024-01/products.json?limit=250&status=active"
+                # First page - fetch all products then filter active ones
+                url = f"https://{SHOP_DOMAIN}/admin/api/2024-01/products.json?limit=250"
             
             response = requests.get(url, headers=headers)
             
@@ -721,11 +721,13 @@ def get_products():
             if 'products' not in response_data:
                 return jsonify({'success': False, 'error': 'Invalid response from Shopify API'}), 500
             
-            # Add products from this page
+            # Add products from this page - filter for active status only
             page_products = response_data['products']
-            all_products.extend(page_products)
+            # Filter only active products (status='active')
+            active_products = [p for p in page_products if p.get('status') == 'active']
+            all_products.extend(active_products)
             
-            print(f"📦 Fetched {len(page_products)} products (total: {len(all_products)})")
+            print(f"📦 Fetched {len(page_products)} products, {len(active_products)} active (total active: {len(all_products)})")
             
             # Check if there are more pages
             link_header = response.headers.get('Link', '')
