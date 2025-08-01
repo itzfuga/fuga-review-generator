@@ -26,10 +26,10 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'dev-secret-key-change-in-pr
 SHOPIFY_API_KEY = os.environ.get('SHOPIFY_API_KEY')
 SHOPIFY_API_SECRET = os.environ.get('SHOPIFY_API_SECRET')
 SHOPIFY_SCOPES = 'read_products,write_products,read_customers,write_customers'
-SHOPIFY_REDIRECT_URI = os.environ.get('SHOPIFY_REDIRECT_URI', 'https://your-app.com/auth/callback')
+SHOPIFY_REDIRECT_URI = os.environ.get('SHOPIFY_REDIRECT_URI')
 
 # App URLs
-BASE_URL = os.environ.get('BASE_URL', 'https://your-app.com')
+BASE_URL = os.environ.get('BASE_URL')
 
 def verify_webhook(data, hmac_header):
     """Verify Shopify webhook"""
@@ -84,6 +84,10 @@ def auth_start():
     
     if not shop or not shop.endswith('.myshopify.com'):
         return "Invalid shop", 400
+    
+    # Check if credentials are configured
+    if not SHOPIFY_API_KEY or not SHOPIFY_API_SECRET or not SHOPIFY_REDIRECT_URI:
+        return "App not configured properly. Please set SHOPIFY_API_KEY, SHOPIFY_API_SECRET, and SHOPIFY_REDIRECT_URI environment variables.", 500
     
     # Start OAuth flow
     auth_url = f"https://{shop}/admin/oauth/authorize"

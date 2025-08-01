@@ -14,8 +14,8 @@ load_dotenv()
 app = Flask(__name__)
 
 # Your credentials from environment variables
-SHOP_DOMAIN = os.environ.get('SHOPIFY_SHOP_DOMAIN', 'your-shop.myshopify.com')
-ACCESS_TOKEN = os.environ.get('SHOPIFY_ACCESS_TOKEN', 'your-access-token')
+SHOP_DOMAIN = os.environ.get('SHOPIFY_SHOP_DOMAIN')
+ACCESS_TOKEN = os.environ.get('SHOPIFY_ACCESS_TOKEN')
 KLAVIYO_API_KEY = os.environ.get('KLAVIYO_API_KEY')
 
 # File to track generated reviews
@@ -540,7 +540,7 @@ def debug_reviews():
             debug_info['recent_events'] = recent_events_summary
         
         # 3. Check specific product in Shopify for review data in metafields
-        if SHOP_DOMAIN != 'your-shop.myshopify.com':
+        if SHOP_DOMAIN and ACCESS_TOKEN:
             shopify_headers = {'X-Shopify-Access-Token': ACCESS_TOKEN}
             products_url = f"https://{SHOP_DOMAIN}/admin/api/2024-01/products.json?limit=1"
             products_response = requests.get(products_url, headers=shopify_headers)
@@ -687,7 +687,7 @@ def get_products():
     """Fetch all products with review count tracking"""
     try:
         # Check if credentials are properly set
-        if SHOP_DOMAIN == 'your-shop.myshopify.com' or ACCESS_TOKEN == 'your-access-token':
+        if not SHOP_DOMAIN or not ACCESS_TOKEN:
             return jsonify({
                 'success': False, 
                 'error': 'Shopify credentials not configured. Please set SHOPIFY_SHOP_DOMAIN and SHOPIFY_ACCESS_TOKEN environment variables.'
@@ -837,6 +837,13 @@ def generate_for_product(product_id):
     from review_generator import generate_review, select_language
     
     try:
+        # Check if credentials are properly set
+        if not SHOP_DOMAIN or not ACCESS_TOKEN:
+            return jsonify({
+                'success': False, 
+                'error': 'Shopify credentials not configured. Please set SHOPIFY_SHOP_DOMAIN and SHOPIFY_ACCESS_TOKEN environment variables.'
+            }), 500
+        
         # Get review count from request
         data = request.json
         review_count = data.get('count', 5)
@@ -919,6 +926,13 @@ def generate_for_product(product_id):
 @app.route('/api/generate', methods=['POST'])
 def generate():
     from review_generator import generate_review, select_language
+    
+    # Check if credentials are properly set
+    if not SHOP_DOMAIN or not ACCESS_TOKEN:
+        return jsonify({
+            'success': False, 
+            'error': 'Shopify credentials not configured. Please set SHOPIFY_SHOP_DOMAIN and SHOPIFY_ACCESS_TOKEN environment variables.'
+        }), 500
     
     # Fetch products
     url = f"https://{SHOP_DOMAIN}/admin/api/2024-01/products.json?limit=250"
